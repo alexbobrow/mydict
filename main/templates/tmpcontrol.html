@@ -1,0 +1,130 @@
+{% load static %}
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>My Dict</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+        <meta http-equiv="refresh" content="60">
+
+        
+        <style>
+
+            body {
+                font-family: sans-serif;
+                font-size: 14px;
+            }
+
+
+            
+            button.icon-button,
+            a.icon-button {
+                cursor: pointer;
+            }
+
+            button.icon-button:hover,
+            a.icon-button:hover {
+                opacity: .7;
+            }
+
+            
+            button.icon-button {
+                background: transparent;
+                border: none;
+                padding: 0;
+            }
+
+            button.icon-button img,
+            a.icon-button img {
+                height: 16px;
+            }
+
+
+
+            table {
+                border-collapse: collapse;
+            }
+
+            td {
+                border-bottom: 1px solid #eee;
+                padding: 5px;
+                font-size: 14px;
+            }
+
+            td.word-id,
+            td.word-freq {
+                color: #777;
+            }
+
+            tr:hover td {
+                background-color: #f6f6f6;
+            }
+
+
+            
+        </style>    
+
+
+        <script>
+
+            $(function(){
+
+     
+                $('body').on('click', 'button[data-action=sound]', function(){
+                    var tr = $(this).closest('tr');
+                    var id = tr.attr('data-id');
+                    var word = tr.find('.word-text').text();
+
+                    $('audio').attr('src', 'http://www.gstatic.com/dictionary/static/sounds/de/0/'+word+'.mp3');
+                    $('audio')[0].play();
+
+                });
+
+
+
+
+
+
+
+            });
+
+
+        </script>
+
+
+    </head>
+    <body>
+
+        <div class="a-mb">
+            Всего {{ words|length }}
+        </div>
+
+        <audio></audio>
+            
+        <table>
+{% for word in words %}            
+            <tr data-id='{{ word.id }}'>
+                <td class="word-id">
+                    {{ word.id }}
+                </td>
+                <td>
+                    <a href='https://translate.google.com/#en/ru/{{ word.word }}' class='icon-button'>
+                        <img src='{% static 'translate.svg' %}'>
+                    </a>
+                    &nbsp;
+                    <button class='icon-button' data-action='sound'>
+                        <img src='{% static 'sound.svg' %}'>
+                    </button>                
+                </td>
+                <td class="word-text">{{ word.word }}</td>
+                <td>{{ word.translation }}</td>
+
+            </tr>
+{% endfor %}
+        </table>
+
+
+
+
+    </body>
+</html>

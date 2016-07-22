@@ -1,0 +1,6 @@
+**.pyc
+media/*
+local/*
+settings_local.py
+/tmp-*
+requirements.txt
