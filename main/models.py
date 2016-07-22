@@ -35,19 +35,21 @@ class WordManager(models.Manager):
         """
         Функция выдачи следующего слова для показа / теста
 
-        Проверяем наличия 100 слов
-
+        Сначала проверяем наличие 100 слов
+        Если меньше, добиваем до сотни
+        
+        Далее
         Выбираем добавляем мы новое слово в словарь или нет
-        Алгоритм такой. Вычисляем среднее значение ratio изученых слов
-        (если слов 200 и более то без учёта последних 100 слов)
+        Алгоритм такой. Вычисляем среднее значение ratio (далее avg_ratio)
+        изученых слов (если слов 200 и более то без учёта последних 100 слов)
+        
         Алгоритм выдачи следующего слова:
-        Далее по формуле - вероятность появления нового слова
+        Вероятность добавления нового слова в зависимости от avg_ratio
         1 - 100%
         0.5 - 0%
-        то есть
-        1->0.5 
-        100->0
-        нормализуем до 0.5->0:
+        
+        Составляем формулу:
+        нормализуем до 0.5->0
         nval = 0.5 нормализованный максимум
         ndelta = 0.5 нормализующее смещение
         x = (y-ndelta)*(100/nval)
@@ -58,15 +60,15 @@ class WordManager(models.Manager):
         100-200
             полный рандом
         200-650
-            50% последние 100-0
+            50% последние 100-0 (order by id desc limit 0 100)
             50% последние x-100 (все остальные)
         650-1000
-            50% последние 100-0
-            25% последние 200-100
+            50% последние 100-0 (order by id desc limit 0 100)
+            25% последние 200-100 (order by id desc limit 100 100)
             25% последние x-200 (все остальные)
         1000-
-            50% последние 100-0
-            25% последние 300-100
+            50% последние 100-0 (order by id desc limit 0 100)
+            25% последние 300-100 (order by id desc limit 100 200)
             25% последние x-300 (все остальные)
         """
         
@@ -80,7 +82,7 @@ class WordManager(models.Manager):
         action = NOT_SET
 
 
-        count = self.filter(user=user).count()
+        count = Progress.objects.filter(user=user).count()
 
         # Если у юзера слов меньше 100, то добивем до 100
         if count<100:
@@ -104,8 +106,10 @@ class WordManager(models.Manager):
         if avg_ratio < 0.5:
             action = REPEAT
         else:
-            #probability
+            # prb <- probability
+            # формула вероятности добавления нового слова
             prb = (avg_ratio-ndelta)*(100/0.5)
+            # по вероятности определяем действие
             action = NEW if prb>=random(1,100) else REPEAT
 
         
@@ -115,44 +119,9 @@ class WordManager(models.Manager):
             return
 
 
-        range_rand = random.randint(1, 100)
-        range_start = None
-        range_end = None
-
-
         if action==REPEAT:
-            # если слов 
-            # if count<200:
-            #    range_start = None
-            #    range_end = None
-            if count>=200 and count<650:
-                if range_rand<=50:
-                    range_start = 100
-                    range_end = 0
-                else:
-                    range_start = None
-                    range_end = 100
-            elif count>=650 and count<1000:
-                if range_rand<=50:
-                    range_start = 100
-                    range_end = 0
-                elif range_rand<=75:
-                    range_start = 200
-                    range_end = 100
-                else:
-                    range_start = None
-                    range_end = 200
-            elif count>=1000:
-                if range_rand<=50:
-                    range_start = 100
-                    range_end = 0
-                elif range_rand<=75:
-                    range_start = 300
-                    range_end = 100
-                else:
-                    range_start = None
-                    range_end = 300
 
+            range_start, range_end = self._getRange(count)
 
             # слова на границах выбранного диапазона
             word_start = self.all().order_by('-id')[range_start:1]
@@ -169,8 +138,67 @@ class WordManager(models.Manager):
             word = random.choice(words_list)
 
 
-def nextGetRatio():
-    pass
+
+
+    def _getRange(self, count):
+
+        range_rand = random.randint(1, 100)
+        range_start = None
+        range_end = None
+
+        # вычисляем границы диапазонов
+
+        # идентично если включить эти строки
+        # меньше 200 слов -> используем все слова
+        # if count<200:
+        #    range_start = None
+        #    range_end = None
+
+        # от 200 до 650
+        if count>=200 and count<650:
+            # 50% вероятности 100-0
+            if range_rand<=50:
+                range_start = 100
+                range_end = 0
+            # 50% вероятности x-100
+            else:
+                range_start = None
+                range_end = 100
+
+        # от 650 до 1000
+        elif count>=650 and count<1000:
+            # 50% вероятности 100-0
+            if range_rand<=50:
+                range_start = 100
+                range_end = 0
+            # 25% вероятности 200-100
+            elif range_rand<=75:
+                range_start = 200
+                range_end = 100
+            # 25% вероятности х-100
+            else:
+                range_start = None
+                range_end = 200
+        
+        # больше 1000
+        elif count>=1000:
+            # 50% вероятности 100-0
+            if range_rand<=50:
+                range_start = 100
+                range_end = 0
+            # 25% вероятности 300-100
+            elif range_rand<=75:
+                range_start = 300
+                range_end = 100
+            # 25% вероятности х-300
+            else:
+                range_start = None
+                range_end = 300
+
+        return (range_start, range_end)
+
+
+
 
 
 
