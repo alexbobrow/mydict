@@ -81,12 +81,11 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'mydict',
-        'USER': 'root',
-        'PASSWORD': 'mysql',
-        'HOST': '',
-        'PORT': '',
+        'USER': 'mydict',
+        'PASSWORD': 'mydict',
+        'HOST': 'localhost',
     }
 }
 
