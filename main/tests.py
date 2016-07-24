@@ -5,7 +5,7 @@ from .models import Word
 
 class AnimalTestCase(TestCase):
 
-    fixtures = ['words2000.xml']
+    fixtures = ['words-2000.json']
 
     def test_initial_words_count(self):
         count = Word.objects.all().count()
