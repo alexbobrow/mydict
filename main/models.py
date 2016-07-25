@@ -8,6 +8,7 @@ import random
 
 
 from django.db import models
+from django.db.models import Avg
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -21,7 +22,10 @@ class ProgressManager(models.Manager):
 
 
     def addNewWord(self, user):
-        word = self.all().filter(disabled=False)[0]
+
+        exclude = self.filter(user=user).values('word_id')
+
+        word = Word.objects.filter(disabled=False).exclude(id__in=exclude)[0]
         return self.create(
             user=user,
             word=word              
@@ -30,7 +34,7 @@ class ProgressManager(models.Manager):
 
 
     def addNewWordBulk(self, user, count):
-        for x in range(1, count):
+        for x in range(0, count):
             self.addNewWord(user)
 
 
@@ -39,6 +43,7 @@ class ProgressManager(models.Manager):
     def getAvgRatio(self, user):
 
         progress = self.filter(user=user)
+        count = progress.count()
 
         if count>=200:
             # если больше 200 то не учитываем посл 100
@@ -93,10 +98,10 @@ class ProgressManager(models.Manager):
             25% последние x-300 (все остальные)
         """
         
-        self._ensure100(user)
+        self.ensure100(user)
         
 
-        NOT_SET = 0
+        NEW = 0
         REPEAT = 1
 
         avg_ratio = self.getAvgRatio(user)
@@ -115,27 +120,52 @@ class ProgressManager(models.Manager):
 
         if action==NEW:
             # add word
+            print "NEW"
             return self.addNewWord(user)
 
 
 
         if action==REPEAT:
 
-            range_start, range_end = self._getRange(count)
+            range_start, range_end = self.getRange(self.userProgressCount)
+            print(self.userProgressCount)
+            print(range_start)
+            print(range_end)
+
+            qs = self.all()
 
             # слова на границах выбранного диапазона
-            word_start = self.all().order_by('-id')[range_start:1]
-            word_end = self.all().order_by('-id')[range_end:1]
+            if range_start is not None:
+                print('Processing range start')
+                word_start = self.all().order_by('-id')[range_start:1][0]
+                print("range start word id %s" % word_start.id)
+                qs = qs.filter(id__gt=word_start.id)
+
+            if range_end is not None:
+                print('Processing range end')
+                word_end = self.all().order_by('-id')[range_end:1][0]
+                print("range end word id %s" % word_end.id)
+                qs = qs.filter(id__lte=word_end.id)
+
 
             # из диапазона выбираем топ 10% слов с наименьшим ratio
-            range_count = self.all().filter(id__gt=word_start.id, id__lt=word_end.id).count()
+            range_count = qs.count()
+
+            print "Range count %s" % range_count
             ten_perc = range_count // 10
 
+            print "ten percents %s" % ten_perc
+
             # непосредственно спислк слов
-            words_list = self.all().filter(id__gt=word_start.id, id__lt=word_end.id).order_by('-ratio')[0:ten_perc]
+            words_list = qs.order_by('-ratio')[0:ten_perc]
+
+            print words_list
 
             # и наконец наше слово
             word = random.choice(words_list)
+
+            print "REPEAT"
+            print word.word
 
             return word
 
@@ -145,15 +175,15 @@ class ProgressManager(models.Manager):
 
 
 
-    def _ensure100(self, user):
+    def ensure100(self, user):
         """
         Ensures user has minimum 100 initial words
         """
-        count = Progress.objects.filter(user=user).count()
+        self.userProgressCount = Progress.objects.filter(user=user).count()
 
         # Если у юзера слов меньше 100, то добивем до 100
-        if count<100:
-            self.addNewWord(user, 100-count)
+        if self.userProgressCount<100:
+            self.addNewWordBulk(user, 100-self.userProgressCount)
             count = Progress.objects.filter(user=user).count()
             if count<100:
                 raise Exception("Can't add first 100 words")
@@ -162,7 +192,7 @@ class ProgressManager(models.Manager):
 
 
 
-    def _getRange(self, count):
+    def getRange(self, count):
 
         range_rand = random.randint(1, 100)
         range_start = None
@@ -170,7 +200,7 @@ class ProgressManager(models.Manager):
 
         # вычисляем границы диапазонов
 
-        # идентично если включить эти строки
+
         # меньше 200 слов -> используем все слова
         # if count<200:
         #    range_start = None
@@ -275,7 +305,6 @@ class WordSecond(models.Model):
     time_updated = models.DateTimeField(auto_now=True)
     frequency = models.PositiveIntegerField(default=0)
 
-    objects = WordManager()
 
     def __str__(self):
         return self.word
