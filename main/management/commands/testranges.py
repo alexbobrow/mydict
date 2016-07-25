@@ -10,10 +10,14 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
 
+
+        # count of user words to test
+        words = 1000
+
         results = {}
 
-        for x in range(0,1000):
-            res =  Word.objects._getRange(199)
+        for x in range(0,5000):
+            res =  Word.objects._getRange(words)
             key = str(res[0]) + '_' + str(res[1])
 
             if not key in results:

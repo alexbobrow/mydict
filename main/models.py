@@ -15,18 +15,39 @@ from django.utils.encoding import python_2_unicode_compatible
 
 
 
-class WordManager(models.Manager):
+class ProgressManager(models.Manager):
 
 
-    def addNewWord(self, user, count=1):
 
-        words = self.all().filter(disabled=False)[0:count]
 
-        for word in words:
-            Progress.objects.create(
-                user=user,
-                word=word              
-            )
+    def addNewWord(self, user):
+        word = self.all().filter(disabled=False)[0]
+        return self.create(
+            user=user,
+            word=word              
+        )
+
+
+
+    def addNewWordBulk(self, user, count):
+        for x in range(1, count):
+            self.addNewWord(user)
+
+
+
+
+    def getAvgRatio(self, user):
+
+        progress = self.filter(user=user)
+
+        if count>=200:
+            # если больше 200 то не учитываем посл 100
+            id_minus_100 = progress.order_by('-id')[100:1]
+            return progress.filter(id__lt=id_minus_100.id).aggregate(ratio=Avg('ratio'))['ratio']
+        else:
+            # учитываем все
+            return progress.aggregate(ratio=Avg('ratio'))['ratio']
+
 
 
 
@@ -72,35 +93,13 @@ class WordManager(models.Manager):
             25% последние x-300 (все остальные)
         """
         
-        
+        self._ensure100(user)
         
 
         NOT_SET = 0
         REPEAT = 1
-        NEW = 2
 
-        action = NOT_SET
-
-
-        count = Progress.objects.filter(user=user).count()
-
-        # Если у юзера слов меньше 100, то добивем до 100
-        if count<100:
-            self.addNewWord(user, 100-count)
-            count = self.filter(user=user).count()
-            if count<100:
-                raise Exception("Can't add first 100 words")
-
-
-        if count>=200:
-            # если больще 200 то не учитываем посл 100
-            # id_minus_100 = self.all().order_by('-id')[100:1]
-            # avg_ratio = self.all().filter(id__lt=id_minus_100.id).aggregate(ratio=Avg('ratio'))['ratio']
-            avg_ratio = self.all().aggregate(ratio=Avg('ratio'))['ratio']
-        else:
-            # учитываем все
-            avg_ratio = self.all().aggregate(ratio=Avg('ratio'))['ratio']
-
+        avg_ratio = self.getAvgRatio(user)
 
         
         if avg_ratio < 0.5:
@@ -111,12 +110,13 @@ class WordManager(models.Manager):
             prb = (avg_ratio-ndelta)*(100/0.5)
             # по вероятности определяем действие
             action = NEW if prb>=random(1,100) else REPEAT
+       
 
-        
+
         if action==NEW:
             # add word
-            # return new word
-            return
+            return self.addNewWord(user)
+
 
 
         if action==REPEAT:
@@ -129,13 +129,35 @@ class WordManager(models.Manager):
 
             # из диапазона выбираем топ 10% слов с наименьшим ratio
             range_count = self.all().filter(id__gt=word_start.id, id__lt=word_end.id).count()
-            ten_prec = range_count // 10
+            ten_perc = range_count // 10
 
             # непосредственно спислк слов
-            words_list = self.all().filter(id__gt=word_start.id, id__lt=word_end.id).order_by('-ratio')[0:ten_prec]
+            words_list = self.all().filter(id__gt=word_start.id, id__lt=word_end.id).order_by('-ratio')[0:ten_perc]
 
             # и наконец наше слово
             word = random.choice(words_list)
+
+            return word
+
+
+
+
+
+
+
+    def _ensure100(self, user):
+        """
+        Ensures user has minimum 100 initial words
+        """
+        count = Progress.objects.filter(user=user).count()
+
+        # Если у юзера слов меньше 100, то добивем до 100
+        if count<100:
+            self.addNewWord(user, 100-count)
+            count = Progress.objects.filter(user=user).count()
+            if count<100:
+                raise Exception("Can't add first 100 words")
+
 
 
 
@@ -235,7 +257,6 @@ class Word(models.Model):
     gstatic = models.NullBooleanField(null=True, default=None)
     disabled = models.BooleanField(default=False)
 
-    objects = WordManager()
 
     class Meta:
         ordering = ['rank']
@@ -261,10 +282,17 @@ class WordSecond(models.Model):
 
 
 
+
+
+
+
+
 class Progress(models.Model):
     word = models.ForeignKey(Word)
     user = models.ForeignKey(User)
     show_count = models.PositiveIntegerField(default=0)
     answered = models.PositiveIntegerField(default=0)
     ratio = models.PositiveIntegerField(default=0)
+
+    objects = ProgressManager()
 
