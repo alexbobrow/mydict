@@ -1,3 +1,5 @@
+from __future__ import division
+
 import random
 
 from django.test import TestCase
@@ -152,28 +154,121 @@ class NoNameTestClass(TestCase):
 
 
 
-    def test_get_range(self):
+    def test_get_range_1(self):
         """
         Testing helper function getRange()
         Test case 1
-        if user's dict contains < 100
-        Function must return None, None in 100% cases
+        if user's dict contains < 200
+        Function must return None_None in 100% cases
         """
-
+        word_count = 100
         iterations = 5000
-
-        results = self.get_range_helper(100, iterations)
+        results = self.get_range_helper(word_count, iterations)
         self.assertIn('None_None', results)
-
-        print results
-
-        #self.assertIn(results['None_None'], results)
+        self.assertEqual(results['None_None']['percent'], 100)
 
 
 
 
 
 
+
+    def get_range_2(self, word_count):
+        iterations = 10000
+        results = self.get_range_helper(word_count, iterations)
+        self.assertIn('100_0', results)
+        self.assertIn('None_100', results)
+        
+        self.assertGreater(results['100_0']['percent'], 48)
+        self.assertLess(results['100_0']['percent'], 52)
+
+        self.assertGreater(results['None_100']['percent'], 48)
+        self.assertLess(results['None_100']['percent'], 52)
+
+
+
+    def test_get_range_2(self):
+        """
+        Testing helper function getRange()
+        Test case 2
+        if user's dict contains >=300 and <650
+        Function must return
+        100_0 in 50% cases
+        None_100 in 50% cases
+        """
+        self.get_range_2(300)
+        self.get_range_2(500)
+        self.get_range_2(649)
+
+
+
+
+
+    def get_range_3(self, word_count):
+        iterations = 10000
+        results = self.get_range_helper(word_count, iterations)
+        self.assertIn('100_0', results)
+        self.assertIn('200_100', results)
+        self.assertIn('None_200', results)
+        
+        self.assertGreater(results['100_0']['percent'], 48)
+        self.assertLess(results['100_0']['percent'], 52)
+
+        self.assertGreater(results['200_100']['percent'], 23)
+        self.assertLess(results['200_100']['percent'], 27)
+
+        self.assertGreater(results['None_200']['percent'], 23)
+        self.assertLess(results['None_200']['percent'], 27)
+
+
+
+    def test_get_range_3(self):
+        """
+        Testing helper function getRange()
+        Test case 3
+        if user's dict contains >=650 and <1000
+        Function must return
+        100_0 in 50% cases
+        200_100 in 25% cases
+        None_200 in 25% cases
+        """
+        self.get_range_3(650)
+        self.get_range_3(800)
+        self.get_range_3(999)
+
+
+
+
+    def get_range_4(self, word_count):
+        iterations = 10000
+        results = self.get_range_helper(word_count, iterations)
+        self.assertIn('100_0', results)
+        self.assertIn('300_100', results)
+        self.assertIn('None_300', results)
+        
+        self.assertGreater(results['100_0']['percent'], 48)
+        self.assertLess(results['100_0']['percent'], 52)
+
+        self.assertGreater(results['300_100']['percent'], 23)
+        self.assertLess(results['300_100']['percent'], 27)
+
+        self.assertGreater(results['None_300']['percent'], 23)
+        self.assertLess(results['None_300']['percent'], 27)
+
+
+
+    def test_get_range_4(self):
+        """
+        Testing helper function getRange()
+        Test case 4
+        if user's dict contains >= 1000
+        Function must return
+        100_0 in 50% cases
+        300_100 in 25% cases
+        None_300 in 25% cases
+        """
+        self.get_range_4(1000)
+        self.get_range_4(2000)
 
 
 
