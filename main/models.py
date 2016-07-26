@@ -47,7 +47,8 @@ class ProgressManager(models.Manager):
 
         if count>=200:
             # если больше 200 то не учитываем посл 100
-            id_minus_100 = progress.order_by('-id')[100:1]
+            # id_minus_100 входит в диапазон посл 100
+            id_minus_100 = progress.order_by('-id')[100]
             return progress.filter(id__lt=id_minus_100.id).aggregate(ratio=Avg('ratio'))['ratio']
         else:
             # учитываем все
@@ -324,4 +325,7 @@ class Progress(models.Model):
     ratio = models.PositiveIntegerField(default=0)
 
     objects = ProgressManager()
+
+    def __str__(self):
+        return "id:%s / word_id:%s" % (self.id, self.word_id)
 

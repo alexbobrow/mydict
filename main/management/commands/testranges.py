@@ -1,9 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Word, WordManager
+from main.models import Progress
 
 class Command(BaseCommand):
     
-    help = 'Testing WordManager._getRange'
+    help = 'Testing ProgressManager._getRange'
 
 
 
@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
 
         # count of user words to test
-        words = 1000
+        words = 100
 
         results = {}
 
