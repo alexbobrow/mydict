@@ -113,15 +113,15 @@ class ProgressManager(models.Manager):
         else:
             # prb <- probability
             # формула вероятности добавления нового слова
-            prb = (avg_ratio-ndelta)*(100/0.5)
+            prb = (avg_ratio-0.5)*(100/0.5)
             # по вероятности определяем действие
-            action = NEW if prb>=random(1,100) else REPEAT
+            action = NEW if prb>=random.randint(1,100) else REPEAT
        
 
 
         if action==NEW:
             # add word
-            print "NEW"
+            #print "NEW"
             return self.addNewWord(user)
 
 
@@ -129,44 +129,45 @@ class ProgressManager(models.Manager):
         if action==REPEAT:
 
             range_start, range_end = self.getRange(self.userProgressCount)
-            print(self.userProgressCount)
-            print(range_start)
-            print(range_end)
+            #print(self.userProgressCount)
+            #print(range_start)
+            #print(range_end)
 
-            qs = self.all()
+            qs = self.filter(user=user)
 
             # слова на границах выбранного диапазона
             if range_start is not None:
-                print('Processing range start')
-                word_start = self.all().order_by('-id')[range_start:1][0]
-                print("range start word id %s" % word_start.id)
+                #import ipdb; ipdb.set_trace()
+                #print('Processing range start')
+                word_start = self.filter(user=user).order_by('-id')[range_start:range_start+1][0]
+                #print("range start word id %s" % word_start.id)
                 qs = qs.filter(id__gt=word_start.id)
 
             if range_end is not None:
-                print('Processing range end')
-                word_end = self.all().order_by('-id')[range_end:1][0]
-                print("range end word id %s" % word_end.id)
+                #print('Processing range end')
+                word_end = self.filter(user=user).order_by('-id')[range_end:range_end+1][0]
+                #print("range end word id %s" % word_end.id)
                 qs = qs.filter(id__lte=word_end.id)
 
 
             # из диапазона выбираем топ 10% слов с наименьшим ratio
             range_count = qs.count()
 
-            print "Range count %s" % range_count
+            #print "Range count %s" % range_count
             ten_perc = range_count // 10
 
-            print "ten percents %s" % ten_perc
+            #print "ten percents %s" % ten_perc
 
             # непосредственно спислк слов
             words_list = qs.order_by('-ratio')[0:ten_perc]
 
-            print words_list
+            #print words_list
 
             # и наконец наше слово
             word = random.choice(words_list)
 
-            print "REPEAT"
-            print word.word
+            #print "REPEAT"
+            #print word.word
 
             return word
 
@@ -322,7 +323,7 @@ class Progress(models.Model):
     user = models.ForeignKey(User)
     show_count = models.PositiveIntegerField(default=0)
     answered = models.PositiveIntegerField(default=0)
-    ratio = models.PositiveIntegerField(default=0)
+    ratio = models.DecimalField(default=0, max_digits=10, decimal_places=9)
 
     objects = ProgressManager()
 

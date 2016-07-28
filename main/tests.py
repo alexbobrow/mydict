@@ -72,7 +72,7 @@ class NoNameTestClass(TestCase):
     def set_random_ratio(self, min, max):
         progress = Progress.objects.filter(user=self.user)
         for word in progress:
-            word.ratio = random.randint(min, max)
+            word.ratio = random.randint(min*10, max*10)/10
             word.save()
 
 
@@ -86,25 +86,25 @@ class NoNameTestClass(TestCase):
         Progress.objects.addNewWordBulk(self.user, 5)
 
         progress = Progress.objects.filter(user=self.user)
-        # making ration 0,1,2,3,4 so avg=2
+        # making ration 0, .1, .2, .3, .4 so avg=.2
         for key, word in enumerate(progress):
-            word.ratio = key
+            word.ratio = key / 10
             word.save()
 
         avg_ratio = Progress.objects.getAvgRatio(self.user)
-        self.assertEqual(avg_ratio, 2)
+        self.assertEqual(avg_ratio, 0.2)
 
 
-        self.set_random_ratio(3,5)
+        self.set_random_ratio(0.3, 0.5)
         avg_ratio = Progress.objects.getAvgRatio(self.user)
-        self.assertGreaterEqual(avg_ratio, 3)
-        self.assertLessEqual(avg_ratio, 5)
+        self.assertGreaterEqual(avg_ratio, 0.3)
+        self.assertLessEqual(avg_ratio, 0.5)
 
 
-        self.set_random_ratio(5,8)
+        self.set_random_ratio(0.5, 0.8)
         avg_ratio = Progress.objects.getAvgRatio(self.user)
-        self.assertGreaterEqual(avg_ratio, 5)
-        self.assertLessEqual(avg_ratio, 8)
+        self.assertGreaterEqual(avg_ratio, 0.5)
+        self.assertLessEqual(avg_ratio, 0.8)
 
 
 
@@ -121,15 +121,15 @@ class NoNameTestClass(TestCase):
         # 200th border word
         border_word = qs[200]
 
-        # make ratio of first 200 words 7
-        qs.filter(id__lte=border_word.id).update(ratio=7)
+        # make ratio of first 200 words .7
+        qs.filter(id__lte=border_word.id).update(ratio=0.7)
 
-        # make ratio of newest 100 words 3
-        qs.filter(id__gt=border_word.id).update(ratio=3)
+        # make ratio of newest 100 words .3
+        qs.filter(id__gt=border_word.id).update(ratio=0.3)
 
         # ensure that last 100 words doesn't affect on result
         avg_ratio = Progress.objects.getAvgRatio(self.user)
-        self.assertLessEqual(avg_ratio, 7)
+        self.assertLessEqual(avg_ratio, 0.7)
 
 
 
@@ -269,6 +269,79 @@ class NoNameTestClass(TestCase):
         """
         self.get_range_4(1000)
         self.get_range_4(2000)
+
+
+    
+    def test_get_next(self):
+        """
+        Testing main parent function
+        """
+
+        # adding first 100 words
+        Progress.objects.ensure100(self.user)
+
+        qs = Progress.objects.filter(user=self.user)
+        
+        # mark words as showed
+        qs.update(show_count=1)
+
+        # function must return old words in 100% cases
+        # because ratio=0
+        for x in range(0, 100):
+            # must be an old word
+            word = Progress.objects.getNext(self.user)
+            self.assertEqual(word.show_count, 1)
+
+
+        # additional check that no new words added
+        self.assertEqual(qs.count(), 100)
+
+
+        # function must return new words in 100% cases
+        # because ratio=1
+        for x in range(0, 100):
+            qs.update(ratio=1, show_count=1)
+            # must be a new word
+            word = Progress.objects.getNext(self.user)
+            self.assertEqual(word.show_count, 0)
+
+
+        # additional check that 100 new words added
+        self.assertEqual(qs.count(), 200)
+
+
+
+        # function must return new words in 50% cases, and old in 50%
+        # because ratio=0.75
+        new = 0
+        old = 0
+
+        iterations = 500
+
+        qs.update(ratio=0.75, show_count=1)
+
+        for x in range(0, iterations):
+            # can be new or old word as well
+            word = Progress.objects.getNext(self.user)
+            if word.show_count == 1:
+                old += 1
+            else:
+                new += 1
+
+            if word.show_count != 1:
+                word.ratio=0.75
+                word.show_count=1
+                word.save()
+
+
+        new_perc = new * 100 / iterations
+        self.assertGreater(new_perc, 45)
+        self.assertLess(new_perc, 55)
+
+
+
+
+
 
 
 
