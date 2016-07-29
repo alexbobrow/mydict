@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from __future__ import division
+from collections import OrderedDict
 
 import os.path
 import uuid
@@ -22,6 +23,10 @@ class ProgressManager(models.Manager):
 
 
     def addNewWord(self, user):
+        """
+        Adding new word in user's dictionary
+        Returns Progress entry
+        """
 
         exclude = self.filter(user=user).values('word_id')
 
@@ -100,12 +105,18 @@ class ProgressManager(models.Manager):
         """
         
         self.ensure100(user)
+
+        # отладочная информация алгоритма для тестов и ручного дебага
+        debug = OrderedDict()
+
+        debug['userPorgressCount'] = self.userProgressCount
         
 
         NEW = 0
         REPEAT = 1
 
         avg_ratio = self.getAvgRatio(user)
+        debug['avg_ratio'] = avg_ratio
 
         
         if avg_ratio < 0.5:
@@ -118,40 +129,53 @@ class ProgressManager(models.Manager):
             action = NEW if prb>=random.randint(1,100) else REPEAT
        
 
+        debug['action'] = 'NEW' if action == NEW else 'REPEAT'
+
 
         if action==NEW:
             # add word
             #print "NEW"
-            return self.addNewWord(user)
+            progress_word = self.addNewWord(user)
+            progress_word.debug = debug
+            return progress_word
 
 
 
         if action==REPEAT:
 
             range_start, range_end = self.getRange(self.userProgressCount)
-            #print(self.userProgressCount)
-            #print(range_start)
-            #print(range_end)
+
+           
+            debug['range_start'] = range_start
 
             qs = self.filter(user=user)
 
-            # слова на границах выбранного диапазона
             if range_start is not None:
-                #import ipdb; ipdb.set_trace()
-                #print('Processing range start')
-                word_start = self.filter(user=user).order_by('-id')[range_start:range_start+1][0]
-                #print("range start word id %s" % word_start.id)
+                #print('Processing range end')
+                # это слово ВХОДИТ диапазон
+                word_end = self.filter(user=user).order_by('-id')[range_start:range_start+1][0]
+                debug['range_start_word_id'] = word_end.id
+                qs = qs.filter(id__lte=word_end.id)
+
+
+            debug['range_end'] = range_end
+
+
+            # слова на границах выбранного диапазона
+            if range_end is not None:
+                # import ipdb; ipdb.set_trace()
+                # это слово НЕ входит диапазон
+                word_start = self.filter(user=user).order_by('-id')[range_end:range_end+1][0]
+                debug['range_end_word_id'] = word_start.id
                 qs = qs.filter(id__gt=word_start.id)
 
-            if range_end is not None:
-                #print('Processing range end')
-                word_end = self.filter(user=user).order_by('-id')[range_end:range_end+1][0]
-                #print("range end word id %s" % word_end.id)
-                qs = qs.filter(id__lte=word_end.id)
 
 
             # из диапазона выбираем топ 10% слов с наименьшим ratio
             range_count = qs.count()
+
+            debug['range_count'] = range_count
+            debug['qs'] = qs
 
             #print "Range count %s" % range_count
             ten_perc = range_count // 10
@@ -164,12 +188,10 @@ class ProgressManager(models.Manager):
             #print words_list
 
             # и наконец наше слово
-            word = random.choice(words_list)
+            progress_word = random.choice(words_list)
+            progress_word.debug = debug
 
-            #print "REPEAT"
-            #print word.word
-
-            return word
+            return progress_word
 
 
 
@@ -197,57 +219,63 @@ class ProgressManager(models.Manager):
     def getRange(self, count):
 
         range_rand = random.randint(1, 100)
+        
+        # начало диапазона (при обратной сортировке по id)
         range_start = None
+
+        # конец диапазона (при обратной сортировке по id)
+        # зачастую None, это значит от range_start и до конца таблицы
         range_end = None
+        
 
         # вычисляем границы диапазонов
 
 
         # меньше 200 слов -> используем все слова
         # if count<200:
-        #    range_start = None
         #    range_end = None
+        #    range_start = None
 
         # от 200 до 650
         if count>=200 and count<650:
-            # 50% вероятности 100-0
+            # 50% вероятности 0-100
             if range_rand<=50:
-                range_start = 100
-                range_end = 0
-            # 50% вероятности x-100
-            else:
-                range_start = None
+                range_start = 0
                 range_end = 100
+            # 50% вероятности 100-x
+            else:
+                range_start = 100
+                range_end = None
 
         # от 650 до 1000
         elif count>=650 and count<1000:
-            # 50% вероятности 100-0
+            # 50% вероятности 0-100
             if range_rand<=50:
-                range_start = 100
-                range_end = 0
-            # 25% вероятности 200-100
-            elif range_rand<=75:
-                range_start = 200
+                range_start = 0
                 range_end = 100
-            # 25% вероятности х-100
-            else:
-                range_start = None
+            # 25% вероятности 100-200
+            elif range_rand<=75:
+                range_start = 100
                 range_end = 200
+            # 25% вероятности 200-x
+            else:
+                range_start = 200
+                range_end = None
         
         # больше 1000
         elif count>=1000:
-            # 50% вероятности 100-0
+            # 50% вероятности 0-100
             if range_rand<=50:
-                range_start = 100
-                range_end = 0
-            # 25% вероятности 300-100
-            elif range_rand<=75:
-                range_start = 300
+                range_start = 0
                 range_end = 100
-            # 25% вероятности х-300
-            else:
-                range_start = None
+            # 25% вероятности 100-300
+            elif range_rand<=75:
+                range_start = 100
                 range_end = 300
+            # 25% вероятности 300-x
+            else:
+                range_start = 300
+                range_end = None
 
         return (range_start, range_end)
 

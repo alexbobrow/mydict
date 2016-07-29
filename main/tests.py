@@ -176,14 +176,14 @@ class NoNameTestClass(TestCase):
     def get_range_2(self, word_count):
         iterations = 10000
         results = self.get_range_helper(word_count, iterations)
-        self.assertIn('100_0', results)
-        self.assertIn('None_100', results)
+        self.assertIn('0_100', results)
+        self.assertIn('100_None', results)
         
-        self.assertGreater(results['100_0']['percent'], 48)
-        self.assertLess(results['100_0']['percent'], 52)
+        self.assertGreater(results['0_100']['percent'], 48)
+        self.assertLess(results['0_100']['percent'], 52)
 
-        self.assertGreater(results['None_100']['percent'], 48)
-        self.assertLess(results['None_100']['percent'], 52)
+        self.assertGreater(results['100_None']['percent'], 48)
+        self.assertLess(results['100_None']['percent'], 52)
 
 
 
@@ -207,18 +207,18 @@ class NoNameTestClass(TestCase):
     def get_range_3(self, word_count):
         iterations = 10000
         results = self.get_range_helper(word_count, iterations)
-        self.assertIn('100_0', results)
-        self.assertIn('200_100', results)
-        self.assertIn('None_200', results)
+        self.assertIn('0_100', results)
+        self.assertIn('100_200', results)
+        self.assertIn('200_None', results)
         
-        self.assertGreater(results['100_0']['percent'], 48)
-        self.assertLess(results['100_0']['percent'], 52)
+        self.assertGreater(results['0_100']['percent'], 48)
+        self.assertLess(results['0_100']['percent'], 52)
 
-        self.assertGreater(results['200_100']['percent'], 23)
-        self.assertLess(results['200_100']['percent'], 27)
+        self.assertGreater(results['100_200']['percent'], 23)
+        self.assertLess(results['100_200']['percent'], 27)
 
-        self.assertGreater(results['None_200']['percent'], 23)
-        self.assertLess(results['None_200']['percent'], 27)
+        self.assertGreater(results['200_None']['percent'], 23)
+        self.assertLess(results['200_None']['percent'], 27)
 
 
 
@@ -242,18 +242,18 @@ class NoNameTestClass(TestCase):
     def get_range_4(self, word_count):
         iterations = 10000
         results = self.get_range_helper(word_count, iterations)
-        self.assertIn('100_0', results)
-        self.assertIn('300_100', results)
-        self.assertIn('None_300', results)
+        self.assertIn('0_100', results)
+        self.assertIn('100_300', results)
+        self.assertIn('300_None', results)
         
-        self.assertGreater(results['100_0']['percent'], 48)
-        self.assertLess(results['100_0']['percent'], 52)
+        self.assertGreater(results['0_100']['percent'], 48)
+        self.assertLess(results['0_100']['percent'], 52)
 
-        self.assertGreater(results['300_100']['percent'], 23)
-        self.assertLess(results['300_100']['percent'], 27)
+        self.assertGreater(results['100_300']['percent'], 23)
+        self.assertLess(results['100_300']['percent'], 27)
 
-        self.assertGreater(results['None_300']['percent'], 23)
-        self.assertLess(results['None_300']['percent'], 27)
+        self.assertGreater(results['300_None']['percent'], 23)
+        self.assertLess(results['300_None']['percent'], 27)
 
 
 
@@ -272,9 +272,10 @@ class NoNameTestClass(TestCase):
 
 
     
-    def test_get_next(self):
+    def test_get_next_1(self):
         """
-        Testing main parent function
+        Ensuring that getNext() decide create word
+        or use old one for repeat in the right way
         """
 
         # adding first 100 words
@@ -289,8 +290,8 @@ class NoNameTestClass(TestCase):
         # because ratio=0
         for x in range(0, 100):
             # must be an old word
-            word = Progress.objects.getNext(self.user)
-            self.assertEqual(word.show_count, 1)
+            progress_word = Progress.objects.getNext(self.user)
+            self.assertEqual(progress_word.show_count, 1)
 
 
         # additional check that no new words added
@@ -299,11 +300,16 @@ class NoNameTestClass(TestCase):
 
         # function must return new words in 100% cases
         # because ratio=1
+        qs.update(ratio=1, show_count=1)
         for x in range(0, 100):
-            qs.update(ratio=1, show_count=1)
             # must be a new word
-            word = Progress.objects.getNext(self.user)
-            self.assertEqual(word.show_count, 0)
+            progress_word = Progress.objects.getNext(self.user)
+            self.assertEqual(progress_word.show_count, 0)
+
+            progress_word.ratio=1
+            progress_word.show_count=1
+            progress_word.save()
+
 
 
         # additional check that 100 new words added
@@ -322,21 +328,63 @@ class NoNameTestClass(TestCase):
 
         for x in range(0, iterations):
             # can be new or old word as well
-            word = Progress.objects.getNext(self.user)
-            if word.show_count == 1:
+            progress_word = Progress.objects.getNext(self.user)
+            if progress_word.show_count == 1:
                 old += 1
             else:
                 new += 1
 
-            if word.show_count != 1:
-                word.ratio=0.75
-                word.show_count=1
-                word.save()
+            if progress_word.show_count != 1:
+                progress_word.ratio=0.75
+                progress_word.show_count=1
+                progress_word.save()
 
 
         new_perc = new * 100 / iterations
         self.assertGreater(new_perc, 45)
         self.assertLess(new_perc, 55)
+
+
+
+
+    def test_get_next_2(self):
+        """
+        Ensuring that getNext() pick word
+        form the correct range
+        """
+
+        Progress.objects.addNewWordBulk(self.user, 100)
+
+        for x in range(1200):
+
+
+            progress_word = Progress.objects.getNext(self.user)
+
+            # getting processed ranges from debug info
+            range_start = progress_word.debug['range_start']
+            range_end = progress_word.debug['range_end']
+
+            # getting only ids
+            qs = Progress.objects.filter(user=self.user).order_by('-id').values('id')
+            
+            # imitating same range
+            if range_end is not None:
+                qs = qs[range_start:range_end]
+            else:
+                # not sure if it will work with mysql, because it
+                # is not support OFFSET without LIMIT
+                qs = qs[range_start:]
+
+            # checking the word is present in this range
+            qs2 = Progress.objects.filter(id__in=qs).filter(id=progress_word.id)
+            
+            self.assertEqual(qs2.exists(), True)
+
+            # increasing user's dict for one word
+            Progress.objects.addNewWord(self.user)
+
+
+
 
 
 
