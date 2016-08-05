@@ -19,6 +19,5 @@ import main
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^pages/', include('django.contrib.flatpages.urls')),
     url(r'^', include('main.urls')),
 ]

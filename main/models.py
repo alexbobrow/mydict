@@ -9,7 +9,7 @@ import random
 
 
 from django.db import models
-from django.db.models import Avg
+from django.db.models import Avg, Q
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -300,6 +300,23 @@ def pronounce_full_path(instance, filename):
 
 
 
+
+
+
+class WordManager(models.Manager):
+
+    def getSuggest(self, text):
+        if len(text)<3:
+            return []
+        text2 = " %s" % text
+        qs = self.filter(Q(translation__startswith=text) | Q(translation__contains=text2))
+        return qs[0:10]
+
+
+
+
+
+
 @python_2_unicode_compatible
 class Word(models.Model):
     word = models.CharField(max_length=255)
@@ -316,6 +333,8 @@ class Word(models.Model):
     pronounce = models.FileField(upload_to=pronounce_full_path, blank=True, default='')
     gstatic = models.NullBooleanField(null=True, default=None)
     disabled = models.BooleanField(default=False)
+
+    objects = WordManager()
 
 
     class Meta:

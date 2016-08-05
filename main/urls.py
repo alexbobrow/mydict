@@ -6,8 +6,12 @@ from . import views_tmp as tmp
 urlpatterns = [
 
     url(r'^$', views.root),
+    url(r'^login', views.login_view),
+    url(r'^logout', views.logout_view),
+
+
     url(r'^api/next$', views.next),
-    url(r'^api/autocomplete$', views.autocomplete),
+    url(r'^api/suggest$', views.suggest),
 
     
 

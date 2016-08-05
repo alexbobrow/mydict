@@ -84,7 +84,47 @@ body {
     visibility: hidden;
 }
 
+
 /* A-Microframwork end */
+
+
+
+
+
+/* suggest */
+
+#alsuli {
+    position: absolute;
+    border: 3px solid #f7f7f7;
+    border-top: none;
+    background-color: #fff;
+}
+
+#alsuli a {
+    display: block;
+    padding: 3px;
+    text-decoration: none;
+    color: #555;
+}
+
+#alsuli ul {
+    padding: 5px 0;
+}
+
+#alsuli li {
+    list-style: none ;
+    padding: 10px 15px;
+}
+
+.alsuli-cur {
+    background-color: #e2e2e2;
+}
+/* end suggest */
+
+
+
+
+
 
 
 .w-limit {
@@ -110,7 +150,7 @@ input.test {
     font-family: 'Roboto';
     font-weight: 100;
     font-size: 40px;
-    padding: .2em .3em;
+    padding: 10px 15px;
     border: none;
     width: 100%;
     outline: none;

@@ -1,0 +1,70 @@
+{% load static %}
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>My Dict</title>
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+        <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+        
+        <style>
+            .a-mb {
+                margin-bottom: 15px;
+            }
+        </style>        
+
+    </head>
+    <body>
+        <div class='w-limit'>
+
+            <h1>Авторизация</h1>
+
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                            {{ message }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}         
+
+            <form action='/login' method='post' class="a-mb">
+                
+                {% csrf_token %}
+                
+                <div class="a-mb">
+                    <input type='text' name='login'>
+                </div>
+                
+                <div class="a-mb">
+                    <input type='password' name='password'>
+                </div>
+                
+                <input type='submit'>
+
+            </form>
+
+            <div class="a-mb">
+                <h2>Войти через соц. сеть</h2>
+            </div>
+
+            <div class="a-mb">
+                <button>ВКонтакте</button>
+            </div>
+            
+            <div class="a-mb">
+                <button>Одноклассники</button>
+            </div>
+            
+            <div class="a-mb">
+                <button>Facebook</button>
+            </div>
+            
+            <div class="a-mb">
+                <button>Google+</button>
+            </div>
+
+        </div> <!-- w-limit -->
+    </body>
+</html>
