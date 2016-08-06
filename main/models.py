@@ -306,7 +306,7 @@ def pronounce_full_path(instance, filename):
 class WordManager(models.Manager):
 
     def getSuggest(self, text):
-        if len(text)<3:
+        if len(text)<1:
             return []
         text2 = " %s" % text
         qs = self.filter(Q(translation__startswith=text) | Q(translation__contains=text2))

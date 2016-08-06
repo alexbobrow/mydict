@@ -9,7 +9,7 @@ from django.contrib import messages
 
 
 
-from .models import Word
+from .models import Word, Progress
 
 
 
@@ -24,12 +24,34 @@ def root(request):
 
 def next(request):
 
-    word = Word.objects.getNext(request.user)
+    progress = Progress.objects.getNext(request.user)
 
     return JsonResponse({
-        'word': word.word,
-        'translation': word.translation,
+        'word': progress.word.word,
+        'id': progress.pk,
     })
+
+
+
+
+
+
+def answer(request):
+
+    progress = Progress.objects.get(pk=request.POST['progress_id'])
+    answer = Word.objects.get(pk=request.POST['answer_id'])
+
+    correct = True if progress.word==answer else False
+
+    return JsonResponse({
+        'correct': correct,
+        'answer': progress.word.translation,
+    })
+
+
+
+
+
 
 
 
