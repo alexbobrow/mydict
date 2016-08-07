@@ -308,8 +308,12 @@ class WordManager(models.Manager):
     def getSuggest(self, text):
         if len(text)<1:
             return []
-        text2 = " %s" % text
-        qs = self.filter(Q(translation__startswith=text) | Q(translation__contains=text2))
+
+        text_mass = text.split()
+        qs = self.all()
+        for text_part in text_mass:
+            text_part2 = " %s" % text_part
+            qs = qs.filter(Q(translation__startswith=text_part) | Q(translation__contains=text_part2))
         return qs[0:10]
 
 
