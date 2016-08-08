@@ -175,7 +175,6 @@ class ProgressManager(models.Manager):
             range_count = qs.count()
 
             debug['range_count'] = range_count
-            debug['qs'] = str(qs.query)
 
             #print "Range count %s" % range_count
             ten_perc = range_count // 10
@@ -183,7 +182,10 @@ class ProgressManager(models.Manager):
             #print "ten percents %s" % ten_perc
 
             # непосредственно спислк слов
-            words_list = qs.order_by('-ratio')[0:ten_perc]
+            words_list = qs.order_by('ratio')[0:ten_perc]
+            
+            debug['qs'] = str(words_list.query)
+
 
             #print words_list
 

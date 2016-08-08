@@ -55,8 +55,7 @@ def answer(request):
     progress.asked = progress.asked + 1
     # ratio filed updated in save() method
     progress.save()
-
-    
+   
 
     return JsonResponse({
         'correct': correct,
