@@ -26,10 +26,15 @@ def next(request):
 
     progress = Progress.objects.getNext(request.user)
 
-    return JsonResponse({
+    context = {
         'word': progress.word.word,
         'id': progress.pk,
-    })
+    }
+
+    if request.user.is_staff:
+        context['debug'] = progress.debug
+
+    return JsonResponse(context)
 
 
 
@@ -41,7 +46,17 @@ def answer(request):
     progress = Progress.objects.get(pk=request.POST['progress_id'])
     answer = Word.objects.get(pk=request.POST['answer_id'])
 
-    correct = True if progress.word==answer else False
+    if progress.word==answer:
+        progress.correct_answers = progress.correct_answers + 1
+        correct = True 
+    else:
+        correct = False
+
+    progress.asked = progress.asked + 1
+    # ratio filed updated in save() method
+    progress.save()
+
+    
 
     return JsonResponse({
         'correct': correct,

@@ -175,7 +175,7 @@ class ProgressManager(models.Manager):
             range_count = qs.count()
 
             debug['range_count'] = range_count
-            debug['qs'] = qs
+            debug['qs'] = str(qs.query)
 
             #print "Range count %s" % range_count
             ten_perc = range_count // 10
@@ -358,7 +358,6 @@ class WordSecond(models.Model):
     time_updated = models.DateTimeField(auto_now=True)
     frequency = models.PositiveIntegerField(default=0)
 
-
     def __str__(self):
         return self.word
 
@@ -372,12 +371,53 @@ class WordSecond(models.Model):
 class Progress(models.Model):
     word = models.ForeignKey(Word)
     user = models.ForeignKey(User)
-    show_count = models.PositiveIntegerField(default=0)
-    answered = models.PositiveIntegerField(default=0)
+    asked = models.PositiveIntegerField(default=0)
+    correct_answers = models.PositiveIntegerField(default=0)
     ratio = models.DecimalField(default=0, max_digits=10, decimal_places=9)
 
     objects = ProgressManager()
 
     def __str__(self):
         return "id:%s / word_id:%s" % (self.id, self.word_id)
+
+
+    def save(self, *args, **kwargs):
+
+        update = False
+
+        # getting old object to find out if ratio field
+        # needs to be updated
+        try:
+            old = Progress.objects.get(pk=self.pk)
+            if (
+                old.asked != self.asked or
+                old.correct_answers != self.correct_answers
+            ):
+                # if asked/correct_answers changed - must update ratio
+                update = True
+        except Progress.DoesNotExist: 
+            # if new and asked/correct_answers not 0
+            # must update ratio too 
+            if self.asked>0 or self.correct_answers>0:
+                update = True
+
+
+        # update ratio if needed
+        if update:
+            if self.correct_answers==0:
+                ratio = 0
+            else:
+                ratio = self.correct_answers / self.asked
+
+            if ratio>1:
+                raise Exception('Wrong ratio (word %s) %s / %s = %s' % (self.pk, self.asked, self.correct_answers, ratio))
+            
+            self.ratio = ratio
+
+
+        # parent save method
+        return super(Progress, self).save(*args, **kwargs)
+
+
+
 
