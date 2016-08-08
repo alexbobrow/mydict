@@ -13,12 +13,21 @@ $(function(){
 	$(function(){
 
 
+        $(window).on('keyup', function(e){
+            var code = (e.charCode)? e.charCode : e.keyCode;
+            if (status==RESULT && code==13) {
+                $('input.test').val('');
+                next();
+            }
+        });
+
+
         $('input.test').on('keyup', function(e){
             var code = (e.charCode)? e.charCode : e.keyCode;
             if (status==RESULT && code==13) {
                 $('input.test').val('');
                 next();
-                console.log('Enterok!');
+                e.stopPropagation();
             }
         });
 
@@ -61,6 +70,7 @@ $(function(){
         $('.answer').fadeOut();
         $.get('/api/next', {}, function(ans){
             $('.word').text(ans.word);
+            $('input.test').focus();
             currentProgressId = ans.id;
             status = ANSWERING;
         }, 'json');
