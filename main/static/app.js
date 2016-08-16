@@ -54,7 +54,25 @@ $(function(){
         });
 
 
+
+        $('button[data-action=disable]').on('click', function(e){
+            var data = {
+                progress_id: currentProgressId,
+                csrfmiddlewaretoken: csrf,
+            }
+
+            $.post('/api/disable-word', data, function(ans){
+                status = null;
+                next();
+            }, 'json');            
+        });
+
+
         next();
+
+
+
+
 
 	});
 

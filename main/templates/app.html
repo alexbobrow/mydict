@@ -19,6 +19,8 @@
             </div>
             <div class='answer'>&nbsp;</div>
         </div> <!-- w-limit -->
-
+        {% if request.user.is_staff %}
+            <button data-action='disable'>disable word</button>
+        {% endif %}
     </body>
 </html>

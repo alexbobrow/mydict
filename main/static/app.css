@@ -184,3 +184,12 @@ input.test:-ms-input-placeholder      { color: #ddd; }
     text-align: center;
     color: green;
 }
+
+
+button[data-action=disable] {
+    position: absolute;
+    padding: 10px;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+}

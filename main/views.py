@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
@@ -22,6 +24,7 @@ def root(request):
 
 
 
+@login_required
 def next(request):
 
     progress = Progress.objects.getNext(request.user)
@@ -39,8 +42,7 @@ def next(request):
 
 
 
-
-
+@login_required
 def answer(request):
 
     progress = Progress.objects.get(pk=request.POST['progress_id'])
@@ -112,14 +114,27 @@ def logout_view(request):
 
     
 
-
+@login_required
 def suggest(request):
-
     qs = Word.objects.getSuggest(request.GET['value'])
-
     context = {
         'items': qs
     }
-
     return render(request, 'suggest.html', context)
 
+
+
+
+
+@staff_member_required
+def disable_word(request):
+    progress = Progress.objects.get(pk=request.POST['progress_id'])
+    progress.word.disabled = True
+    progress.word.save()
+
+    qs = Progress.objects.get(word=progress.word)
+    qs.delete()
+
+    return JsonResponse({
+        'success': True
+    })
