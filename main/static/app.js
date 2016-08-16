@@ -89,6 +89,13 @@ $(function(){
         $.get('/api/next', {}, function(ans){
             $('.word').text(ans.word);
             $('input.test').focus();
+
+            if ($('table.debug').length>0) {
+                $.each(ans.debug, function(k, v){
+                    $('table.debug').append("<tr><td>"+v.key+"</td><td>"+v.value+"</td></tr>");
+                });
+            }
+
             currentProgressId = ans.id;
             status = ANSWERING;
         }, 'json');

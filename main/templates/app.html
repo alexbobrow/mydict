@@ -18,6 +18,9 @@
                 <input class='test' placeholder="начните вводить перевод">
             </div>
             <div class='answer'>&nbsp;</div>
+            {% if request.user.is_staff %}
+                <table class='debug'></table>
+            {% endif %}
         </div> <!-- w-limit -->
         {% if request.user.is_staff %}
             <button data-action='disable'>disable word</button>

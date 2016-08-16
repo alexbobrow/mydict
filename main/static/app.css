@@ -193,3 +193,16 @@ button[data-action=disable] {
     left: 50%;
     transform: translateX(-50%);
 }
+
+
+table.debug {
+    margin-top: 50px;
+    font-size: 11px;
+    color: #777;
+}
+
+table.debug td {
+    vertical-align: top;
+    border-bottom: 1px dotted #ddd;
+    padding: 5px;
+}
