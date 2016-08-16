@@ -20,10 +20,10 @@
             <div class='answer'>&nbsp;</div>
             {% if request.user.is_staff %}
                 <table class='debug'></table>
+                <div class='buttons'>
+                    <button data-action='disable'>disable word</button>
+                </div>
             {% endif %}
         </div> <!-- w-limit -->
-        {% if request.user.is_staff %}
-            <button data-action='disable'>disable word</button>
-        {% endif %}
     </body>
 </html>
