@@ -91,6 +91,7 @@ $(function(){
             $('input.test').focus();
 
             if ($('table.debug').length>0) {
+                $('table.debug').empty();
                 $.each(ans.debug, function(k, v){
                     $('table.debug').append("<tr><td>"+v.key+"</td><td>"+v.value+"</td></tr>");
                 });
