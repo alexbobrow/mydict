@@ -22,8 +22,6 @@ class ProgressManager(models.Manager):
 
 
     def debug(self, key, value):
-        if not hasattr(self, 'debug_storage'):
-            self.debug_storage = OrderedDict()
         self.debug_storage[key] = value
 
 
@@ -110,7 +108,10 @@ class ProgressManager(models.Manager):
             25% последние 300-100 (order by id desc limit 100 200)
             25% последние x-300 (все остальные)
         """
+
+        self.debug_storage = OrderedDict()
         
+
         self.ensure100(user)
 
 
@@ -145,6 +146,7 @@ class ProgressManager(models.Manager):
             #print "NEW"
             progress_word = self.addNewWord(user)
             progress_word.debug = self.debug_storage
+            #import ipdb; ipdb.set_trace()
             return progress_word
 
 
