@@ -21,6 +21,12 @@ class ProgressManager(models.Manager):
 
 
 
+    def debug(self, key, value):
+        if not hasattr(self, 'debug_storage'):
+            self.debug_storage = OrderedDict()
+        self.debug_storage[key] = value
+
+
 
     def addNewWord(self, user):
         """
@@ -58,6 +64,7 @@ class ProgressManager(models.Manager):
         else:
             # учитываем все
             return progress.aggregate(ratio=Avg('ratio'))['ratio']
+
 
 
 
@@ -106,17 +113,16 @@ class ProgressManager(models.Manager):
         
         self.ensure100(user)
 
-        # отладочная информация алгоритма для тестов и ручного дебага
-        debug = OrderedDict()
 
-        debug['userPorgressCount'] = self.userProgressCount
-        
+        self.debug('userPorgressCount', self.userProgressCount)
+       
 
         NEW = 0
         REPEAT = 1
 
         avg_ratio = self.getAvgRatio(user)
-        debug['avg_ratio'] = avg_ratio
+        self.debug('avg_ratio', avg_ratio)
+
 
         
         if avg_ratio < 0.5:
@@ -125,18 +131,20 @@ class ProgressManager(models.Manager):
             # prb <- probability
             # формула вероятности добавления нового слова
             prb = (avg_ratio-0.5)*(100/0.5)
+            self.debug('new word probability', prb)
             # по вероятности определяем действие
             action = NEW if prb>=random.randint(1,100) else REPEAT
        
 
-        debug['action'] = 'NEW' if action == NEW else 'REPEAT'
+        str_action = 'NEW' if action == NEW else 'REPEAT'
+        self.debug('action', str_action)
 
 
         if action==NEW:
             # add word
             #print "NEW"
             progress_word = self.addNewWord(user)
-            progress_word.debug = debug
+            progress_word.debug = self.debug_storage
             return progress_word
 
 
@@ -145,8 +153,7 @@ class ProgressManager(models.Manager):
 
             range_start, range_end = self.getRange(self.userProgressCount)
 
-           
-            debug['range_start'] = range_start
+            self.debug('range_start', range_start)
 
             qs = self.filter(user=user)
 
@@ -154,11 +161,11 @@ class ProgressManager(models.Manager):
                 #print('Processing range end')
                 # это слово ВХОДИТ диапазон
                 word_end = self.filter(user=user).order_by('-id')[range_start:range_start+1][0]
-                debug['range_start_word_id'] = word_end.id
+                self.debug('range_start_word_id', word_end.id)
                 qs = qs.filter(id__lte=word_end.id)
 
 
-            debug['range_end'] = range_end
+            self.debug('range_end', range_end)
 
 
             # слова на границах выбранного диапазона
@@ -166,7 +173,7 @@ class ProgressManager(models.Manager):
                 # import ipdb; ipdb.set_trace()
                 # это слово НЕ входит диапазон
                 word_start = self.filter(user=user).order_by('-id')[range_end:range_end+1][0]
-                debug['range_end_word_id'] = word_start.id
+                self.debug('range_end_word_id', word_start.id)
                 qs = qs.filter(id__gt=word_start.id)
 
 
@@ -174,7 +181,7 @@ class ProgressManager(models.Manager):
             # из диапазона выбираем топ 10% слов с наименьшим ratio
             range_count = qs.count()
 
-            debug['range_count'] = range_count
+            self.debug('range_count', range_count)
 
             #print "Range count %s" % range_count
             ten_perc = range_count // 10
@@ -184,14 +191,14 @@ class ProgressManager(models.Manager):
             # непосредственно спислк слов
             words_list = qs.order_by('ratio')[0:ten_perc]
             
-            debug['qs'] = str(words_list.query)
+            self.debug('sql', str(words_list.query))
 
 
             #print words_list
 
             # и наконец наше слово
             progress_word = random.choice(words_list)
-            progress_word.debug = debug
+            progress_word.debug = self.debug_storage
 
             return progress_word
 
