@@ -93,7 +93,11 @@ $(function(){
             if ($('table.debug').length>0) {
                 $('table.debug').empty();
                 $.each(ans.debug, function(k, v){
-                    $('table.debug').append("<tr><td>"+v.key+"</td><td>"+v.value+"</td></tr>");
+                    if (typeof(v)=='object') {
+                        $('table.debug').append("<tr><td>"+v.key+"</td><td>"+v.value+"</td></tr>");
+                    } else {
+                        $('table.debug').append("<tr><td colspan='2'>"+v+"</td></tr>");
+                    }                   
                 });
             }
 

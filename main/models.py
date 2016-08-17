@@ -21,8 +21,16 @@ class ProgressManager(models.Manager):
 
 
 
-    def debug(self, key, value):
-        self.debug_storage[key] = value
+    def debug(self, key, value=''):
+
+        if value=='':
+            self.debug_storage.append(key)
+        else:
+            self.debug_storage.append({
+                'key': key,
+                'value': value
+            })
+
 
 
     def applyDebug(self, progress_word):
@@ -46,7 +54,7 @@ class ProgressManager(models.Manager):
         Returns Progress entry
         """
 
-        self.debug('addNewWord()', "Adding new word to user's dict")
+        self.debug("Adding new word to user's dict")
 
         exclude = self.filter(user=user).values('word_id')
 
@@ -125,7 +133,7 @@ class ProgressManager(models.Manager):
             25% последние x-300 (все остальные)
         """
 
-        self.debug_storage = OrderedDict()
+        self.debug_storage = []
         
 
         self.ensure100(user)
@@ -251,7 +259,7 @@ class ProgressManager(models.Manager):
 
         range_rand = random.randint(1, 100)
 
-        self.debug('getRange', "rand factor: %s" % range_rand)
+        self.debug("rand factor", range_rand)
         
         # начало диапазона (при обратной сортировке по id)
         range_start = None
@@ -265,60 +273,59 @@ class ProgressManager(models.Manager):
 
         # меньше 200 слов -> используем все слова
         if count<200:
-            self.debug('getRange1', "mode 1 (less than 200)")
-            self.debug('getRange2', "using all words")
+            self.debug("range mode 1 / less than 200 / using all words")
             # range_end = None
             # range_start = None
 
         # от 200 до 650
         if count>=200 and count<650:
-            self.debug('getRange3', "mode 2 / 200-649 words")
+            self.debug("range mode 2 / 200-649 words")
             # 50% вероятности 0-100
             if range_rand<=50:
-                self.debug('getRange4', "mode 2.1 / 50% / range 0-100")
+                self.debug("range mode 2.1 / 50% / range 0-100")
                 range_start = 0
                 range_end = 100
             # 50% вероятности 100-x
             else:
-                self.debug('getRange5', "mode 2.2 / 50% / range 100-∞")
+                self.debug("range mode 2.2 / 50% / range 100-∞")
                 range_start = 100
                 range_end = None
 
         # от 650 до 1000
         elif count>=650 and count<1000:
-            self.debug('getRange3', "mode 3 / 650-999 words")
+            self.debug("range mode 3 / 650-999 words")
             # 50% вероятности 0-100
             if range_rand<=50:
-                self.debug('getRange4', "mode 3.1 / 50% / range 0-100")
+                self.debug("range mode 3.1 / 50% / range 0-100")
                 range_start = 0
                 range_end = 100
             # 25% вероятности 100-200
             elif range_rand<=75:
-                self.debug('getRange5', "mode 3.2 / 25% / range 100-200")
+                self.debug("range mode 3.2 / 25% / range 100-200")
                 range_start = 100
                 range_end = 200
             # 25% вероятности 200-x
             else:
-                self.debug('getRange6', "mode 3.3 / 25% / range 200-∞")
+                self.debug("range mode 3.3 / 25% / range 200-∞")
                 range_start = 200
                 range_end = None
         
         # больше 1000
         elif count>=1000:
-            self.debug('getRange3', "mode 4 / 1000 and more words")
+            self.debug("range mode 4 / 1000 and more words")
             # 50% вероятности 0-100
             if range_rand<=50:
-                self.debug('getRange4', "mode 4.1 / 50% / range 0-100")
+                self.debug("range mode 4.1 / 50% / range 0-100")
                 range_start = 0
                 range_end = 100
             # 25% вероятности 100-300
             elif range_rand<=75:
-                self.debug('getRange5', "mode 4.2 / 25% / range 100-300")
+                self.debug("range mode 4.2 / 25% / range 100-300")
                 range_start = 100
                 range_end = 300
             # 25% вероятности 300-x
             else:
-                self.debug('getRange6', "mode 4.3 / 25% / range 300-∞")
+                self.debug("range mode 4.3 / 25% / range 300-∞")
                 range_start = 300
                 range_end = None
 

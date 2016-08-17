@@ -35,7 +35,7 @@ def next(request):
     }
 
     if request.user.is_staff:
-        context['debug'] = [{'key':k, 'value':v} for k, v in progress.debug.iteritems()]
+        context['debug'] = progress.debug
 
     return JsonResponse(context)
 
