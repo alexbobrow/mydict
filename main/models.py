@@ -25,12 +25,28 @@ class ProgressManager(models.Manager):
         self.debug_storage[key] = value
 
 
+    def applyDebug(self, progress_word):
+
+        self.debug('word.id', progress_word.word.id)
+        self.debug('progress.id', progress_word.id)
+        self.debug('progress.asked', progress_word.asked)
+        self.debug('progress.correct_answers', progress_word.correct_answers)
+        self.debug('progress.ratio', progress_word.ratio)
+        
+
+        progress_word.debug = self.debug_storage
+
+        
+
+
 
     def addNewWord(self, user):
         """
         Adding new word in user's dictionary
         Returns Progress entry
         """
+
+        self.debug('addNewWord()', "Adding new word to user's dict")
 
         exclude = self.filter(user=user).values('word_id')
 
@@ -115,7 +131,7 @@ class ProgressManager(models.Manager):
         self.ensure100(user)
 
 
-        self.debug('userPorgressCount', self.userProgressCount)
+        self.debug('user dict count', self.userProgressCount)
        
 
         NEW = 0
@@ -144,8 +160,11 @@ class ProgressManager(models.Manager):
         if action==NEW:
             # add word
             #print "NEW"
+            
             progress_word = self.addNewWord(user)
-            progress_word.debug = self.debug_storage
+            #progress_word.debug = self.debug_storage
+            
+            self.applyDebug(progress_word)
             #import ipdb; ipdb.set_trace()
             return progress_word
 
@@ -200,7 +219,8 @@ class ProgressManager(models.Manager):
 
             # и наконец наше слово
             progress_word = random.choice(words_list)
-            progress_word.debug = self.debug_storage
+            #progress_word.debug = self.debug_storage
+            self.applyDebug(progress_word)
 
             return progress_word
 
@@ -230,6 +250,8 @@ class ProgressManager(models.Manager):
     def getRange(self, count):
 
         range_rand = random.randint(1, 100)
+
+        self.debug('getRange', "rand factor: %s" % range_rand)
         
         # начало диапазона (при обратной сортировке по id)
         range_start = None
@@ -241,50 +263,62 @@ class ProgressManager(models.Manager):
 
         # вычисляем границы диапазонов
 
-
         # меньше 200 слов -> используем все слова
-        # if count<200:
-        #    range_end = None
-        #    range_start = None
+        if count<200:
+            self.debug('getRange1', "mode 1 (less than 200)")
+            self.debug('getRange2', "using all words")
+            # range_end = None
+            # range_start = None
 
         # от 200 до 650
         if count>=200 and count<650:
+            self.debug('getRange3', "mode 2 / 200-649 words")
             # 50% вероятности 0-100
             if range_rand<=50:
+                self.debug('getRange4', "mode 2.1 / 50% / range 0-100")
                 range_start = 0
                 range_end = 100
             # 50% вероятности 100-x
             else:
+                self.debug('getRange5', "mode 2.2 / 50% / range 100-∞")
                 range_start = 100
                 range_end = None
 
         # от 650 до 1000
         elif count>=650 and count<1000:
+            self.debug('getRange3', "mode 3 / 650-999 words")
             # 50% вероятности 0-100
             if range_rand<=50:
+                self.debug('getRange4', "mode 3.1 / 50% / range 0-100")
                 range_start = 0
                 range_end = 100
             # 25% вероятности 100-200
             elif range_rand<=75:
+                self.debug('getRange5', "mode 3.2 / 25% / range 100-200")
                 range_start = 100
                 range_end = 200
             # 25% вероятности 200-x
             else:
+                self.debug('getRange6', "mode 3.3 / 25% / range 200-∞")
                 range_start = 200
                 range_end = None
         
         # больше 1000
         elif count>=1000:
+            self.debug('getRange3', "mode 4 / 1000 and more words")
             # 50% вероятности 0-100
             if range_rand<=50:
+                self.debug('getRange4', "mode 4.1 / 50% / range 0-100")
                 range_start = 0
                 range_end = 100
             # 25% вероятности 100-300
             elif range_rand<=75:
+                self.debug('getRange5', "mode 4.2 / 25% / range 100-300")
                 range_start = 100
                 range_end = 300
             # 25% вероятности 300-x
             else:
+                self.debug('getRange6', "mode 4.3 / 25% / range 300-∞")
                 range_start = 300
                 range_end = None
 
