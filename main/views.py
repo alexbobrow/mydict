@@ -32,6 +32,7 @@ def next(request):
     context = {
         'word': progress.word.word,
         'id': progress.pk,
+        'pronounce': progress.word.pronounce.url,
     }
 
     if request.user.is_staff:

@@ -74,6 +74,15 @@ $(function(){
         });
 
 
+
+        $('div.word').on('click', function(e){
+            var aud = $('audio')[0];
+            if (aud.src!='') {
+                aud.play();
+            }
+        })
+
+
         next();
 
 
@@ -95,6 +104,11 @@ $(function(){
         $.get('/api/next', {}, function(ans){
             $('.word').text(ans.word);
             $('input.test').focus();
+
+            
+            var aud = $('audio')[0];
+            aud.src = ans.pronounce;
+
 
             if ($('table.debug').length>0) {
                 $('table.debug').empty();
