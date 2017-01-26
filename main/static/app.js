@@ -45,6 +45,12 @@ $(function(){
             },
             onPlainEnter: function(i){
                 var o = i.data('alexSuggest');
+                if (i.val()=='') {
+                    // skip, wrong answer
+                    sendAnswer(0);
+                    return;
+                }
+
                 if ($('#alsuli' + " li").length==1) {
                     var id = $('#alsuli' + " li").attr('data-id');
                     sendAnswer(id);
