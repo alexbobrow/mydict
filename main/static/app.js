@@ -4,6 +4,8 @@ $(function(){
 
     var csrf = getCookie('csrftoken');
 
+    var aud = $('audio')[0];
+
     var ANSWERING = 0;
     var RESULT = 1;
     var PROCESSING = 3;
@@ -29,6 +31,10 @@ $(function(){
                 next();
                 e.stopPropagation();
             }
+            if (status==ANSWERING && code==13 && e.ctrlKey) {
+                // ctrl+enter - skip the word (treated as a wrong answer)
+                sendAnswer(0);
+            }
         });
 
 
@@ -45,16 +51,15 @@ $(function(){
             },
             onPlainEnter: function(i){
                 var o = i.data('alexSuggest');
-                if (i.val()=='') {
-                    // skip, wrong answer
-                    sendAnswer(0);
-                    return;
-                }
 
                 if ($('#alsuli' + " li").length==1) {
                     var id = $('#alsuli' + " li").attr('data-id');
                     sendAnswer(id);
+                    return;
                 }
+
+                replay();
+                return;
 
             }
         });
@@ -76,10 +81,7 @@ $(function(){
 
 
         $('div.word').on('click', function(e){
-            var aud = $('audio')[0];
-            if (aud.src!='') {
-                aud.play();
-            }
+            replay();
         })
 
 
@@ -90,6 +92,13 @@ $(function(){
 
 
 	});
+
+
+    function replay() {
+        if (aud.src!='') {
+            aud.play();
+        }
+    }
 
 
 
@@ -105,10 +114,7 @@ $(function(){
             $('.word').text(ans.word);
             $('input.test').focus();
 
-            
-            var aud = $('audio')[0];
             aud.src = ans.pronounce;
-
 
             if ($('table.debug').length>0) {
                 $('table.debug').empty();
