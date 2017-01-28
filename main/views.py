@@ -11,7 +11,7 @@ from django.contrib import messages
 
 
 
-from .models import Word, Progress
+from .models import Word, Progress, ProgressLog
 
 
 
@@ -28,6 +28,22 @@ def root(request):
 def next(request):
 
     progress = Progress.objects.getNext(request.user)
+
+    
+    # last 10 words we keep in session
+    # TODO may be store'em in DB
+    """
+    if 'log' in request.session:
+        log = request.session['log']
+        if len(log)>=10:
+            log = log[1:]
+    else:
+        log = []  
+    log.append(progress.pk)
+    request.session['log'] = log
+    progress.debug.append({'key': 'log','value': log})
+    """
+
 
     context = {
         'word': progress.word.word,
@@ -71,12 +87,20 @@ def answer(request):
             progress.correct_answers = progress.correct_answers + 1
             progress.asked = progress.asked + 1
         correct = True 
+
     else:
         correct = False
         progress.asked = progress.asked + 1
     
     # ratio filed updated in save() method
     progress.save()
+
+
+    # mark in log that word is answered (no matter correct or not)
+    progress_log = ProgressLog.objects.get(progress=progress)
+    progress_log.answered = True
+    progress_log.save()
+    #ProgressLog.objects.mark_answered(progress)
   
 
     return JsonResponse({

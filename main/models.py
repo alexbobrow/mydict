@@ -138,16 +138,23 @@ class ProgressManager(models.Manager):
 
         self.ensure100(user)
 
-
         self.debug('user dict count', self.userProgressCount)
-       
+
+        # проверяем нет ли в логах не отвеченного слова
+        unanswered = ProgressLog.objects.get_unanswered_word(user)       
+        if unanswered:
+            self.debug('unanswered word in logs found')
+            self.applyDebug(unanswered)
+            return unanswered
+
+
 
         NEW = 0
-        REPEAT = 1
+        REPEAT = 14
+        
 
         avg_ratio = self.getAvgRatio(user)
         self.debug('avg_ratio', avg_ratio)
-
 
         
         if avg_ratio < 0.5:
@@ -172,11 +179,6 @@ class ProgressManager(models.Manager):
             progress_word = self.addNewWord(user)
             #progress_word.debug = self.debug_storage
             
-            self.applyDebug(progress_word)
-            #import ipdb; ipdb.set_trace()
-            return progress_word
-
-
 
         if action==REPEAT:
 
@@ -206,6 +208,11 @@ class ProgressManager(models.Manager):
                 qs = qs.filter(id__gt=word_start.id)
 
 
+            # отсеиваем последние 10 из лога
+            log_arr = ProgressLog.objects.get_array(user)
+            qs = qs.exclude(id__in=log_arr)
+            self.debug('log', log_arr)
+
 
             # из диапазона выбираем топ 10% слов с наименьшим ratio
             range_count = qs.count()
@@ -228,9 +235,15 @@ class ProgressManager(models.Manager):
             # и наконец наше слово
             progress_word = random.choice(words_list)
             #progress_word.debug = self.debug_storage
-            self.applyDebug(progress_word)
+            
 
-            return progress_word
+
+        ProgressLog.objects.add(progress_word)
+       
+
+        self.applyDebug(progress_word)
+
+        return progress_word
 
 
 
@@ -473,3 +486,37 @@ class Progress(models.Model):
 
 
 
+class ProgressLogManager(models.Manager):
+
+    def get_array(self, user):
+        qs = self.filter(progress__user=user)[0:10]
+        return [x.progress.pk for x in qs]
+
+    
+    def get_unanswered_word(self, user):
+        unanswered = self.filter(progress__user=user, answered=False)
+        if len(unanswered)>0:
+            return unanswered[0].progress
+        else:
+            None
+
+    
+    def add(self, progress):
+        self.create(progress=progress)
+        qs = list(self.filter(progress__user=progress.user).order_by('-id'))
+        qs = qs[10:]
+        for log in qs:
+            log.delete()
+
+
+
+
+class ProgressLog(models.Model):
+    # id supposed
+    progress = models.ForeignKey(Progress)
+    answered = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['id']
+
+    objects = ProgressLogManager()
