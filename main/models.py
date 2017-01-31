@@ -19,9 +19,12 @@ from django.utils.encoding import python_2_unicode_compatible
 
 class ProgressManager(models.Manager):
 
-
+    
 
     def debug(self, key, value=''):
+
+        if not hasattr(self, 'debug_storage'):
+            self.debug_storage = []
 
         if value=='':
             self.debug_storage.append(key)
@@ -58,7 +61,14 @@ class ProgressManager(models.Manager):
 
         exclude = self.filter(user=user).values('word_id')
 
-        word = Word.objects.filter(disabled=False).exclude(id__in=exclude)[0]
+        try:
+            word_qs = Word.objects.filter(disabled=False).exclude(id__in=exclude)
+            word = word_qs[0]
+        except:
+            print 'Strange error'
+            print word_qs.query
+            print word_qs.query
+
         return self.create(
             user=user,
             word=word              
