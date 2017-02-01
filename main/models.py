@@ -399,7 +399,8 @@ class WordManager(models.Manager):
 @python_2_unicode_compatible
 class Word(models.Model):
     word = models.CharField(max_length=255)
-    translation = models.TextField(max_length=500, null=True, default=None)
+    translation = mod45
+    els.TextField(max_length=500, null=True, default=None)
     #show_count = models.PositiveIntegerField(default=0, blank=True)
     #test_count = models.PositiveIntegerField(default=0, blank=True)
     #test_rating = models.PositiveIntegerField(default=0, blank=True)
@@ -437,6 +438,32 @@ class WordSecond(models.Model):
         return self.word
 
 
+
+
+@python_2_unicode_compatible
+class Translation(models.Model):
+    word = models.CharField(max_length=255)
+    translation = models.TextField(max_length=500, null=True, default=None)
+    base = models.CharField(max_length=255, null=True, default=None)
+    time_created = models.DateTimeField(auto_now_add=True)
+    time_updated = models.DateTimeField(auto_now=True)
+    status = models.NullBooleanField()
+
+    def __str__(self):
+        return self.word
+
+
+
+@python_2_unicode_compatible
+class Pronounce(models.Model):
+    word = models.CharField(max_length=255)
+    time_created = models.DateTimeField(auto_now_add=True)
+    time_updated = models.DateTimeField(auto_now=True)
+    file = models.FileField(upload_to=pronounce_full_path, blank=True, default='')
+    status = models.NullBooleanField()
+
+    def __str__(self):
+        return self.word
 
 
 
