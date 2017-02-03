@@ -393,25 +393,19 @@ class WordManager(models.Manager):
 
 
 
-
-
-
 @python_2_unicode_compatible
 class Word(models.Model):
+    """
+    Main base generated from WordOS, WordWf, Translation and pronouce
+    """
     word = models.CharField(max_length=255)
-    translation = mod45
-    els.TextField(max_length=500, null=True, default=None)
-    #show_count = models.PositiveIntegerField(default=0, blank=True)
-    #test_count = models.PositiveIntegerField(default=0, blank=True)
-    #test_rating = models.PositiveIntegerField(default=0, blank=True)
+    translation = models.TextField(max_length=500, null=True, default=None)
     base = models.CharField(max_length=255, null=True, default=None)
     time_created = models.DateTimeField(auto_now_add=True)
     time_updated = models.DateTimeField(auto_now=True)
     frequency = models.PositiveIntegerField(default=0)
-    frequency2 = models.PositiveIntegerField(default=0)
     rank = models.PositiveIntegerField(default=0)
     pronounce = models.FileField(upload_to=pronounce_full_path, blank=True, default='')
-    gstatic = models.NullBooleanField(null=True, default=None)
     disabled = models.BooleanField(default=False)
 
     objects = WordManager()
@@ -425,13 +419,28 @@ class Word(models.Model):
 
 
 
+
+
+
 @python_2_unicode_compatible
-class WordSecond(models.Model):
+class WordOs(models.Model):
+    """
+    Open Subtitles resource
+    """
     word = models.CharField(max_length=255)
-    translation = models.TextField(max_length=500, null=True, default=None)
-    base = models.CharField(max_length=255, null=True, default=None)
-    time_created = models.DateTimeField(auto_now_add=True)
-    time_updated = models.DateTimeField(auto_now=True)
+    frequency = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.word
+
+
+
+@python_2_unicode_compatible
+class WordWf(models.Model):
+    """
+    Word Frequency 5000 free resource
+    """
+    word = models.CharField(max_length=255)
     frequency = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -442,7 +451,7 @@ class WordSecond(models.Model):
 
 @python_2_unicode_compatible
 class Translation(models.Model):
-    word = models.CharField(max_length=255)
+    word = models.CharField(max_length=255, unique=True)
     translation = models.TextField(max_length=500, null=True, default=None)
     base = models.CharField(max_length=255, null=True, default=None)
     time_created = models.DateTimeField(auto_now_add=True)
@@ -456,7 +465,7 @@ class Translation(models.Model):
 
 @python_2_unicode_compatible
 class Pronounce(models.Model):
-    word = models.CharField(max_length=255)
+    word = models.CharField(max_length=255, unique=True)
     time_created = models.DateTimeField(auto_now_add=True)
     time_updated = models.DateTimeField(auto_now=True)
     file = models.FileField(upload_to=pronounce_full_path, blank=True, default='')

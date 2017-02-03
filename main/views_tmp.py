@@ -10,7 +10,7 @@ from django.utils import timezone
 
 
 
-from .models import Word, WordSecond
+from .models import Word, WordWf
 
 # TEMP
 
