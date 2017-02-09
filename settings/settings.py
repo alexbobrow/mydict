@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     #'django.contrib.sites',
     #'django.contrib.flatpages',
     'main',
-    #'sslserver',
+    'sslserver',
     'debug_toolbar',
 ]
 
@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASESX = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'mydict',
@@ -89,7 +89,7 @@ DATABASESX = {
     }
 }
 
-DATABASES = {
+DATABASESX = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mydict',

@@ -108,7 +108,7 @@
         }
 
         
-        $.get('https://localhost:8050/api/tmp/next', {}, function(ans){
+        $.get('https://mydict.loc:8050/api/tmp/next', {}, function(ans){
 
             if (!ans.ok) {
                 console.log(ans.error);
@@ -153,7 +153,7 @@
             value: wordId
         });
 
-        $.post('https://localhost:8050/api/tmp/trs', data, function(ans){
+        $.post('https://mydict.loc:8050/api/tmp/trs', data, function(ans){
 
             if (!ans.ok) {
                 console.log(ans.error);

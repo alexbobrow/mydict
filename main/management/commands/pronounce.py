@@ -3,7 +3,7 @@ import requests
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files.base import ContentFile
-from main.models import Word
+from main.models import Pronounce
 
 class Command(BaseCommand):
     
@@ -14,8 +14,8 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
 
-        total = Word.objects.count()
-        words = Word.objects.filter(gstatic=None).order_by('rank').all()[0:2000]
+        total = Pronounce.objects.count()
+        words = Pronounce.objects.filter(status=None).all()
         
         found = 0
         notfound = 0
@@ -28,18 +28,18 @@ class Command(BaseCommand):
 
             e = '\n' if i==last else ''
 
-            self.stdout.write('\rword %s/%s, found: %s, not found: %s' % (word.rank, total, found, notfound), ending=e)
+            self.stdout.write('\rword %s/%s, found: %s, not found: %s' % (i, len(words), found, notfound), ending=e)
             self.stdout.flush()
 
             request = requests.get('http://gstatic.com/dictionary/static/sounds/de/0/%s.mp3' % word.word)
 
             if request.status_code==200:
                 found += 1
-                word.pronounce.save('%s.mp3' % word.word, ContentFile(request.content))
-                word.gstatic = True
+                word.file.save('%s.mp3' % word.word, ContentFile(request.content))
+                word.status = True
                 word.save()
             else:
-                word.gstatic = False
+                word.status = False
                 word.save()
                 notfound += 1
 

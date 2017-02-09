@@ -1,5 +1,5 @@
 import os
-#import urllib, urllib2
+import urllib, urllib2
 from datetime import timedelta
 
 from django.http import HttpResponse, JsonResponse
@@ -10,7 +10,7 @@ from django.utils import timezone
 
 
 
-from .models import Word, WordWf
+from .models import Word, WordWf, Translation
 
 # TEMP
 
@@ -18,14 +18,14 @@ from .models import Word, WordWf
 def next_for_translate(request):
 
     try:
-        word = Word.objects.filter(translation=None).first()
+        word = Translation.objects.filter(status=None).first()
         result = {
             'ok': True,
             'word': word.word,
             'id': word.id,
         }
 
-    except Word.DoesNotExist:
+    except Translation.DoesNotExist:
         result = {
             'ok': False,
             'error': 'No words for translation',
@@ -115,24 +115,24 @@ def list(request):
 def control(request):
 
     time_threshold = timezone.now() - timedelta(minutes=3)
-    last = Word.objects.exclude(time_updated__lt=time_threshold).count()
+    last = Translation.objects.exclude(time_updated__lt=time_threshold).count()
     if (last<1):
-    #if (False):
-         # do POST
-        #url = 'https://api.telegram.org/bot170568722:AAEdXnlzY3-0JPFlgo8Hh73DonSYSzo5lLY/sendMessage'
-        #values = dict(text='Translation stopped working...', chat_id=122775874)
-        #data = urllib.urlencode(values)
-        #req = urllib2.Request(url, data)
-        #rsp = urllib2.urlopen(req)
-        #content = rsp.read()
-        raise Exception("CARAUL!!!")
+    #if (True):
+        # do POST
+        url = 'https://api.telegram.org/bot170568722:AAEdXnlzY3-0JPFlgo8Hh73DonSYSzo5lLY/sendMessage'
+        values = dict(text='Translation stopped working...', chat_id=122775874)
+        data = urllib.urlencode(values)
+        req = urllib2.Request(url, data)
+        rsp = urllib2.urlopen(req)
+        content = rsp.read()
+        #raise Exception("CARAUL!!!")
 
 
-    words = Word.objects.exclude(translation=None).order_by('-time_updated')[0:20]
+    left = Translation.objects.filter(status=None).count()
     
 
     context = {
-        'words': words
+        'left': left
     }
     
 
@@ -195,10 +195,11 @@ def save_translation(request):
     # word_id
 
     words = request.POST.getlist('word')
-    word = Word.objects.get(id=request.POST['word_id'])
+    word = Translation.objects.get(id=request.POST['word_id'])
 
     try:
         word.translation = ", ".join(words)
+        word.status = True
         word.base = request.POST['base']
         word.save()
         ans = {'ok': True}
