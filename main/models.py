@@ -61,13 +61,8 @@ class ProgressManager(models.Manager):
 
         exclude = self.filter(user=user).values('word_id')
 
-        try:
-            word_qs = Word.objects.filter(disabled=False).exclude(id__in=exclude)
-            word = word_qs[0]
-        except:
-            print 'Strange error'
-            print word_qs.query
-            print word_qs.query
+        word_qs = Word.objects.filter(disabled=False).exclude(id__in=exclude)
+        word = word_qs[0]
 
         return self.create(
             user=user,

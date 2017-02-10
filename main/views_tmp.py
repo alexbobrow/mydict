@@ -1,5 +1,5 @@
 import os
-import urllib, urllib2
+import urllib
 from datetime import timedelta
 
 from django.http import HttpResponse, JsonResponse
@@ -118,13 +118,26 @@ def control(request):
     last = Translation.objects.exclude(time_updated__lt=time_threshold).count()
     if (last<1):
     #if (True):
-        # do POST
+
         url = 'https://api.telegram.org/bot170568722:AAEdXnlzY3-0JPFlgo8Hh73DonSYSzo5lLY/sendMessage'
         values = dict(text='Translation stopped working...', chat_id=122775874)
+
+        """
+        python2
         data = urllib.urlencode(values)
         req = urllib2.Request(url, data)
         rsp = urllib2.urlopen(req)
         content = rsp.read()
+        """
+
+        #python3
+
+        import urllib.request
+        import urllib.parse
+        data = urllib.parse.urlencode(values)
+        rsp = urllib.request.urlopen(url, data)
+        content = rsp.read()
+
         #raise Exception("CARAUL!!!")
 
 

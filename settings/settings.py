@@ -25,7 +25,7 @@ SECRET_KEY = '5n1nu!+k3$j_#&r6at0i*ljev=s1-x6mo&=48@eb7u@klzoqg4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mydict.loc']
 
 
 # Application definition
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     #'django.contrib.flatpages',
     'main',
     'sslserver',
-    'debug_toolbar',
+    #'debug_toolbar',
 ]
 
 MIDDLEWARE_CLASSES = [
