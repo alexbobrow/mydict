@@ -17,9 +17,14 @@ from .models import Word, Progress, ProgressLog
 
 @login_required
 def root(request):
-
-
+    
     context = {}
+
+    if request.user.has_perm('main.tester'):
+        context['tester'] = True
+    else:
+        context['tester'] = False
+
     return render(request, 'app.html', context)
 
 
@@ -51,7 +56,7 @@ def next(request):
         'pronounce': progress.word.pronounce.url,
     }
 
-    if request.user.is_staff:
+    if request.user.has_perm('main.tester'):
         context['debug'] = progress.debug
 
     return JsonResponse(context)

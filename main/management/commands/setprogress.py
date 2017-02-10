@@ -11,16 +11,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
 
-    	uid = raw_input('Enter user id: ')
+        uid = input('Enter user id: ')
         user = User.objects.get(id=uid)
 
         self.stdout.write('User %s selected: ' % user)
 
-        total = int(raw_input('Enter total words in user progress list: '))
+        total = int(input('Enter total words in user progress list: '))
 
-        asked = int(raw_input('Enter avarage asked: '))
+        asked = int(input('Enter avarage asked: '))
 
-        rating = float(raw_input('Enter avarage rating: '))
+        rating = float(input('Enter avarage rating: '))
         rating100 = int(round(rating*100))
 
 
@@ -29,8 +29,8 @@ class Command(BaseCommand):
         need_to_add = int(total) - current_count
 
         if need_to_add<=0:
-        	self.stdout.write('Cancelation. User already has %s word(s)' % (current_count))
-        	return
+            self.stdout.write('Cancelation. User already has %s word(s)' % (current_count))
+            return
 
         self.stdout.write('User has %s word(s), need to add %s' % (current_count, need_to_add))
 
@@ -38,17 +38,17 @@ class Command(BaseCommand):
 
         #addNewWordBulk(self, user, count):
         for x in range(0, need_to_add):
-        	progress = Progress.objects.addNewWord(user)
-        	# asked
-        	a = random.randint(asked-2, asked+2)
-        	# ratio
-        	r = random.randint(rating100-20, rating100+20)
-        	# correct
-        	#import pdb; pdb.set_trace()
-        	c = int(round(float(r) / 100 * a))
+            progress = Progress.objects.addNewWord(user)
+            # asked
+            a = random.randint(asked-2, asked+2)
+            # ratio
+            r = random.randint(rating100-20, rating100+20)
+            # correct
+            #import pdb; pdb.set_trace()
+            c = int(round(float(r) / 100 * a))
 
-        	progress.asked = a
-        	progress.correct_answers = c
-        	progress.save()
+            progress.asked = a
+            progress.correct_answers = c
+            progress.save()
 
         

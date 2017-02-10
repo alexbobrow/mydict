@@ -408,6 +408,10 @@ class Word(models.Model):
 
     class Meta:
         ordering = ['rank']
+        
+        permissions = (
+            ("tester", "Tester interfaces"),
+        )
 
     def __str__(self):
         return self.word
