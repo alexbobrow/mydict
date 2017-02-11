@@ -384,7 +384,43 @@ class WordManager(models.Manager):
         for text_part in text_mass:
             text_part2 = " %s" % text_part
             qs = qs.filter(Q(translation__startswith=text_part) | Q(translation__contains=text_part2))
-        return qs[0:10]
+
+        # only postgres distinct
+        # res = qs.distinct('translation').order_by()
+       
+        #res = qs[0:20]
+
+        # distinct for all
+        res = []
+        unique = {}
+        for model in qs:
+            if not model.translation in unique:
+                # caution utf-8 in dict keys
+                unique[model.translation] = model.translation
+                res.append(model)
+
+        # now sort so suggestion with exact match will be on top
+
+        def factor(x):
+            trans_mass = x.translation.split(',')
+            trans_mass = [x.strip() for x in trans_mass]
+
+            # exact match
+            if text == x.translation:
+                return 0
+            # match to one of words in translation
+            elif text in trans_mass:
+                return 1
+            # other
+            else:
+                return 2
+
+        res = sorted(res, key=lambda x: x.frequency, reverse=True)
+        res = sorted(res, key=factor)
+
+        res = res[0:10]
+
+        return res
 
 
 
