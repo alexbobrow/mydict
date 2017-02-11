@@ -565,3 +565,16 @@ class ProgressLog(models.Model):
         ordering = ['id']
 
     objects = ProgressLogManager()
+
+
+
+
+@python_2_unicode_compatible
+class Report(models.Model):
+    word = models.ForeignKey(Word)
+    user = models.ForeignKey(User)
+    time_created = models.DateTimeField(auto_now_add=True)
+    text = models.TextField(max_length=500)
+
+    def __str__(self):
+        return self.time_created

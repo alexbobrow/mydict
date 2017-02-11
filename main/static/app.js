@@ -22,7 +22,7 @@ $(function(){
 
 
     alexSuggest('input.test', {
-        url: '/api/suggest',
+        url: appUrls.suggest,
         uniquePart: 'data-id',
         inputOffsetTop: 20,
         inputOffsetLeft: 0,
@@ -89,7 +89,7 @@ $(function(){
             csrfmiddlewaretoken: csrf,
         }
 
-        $.post('/api/disable-word', data, function(ans){
+        $.post(appUrls.disable, data, function(ans){
             status = null;
             next();
         }, 'json');            
@@ -132,7 +132,7 @@ $(function(){
         status = PROCESSING;
         $('input.test').removeClass('wrong').removeClass('correct');
         $('.answer').fadeOut();
-        $.get('/api/next', {}, function(ans){
+        $.get(appUrls.next, {}, function(ans){
             $('span.word').text(ans.word);
             $('input.test').focus();
 
@@ -169,7 +169,7 @@ $(function(){
             csrfmiddlewaretoken: csrf,
         }
 
-        $.post('/api/answer', data, function(ans){
+        $.post(appUrls.answer, data, function(ans){
             $('.answer').text(ans.answer).fadeIn();
             if (ans.correct) {
                 $('input.test').addClass('correct');

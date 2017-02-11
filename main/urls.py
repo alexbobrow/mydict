@@ -10,10 +10,11 @@ urlpatterns = [
     url(r'^logout', views.logout_view, name='logout'),
 
 
-    url(r'^api/next$', views.next),
-    url(r'^api/suggest$', views.suggest),
-    url(r'^api/answer$', views.answer),
-    url(r'^api/disable-word$', views.disable_word),
+    url(r'^api/next$', views.next, name='next'),
+    url(r'^api/suggest$', views.suggest, name='suggest'),
+    url(r'^api/answer$', views.answer, name='answer'),
+    url(r'^api/report-word$', views.disable_word, name='report'),
+    url(r'^api/disable-word$', views.disable_word, name='disable'),
 
     
 
