@@ -1,5 +1,7 @@
 $(function(){
 
+    // vars
+
     var currentProgressId = null;
 
     var csrf = getCookie('csrftoken');
@@ -12,86 +14,104 @@ $(function(){
 
     var status = null;
 
-	$(function(){
+    var debug = window.localStorage.getItem('debug');
 
 
-        $(window).on('keyup', function(e){
-            var code = (e.charCode)? e.charCode : e.keyCode;
-            if (status==RESULT && code==13) {
-                $('input.test').val('');
-                next();
-            }
-        });
+    // initialization
 
 
-        $('input.test').on('keyup', function(e){
-            var code = (e.charCode)? e.charCode : e.keyCode;
-            if (status==RESULT && code==13) {
-                $('input.test').val('');
-                next();
-                e.stopPropagation();
-            }
-            if (status==ANSWERING && code==13 && e.ctrlKey) {
-                // ctrl+enter - skip the word (treated as a wrong answer)
-                sendAnswer(0);
-            }
-        });
 
+    alexSuggest('input.test', {
+        url: '/api/suggest',
+        uniquePart: 'data-id',
+        inputOffsetTop: 20,
+        inputOffsetLeft: 0,
+        inputOffsetWidth: 24,
+        autoValueText: true, 
+        onSelect: function(i, e){
+            var id = e.attr('data-id');
+            sendAnswer(id);
+        },
+        onPlainEnter: function(i){
+            var o = i.data('alexSuggest');
 
-        alexSuggest('input.test', {
-            url: '/api/suggest',
-            uniquePart: 'data-id',
-            inputOffsetTop: 20,
-            inputOffsetLeft: 0,
-            inputOffsetWidth: 24,
-            autoValueText: true, 
-            onSelect: function(i, e){
-                var id = e.attr('data-id');
+            if ($('#alsuli' + " li").length==1) {
+                var id = $('#alsuli' + " li").attr('data-id');
                 sendAnswer(id);
-            },
-            onPlainEnter: function(i){
-                var o = i.data('alexSuggest');
-
-                if ($('#alsuli' + " li").length==1) {
-                    var id = $('#alsuli' + " li").attr('data-id');
-                    sendAnswer(id);
-                    return;
-                }
-
-                replay();
                 return;
-
-            }
-        });
-
-
-
-        $('button[data-action=disable]').on('click', function(e){
-            var data = {
-                progress_id: currentProgressId,
-                csrfmiddlewaretoken: csrf,
             }
 
-            $.post('/api/disable-word', data, function(ans){
-                status = null;
-                next();
-            }, 'json');            
-        });
-
-
-
-        $('div.word').on('click', function(e){
             replay();
-        })
+            return;
+
+        }
+    });    
 
 
-        next();
+    // show debug if needed
+    if (debug==='true') {
+        $('table.debug').show();
+    }
+
+
+    // binds
+
+    $(window).on('keyup', function(e){
+        var code = (e.charCode)? e.charCode : e.keyCode;
+        if (status==RESULT && code==13) {
+            $('input.test').val('');
+            next();
+        }
+    });
+
+
+    $('input.test').on('keyup', function(e){
+        var code = (e.charCode)? e.charCode : e.keyCode;
+        if (status==RESULT && code==13) {
+            $('input.test').val('');
+            next();
+            e.stopPropagation();
+        }
+        if (status==ANSWERING && code==13 && e.ctrlKey) {
+            // ctrl+enter - skip the word (treated as a wrong answer)
+            sendAnswer(0);
+        }
+    });
+
+
+    $('button[data-action=disable]').on('click', function(e){
+        var data = {
+            progress_id: currentProgressId,
+            csrfmiddlewaretoken: csrf,
+        }
+
+        $.post('/api/disable-word', data, function(ans){
+            status = null;
+            next();
+        }, 'json');            
+    });
 
 
 
+    $('div.word').on('click', function(e){
+        replay();
+    });
 
 
-	});
+    $('a[data-action=toggle-debug]').on('click', function(e){
+        e.preventDefault();
+        if ($('table.debug').is(':visible')) {
+            $('table.debug').hide();
+            window.localStorage.setItem('debug', 'false');
+        } else {
+            $('table.debug').show();
+            window.localStorage.setItem('debug', 'true');
+        }
+    });
+
+
+
+    // private functions
 
 
     function replay() {
@@ -99,8 +119,6 @@ $(function(){
             aud.play();
         }
     }
-
-
 
 
     function next() {
@@ -153,13 +171,13 @@ $(function(){
             }
             status = RESULT;
         }, 'json');
-
-
     }
 
 
+    next();
 
-});
+
+}); // dom ready
 
 
 

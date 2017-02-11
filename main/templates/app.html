@@ -17,7 +17,7 @@
             <div class='test'>
                 <input class='test' placeholder="начните вводить перевод">
             </div>
-            <div class='answer'>&nbsp;</div>
+            <div class='answer' style='display: none'></div>
             {% if tester %}
                 <table class='debug'></table>
                 <div class='buttons'>
@@ -28,5 +28,15 @@
             {% endif %}
         </div> <!-- w-limit -->
         <audio type="audio/mpeg" autoplay="true"></audio>
+
+        <div class="footer-placeholder"></div>
+        <div class="footer">
+            <ul>
+                <li><a data-action='toggle-debug' href="#">Debug info</a></li>
+                <li><a href="">О программе</a></li>
+                <li><a href="{% url 'logout' %}">Выход</a></li>
+            </ul>
+        </div>
+
     </body>
 </html>

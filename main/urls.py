@@ -7,7 +7,7 @@ urlpatterns = [
 
     url(r'^$', views.root),
     url(r'^login', views.login_view),
-    url(r'^logout', views.logout_view),
+    url(r'^logout', views.logout_view, name='logout'),
 
 
     url(r'^api/next$', views.next),
