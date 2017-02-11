@@ -13,19 +13,23 @@
     </head>
     <body>
         <div class='w-limit'>
-            <div class='word'>&nbsp;</div>
+            <div class='word'>
+                <span class='position'>
+                    <span class='word'>&nbsp;</span>
+                    <span class='buttons'>
+                        <button title='Сообщить о проблеме' class='report' data-action='report'></button>
+                        {% if request.user.is_staff %}
+                        <button title='Отключить слово' class='disable' data-action='disable'></button>
+                        {% endif %}
+                    </span>
+                </span>
+            </div>
             <div class='test'>
                 <input class='test' placeholder="начните вводить перевод">
             </div>
             <div class='answer' style='display: none'></div>
             {% if tester %}
                 <table class='debug'></table>
-                <div class='buttons'>
-                    <button class='report' data-action='report'></button>
-                    {% if request.user.is_staff %}
-                    <button class='disable' data-action='disable'></button>
-                    {% endif %}
-                </div>
             {% endif %}
         </div> <!-- w-limit -->
         <audio type="audio/mpeg" autoplay="true"></audio>

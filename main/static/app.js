@@ -133,7 +133,7 @@ $(function(){
         $('input.test').removeClass('wrong').removeClass('correct');
         $('.answer').fadeOut();
         $.get('/api/next', {}, function(ans){
-            $('.word').text(ans.word);
+            $('span.word').text(ans.word);
             $('input.test').focus();
 
             aud.src = ans.pronounce;
@@ -153,6 +153,9 @@ $(function(){
             status = ANSWERING;
         }, 'json');
     }
+
+
+
 
 
 

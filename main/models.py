@@ -146,7 +146,7 @@ class ProgressManager(models.Manager):
         self.debug('user dict count', self.userProgressCount)
 
         # проверяем нет ли в логах не отвеченного слова
-        unanswered = ProgressLog.objects.get_unanswered_word(user)       
+        unanswered = ProgressLog.objects.get_unanswered_word(user)
         if unanswered:
             self.debug('unanswered word in logs found')
             self.applyDebug(unanswered)
