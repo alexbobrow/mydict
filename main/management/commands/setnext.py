@@ -32,8 +32,14 @@ class Command(BaseCommand):
         log_words = ProgressLog.objects.filter(progress__user=user)
         log_words.update(answered=True)
 
+        # ensure it is not present in log already
         # add new word in progress
-        ProgressLog.objects.add(progress)
+        try:
+            log = ProgressLog.objects.get(progress=progress)
+            log.answered = False
+            log.save()
+        except ProgressLog.DoesNotExist:       
+            ProgressLog.objects.add(progress)
 
         self.stdout.write(self.style.SUCCESS('Done!'))
 
