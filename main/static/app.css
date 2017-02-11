@@ -194,10 +194,10 @@ span.position {
 
 span.buttons {
     position: absolute;
-    top: 5px;
-    right: -98px;
+    top: 0;
+    right: 0px;
     opacity: 0;
-    transition: opacity linear 400ms;
+    transition: opacity linear 250ms;
 }
 
 div.word:hover span.buttons {
@@ -205,6 +205,8 @@ div.word:hover span.buttons {
 }
 
 button.disable, button.report {
+    position: absolute;
+    top: 13px;
     width: 40px;
     height: 40px;
     border-radius: 40px;
@@ -234,12 +236,14 @@ button.report {
     background-image: url(dislike.png);
     background-size: 17px 17px;
     background-position: center 13px;
+    right: -43px;
 }
 
 button.disable {
     background-image: url(x.png);
     background-size: 19px 19px;
     background-position: center;
+    right: -94px;
 }
 
 

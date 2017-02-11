@@ -83,16 +83,34 @@ $(function(){
         if (!confirm('Отключить это слово?')) {
             return false;
         }
-
         var data = {
             progress_id: currentProgressId,
             csrfmiddlewaretoken: csrf,
         }
-
         $.post(appUrls.disable, data, function(ans){
             status = null;
             next();
         }, 'json');            
+    });
+
+
+    $('button[data-action=report]').on('click', function(e){
+        if (!confirm('Сообщить о проблеме с этим словом?')) {
+            return false;
+        }
+
+        var message = prompt('Комментарий: (необязательно)');
+
+        var data = {
+            progress_id: currentProgressId,
+            csrfmiddlewaretoken: csrf,
+            message: message
+        }
+
+        $.post(appUrls.report, data, function(ans){
+            alert('Спасибо, Ваше сообщение отправлено');
+        }, 'json');
+
     });
 
 

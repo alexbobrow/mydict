@@ -11,7 +11,7 @@ from django.contrib import messages
 
 
 
-from .models import Word, Progress, ProgressLog
+from .models import Word, Progress, ProgressLog, Report
 
 
 
@@ -183,6 +183,25 @@ def disable_word(request):
 
     qs = Progress.objects.get(word=progress.word)
     qs.delete()
+
+    return JsonResponse({
+        'success': True
+    })
+
+
+
+
+
+@login_required
+def report_word(request):
+
+    progress = Progress.objects.get(pk=request.POST['progress_id'])
+
+    report = Report.objects.create(
+        user=request.user,
+        word=progress.word,
+        text=request.POST['message'],
+    )
 
     return JsonResponse({
         'success': True

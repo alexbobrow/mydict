@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^api/next$', views.next, name='next'),
     url(r'^api/suggest$', views.suggest, name='suggest'),
     url(r'^api/answer$', views.answer, name='answer'),
-    url(r'^api/report-word$', views.disable_word, name='report'),
+    url(r'^api/report-word$', views.report_word, name='report'),
     url(r'^api/disable-word$', views.disable_word, name='disable'),
 
     
