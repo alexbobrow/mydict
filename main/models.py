@@ -594,7 +594,7 @@ class ProgressLogManager(models.Manager):
 
 class ProgressLog(models.Model):
     # id supposed
-    progress = models.ForeignKey(Progress)
+    progress = models.OneToOneField(Progress)
     answered = models.BooleanField(default=False)
 
     class Meta:

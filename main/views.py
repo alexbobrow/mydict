@@ -110,7 +110,9 @@ def answer(request):
 
     return JsonResponse({
         'correct': correct,
-        'answer': progress.word.translation,
+        'correctTranslation': progress.word.translation,
+        'answerWord': answer.word,
+        'answerTranslation': answer.translation,
     })
 
 

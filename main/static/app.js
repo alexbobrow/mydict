@@ -188,7 +188,7 @@ $(function(){
         }
 
         $.post(appUrls.answer, data, function(ans){
-            $('.answer').text(ans.answer).fadeIn();
+            $('.answer').text(ans.correctTranslation).fadeIn();
             if (ans.correct) {
                 $('input.test').addClass('correct');
             } else {
