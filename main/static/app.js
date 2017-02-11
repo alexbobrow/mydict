@@ -80,6 +80,10 @@ $(function(){
 
 
     $('button[data-action=disable]').on('click', function(e){
+        if (!confirm('Отключить это слово?')) {
+            return false;
+        }
+
         var data = {
             progress_id: currentProgressId,
             csrfmiddlewaretoken: csrf,

@@ -190,17 +190,56 @@ input.test:-ms-input-placeholder      { color: #ddd; }
 
 
 .buttons {
+    margin-top: 50px;
     text-align: center;
 }
 
-button[data-action=disable] {
-    padding: 10px;
-    margin-top: 30px;
+button.disable, button.report {
+    width: 60px;
+    height: 60px;
+    border-radius: 60px;
+    border: 1px solid #000;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    opacity: .5;
+    cursor: pointer;
+    transition: opacity linear 100ms;
+    outline: none;
 }
+
+button.disable:focus, button.report:focus {
+    opacity: 1;
+}
+
+button.disable:hover, button.report:hover {
+    opacity: 1;
+}
+
+button.disable:active, button.report:active {
+    background-color: #eee;
+    transform: scale(.95);
+}
+
+button.report {
+    background-image: url(dislike.png);
+    background-size: 22px 22px;
+    background-position: center 20px;
+}
+
+button.disable {
+    background-image: url(x.png);
+    background-size: 19px 19px;
+    background-position: center;
+    margin-left: 10px;
+}
+
+
+
 
 
 table.debug {
     display: none;
+    width: 100%;
     margin-top: 50px;
     font-size: 11px;
     color: #777;

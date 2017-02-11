@@ -21,8 +21,9 @@
             {% if tester %}
                 <table class='debug'></table>
                 <div class='buttons'>
+                    <button class='report' data-action='report'></button>
                     {% if request.user.is_staff %}
-                    <button data-action='disable'>disable word</button>
+                    <button class='disable' data-action='disable'></button>
                     {% endif %}
                 </div>
             {% endif %}
