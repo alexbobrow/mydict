@@ -10,11 +10,14 @@ $(function(){
 
     var ANSWERING = 0;
     var RESULT = 1;
+    var CORRECT = 2;
     var PROCESSING = 3;
 
     var status = null;
 
     var debug = window.localStorage.getItem('debug');
+
+    var lastResult = null;
 
 
     // initialization
@@ -58,18 +61,18 @@ $(function(){
 
     $(window).on('keyup', function(e){
         var code = (e.charCode)? e.charCode : e.keyCode;
-        if (status==RESULT && code==13) {
+        if ((status==RESULT || status==CORRECT) && code==13) {
             $('input.test').val('');
-            next();
+            nextOrCorrect();
         }
     });
 
 
     $('input.test').on('keyup', function(e){
         var code = (e.charCode)? e.charCode : e.keyCode;
-        if (status==RESULT && code==13) {
+        if ((status==RESULT || status==CORRECT) && code==13) {
             $('input.test').val('');
-            next();
+            nextOrCorrect();
             e.stopPropagation();
         }
         if (status==ANSWERING && code==13 && e.ctrlKey) {
@@ -102,10 +105,16 @@ $(function(){
         var message = prompt('Комментарий: (необязательно)');
 
         var data = {
-            progress_id: currentProgressId,
             csrfmiddlewaretoken: csrf,
             message: message
         }
+
+        if (status==CORRECT) {
+            data['word_id'] = lastResult.answerWordId;
+        } else {
+            data['progress_id'] = currentProgressId;
+        }
+
 
         $.post(appUrls.report, data, function(ans){
             alert('Спасибо, Ваше сообщение отправлено');
@@ -143,10 +152,33 @@ $(function(){
     }
 
 
+
+
+    function nextOrCorrect() {
+        // if answer was wrong, show reverse translation of
+        // wrong answer
+        if (status==RESULT && lastResult.correct==false) {
+            console.log('show correct');
+            status=CORRECT;
+            $('span.word').text(lastResult.answerWord);
+            $('.answer').text(lastResult.answerTranslation);
+            return;
+        }
+        console.log('go next');
+        next();
+    }
+
+
+
+
+
+
     function next() {
+        console.log('next1');
         if (status==PROCESSING || status==ANSWERING) {
             return false;
         }
+        console.log('next2');
         status = PROCESSING;
         $('input.test').removeClass('wrong').removeClass('correct');
         $('.answer').fadeOut();
@@ -188,6 +220,7 @@ $(function(){
         }
 
         $.post(appUrls.answer, data, function(ans){
+            lastResult = ans;
             $('.answer').text(ans.correctTranslation).fadeIn();
             if (ans.correct) {
                 $('input.test').addClass('correct');

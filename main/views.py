@@ -75,7 +75,7 @@ def answer(request):
     else:
         answer = Word.objects.get(pk=request.POST['answer_id'])
 
-    if progress.word==answer:
+    if progress.word==answer or progress.word.translation==answer.translation:
 
         if progress.asked == 0:
             # first answer and it is right
@@ -111,6 +111,7 @@ def answer(request):
     return JsonResponse({
         'correct': correct,
         'correctTranslation': progress.word.translation,
+        'answerWordId': answer.pk,
         'answerWord': answer.word,
         'answerTranslation': answer.translation,
     })
@@ -197,11 +198,15 @@ def disable_word(request):
 @login_required
 def report_word(request):
 
-    progress = Progress.objects.get(pk=request.POST['progress_id'])
+    if 'progress_id' in request.POST:
+        progress = Progress.objects.get(pk=request.POST['progress_id'])
+        word = progress.word
+    else:
+        word = Word.objects.get(pk=request.POST['word_id'])
 
     report = Report.objects.create(
         user=request.user,
-        word=progress.word,
+        word=word,
         text=request.POST['message'],
     )
 
