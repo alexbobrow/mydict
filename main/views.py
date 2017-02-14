@@ -63,9 +63,41 @@ def next(request):
 
 
 
-
 @login_required
 def answer(request):
+
+    progress = Progress.objects.get(pk=request.POST['progress_id'], user=request.user)
+
+    if request.POST['answer_id']=='0':
+        # skip mode (plain enter on empty field)
+        answer = None 
+    else:
+        answer = Word.objects.get(pk=request.POST['answer_id'])
+
+    correct, exact = progress.apply_answer(answer)
+
+    resp = {
+        'correct': correct,
+        'exact': exact,
+        'correctTranslation': progress.word.translation,
+    }
+
+    # adding reverse translation of user selected answer
+    if (not correct or not exact) and not answer is None:
+        resp.update({
+            'answerWordId': answer.pk,
+            'answerWord': answer.word,
+            'answerTranslation': answer.translation,
+        })
+
+    return JsonResponse(resp)
+
+
+
+
+
+@login_required
+def answerX(request):
 
     progress = Progress.objects.get(pk=request.POST['progress_id'])
 

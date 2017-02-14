@@ -453,6 +453,11 @@ class Word(models.Model):
         return self.word
 
 
+    def translation_list(self):
+        trans_mass = self.translation.split(',')
+        return [x.strip() for x in trans_mass]
+
+
 
 
 
@@ -525,6 +530,66 @@ class Progress(models.Model):
 
     def __str__(self):
         return "id:%s / word_id:%s" % (self.id, self.word_id)
+
+
+    def check_partly(self, answer):
+        correct = set(self.word.translation_list())
+        answer = set(answer.translation_list())
+        return len(correct.intersection(answer)) > 0
+
+
+
+
+    def apply_answer(self, answer):
+        """
+        apply user selected answer
+        returns two booleans correct and exact
+        if words match by id - correct true, exact set to true
+        if only one of translation words, then correct true but exact false
+        """
+
+        exact = self.word==answer
+
+        if not exact and not answer is None:
+            partly = self.check_partly(answer)
+        else:
+            partly = False
+
+
+        if exact or partly:
+
+            if self.asked == 0:
+                # first answer and it is right
+                # treat like 3 right answers
+                self.asked=3
+                self.correct_answers=3
+            elif self.asked==3 and self.correct_answers==3:
+                # second right answer in a row
+                # treat like 2 right answers
+                self.asked=5
+                self.correct_answers=5
+            else:
+                # for other right answers adding 1
+                self.correct_answers = self.correct_answers + 1
+                self.asked = self.asked + 1
+            correct = True 
+
+        else:
+            correct = False
+            self.asked = self.asked + 1
+        
+        # ratio filed updated in save() method
+        self.save()
+
+
+        # mark in log that word is answered (no matter correct or not)
+        progress_log = ProgressLog.objects.get(progress=self)
+        progress_log.answered = True
+        progress_log.save()
+
+        return correct, exact
+
+
 
 
     def save(self, *args, **kwargs):
