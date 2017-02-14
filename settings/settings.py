@@ -22,10 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '5n1nu!+k3$j_#&r6at0i*ljev=s1-x6mo&=48@eb7u@klzoqg4'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ['mydict.loc']
 
 
 # Application definition
@@ -40,7 +37,7 @@ INSTALLED_APPS = [
     #'django.contrib.sites',
     #'django.contrib.flatpages',
     'main',
-    'sslserver',
+    #'sslserver',
     #'debug_toolbar',
 ]
 
@@ -76,31 +73,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'settings.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mydict',
-        'USER': 'mydict',
-        'PASSWORD': 'mydict',
-        'HOST': 'localhost',
-    }
-}
-
-DATABASESX = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydict',
-        'USER': 'root',
-        'PASSWORD': 'mysql',
-        'HOST': '',
-        'PORT': '',
-    },
-}
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -134,13 +106,5 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/static/'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
-LOGIN_URL = '/login'
+from .settings_local import *
