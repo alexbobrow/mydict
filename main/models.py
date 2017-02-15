@@ -380,7 +380,7 @@ class WordManager(models.Manager):
             return []
 
         text_mass = text.split()
-        qs = self.all()
+        qs = self.filter(disabled=False)
         for text_part in text_mass:
             text_part2 = " %s" % text_part
             qs = qs.filter(Q(translation__startswith=text_part) | Q(translation__contains=text_part2))

@@ -157,14 +157,12 @@ $(function(){
     function nextOrCorrect() {
         // if answer was wrong, show reverse translation of
         // wrong answer
-        if (status==RESULT && lastResult.correct==false) {
-            console.log('show correct');
+        if (status==RESULT && (lastResult.correct==false || lastResult.exact==false)) {
             status=CORRECT;
             $('span.word').text(lastResult.answerWord);
             $('.answer').text(lastResult.answerTranslation);
             return;
         }
-        console.log('go next');
         next();
     }
 
@@ -174,11 +172,9 @@ $(function(){
 
 
     function next() {
-        console.log('next1');
         if (status==PROCESSING || status==ANSWERING) {
             return false;
         }
-        console.log('next2');
         status = PROCESSING;
         $('input.test').removeClass('wrong').removeClass('correct');
         $('.answer').fadeOut();

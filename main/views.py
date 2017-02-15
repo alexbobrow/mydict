@@ -72,7 +72,7 @@ def answer(request):
         # skip mode (plain enter on empty field)
         answer = None 
     else:
-        answer = Word.objects.get(pk=request.POST['answer_id'])
+        answer = Word.objects.get(pk=request.POST['answer_id'], disabled=False)
 
     correct, exact = progress.apply_answer(answer)
 
@@ -91,63 +91,6 @@ def answer(request):
         })
 
     return JsonResponse(resp)
-
-
-
-
-
-@login_required
-def answerX(request):
-
-    progress = Progress.objects.get(pk=request.POST['progress_id'])
-
-    if request.POST['answer_id']=='0':
-        # skip mode (plain enter on empty field)
-        answer = None 
-    else:
-        answer = Word.objects.get(pk=request.POST['answer_id'])
-
-    if progress.word==answer or progress.word.translation==answer.translation:
-
-        if progress.asked == 0:
-            # first answer and it is right
-            # treat like 3 right answers
-            progress.asked=3
-            progress.correct_answers=3
-        elif progress.asked==3 and progress.correct_answers==3:
-            # second right answer in a row
-            # treat like 2 right answers
-            progress.asked=5
-            progress.correct_answers=5
-        else:
-            # for other right answers adding 1
-            progress.correct_answers = progress.correct_answers + 1
-            progress.asked = progress.asked + 1
-        correct = True 
-
-    else:
-        correct = False
-        progress.asked = progress.asked + 1
-    
-    # ratio filed updated in save() method
-    progress.save()
-
-
-    # mark in log that word is answered (no matter correct or not)
-    progress_log = ProgressLog.objects.get(progress=progress)
-    progress_log.answered = True
-    progress_log.save()
-    #ProgressLog.objects.mark_answered(progress)
-  
-
-    return JsonResponse({
-        'correct': correct,
-        'correctTranslation': progress.word.translation,
-        'answerWordId': answer.pk,
-        'answerWord': answer.word,
-        'answerTranslation': answer.translation,
-    })
-
 
 
 
