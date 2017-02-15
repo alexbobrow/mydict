@@ -15,9 +15,13 @@ from .models import Word, Progress, ProgressLog, Report
 
 
 
-@login_required
 def root(request):
+
+    # internal redirect to login
+    if not request.user.is_authenticated:
+        return login_view(request)
     
+
     context = {}
 
     if request.user.has_perm('main.tester'):
