@@ -562,8 +562,8 @@ class Progress(models.Model):
                 correct_set = set(self.word.translation_list())
                 answer_set = set(answer.translation_list())
                 partly = len(correct_set.intersection(answer_set)) > 0
-                if partly:
-                    user_word = answer
+                #raise Exception(correct_set.intersection(answer_set))
+                user_word = answer
             else:
                 partly = False
         else:
@@ -576,23 +576,9 @@ class Progress(models.Model):
 
 
         if exact or partly:
-
-            if self.asked == 0:
-                # first answer and it is right
-                # treat like 3 right answers
-                self.asked=3
-                self.correct_answers=3
-            elif self.asked==3 and self.correct_answers==3:
-                # second right answer in a row
-                # treat like 2 right answers
-                self.asked=5
-                self.correct_answers=5
-            else:
-                # for other right answers adding 1
-                self.correct_answers = self.correct_answers + 1
-                self.asked = self.asked + 1
+            self.correct_answers = self.correct_answers + 1
+            self.asked = self.asked + 1
             correct = True 
-
         else:
             correct = False
             self.asked = self.asked + 1

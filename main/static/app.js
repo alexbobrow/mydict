@@ -147,7 +147,7 @@ $(function(){
         if (status==RESULT && (lastResult.userWord)) {
             status=CORRECT;
             $('span.word').text(lastResult.userWord.word);
-            $('.answer').text(lastResult.userWord.word.translation);
+            $('.answer').text(lastResult.userWord.translation);
             return;
         }
         next();

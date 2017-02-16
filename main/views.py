@@ -99,7 +99,7 @@ def answer(request):
                 'id': user_word.pk,
                 'word': user_word.word,
                 'translation': user_word.translation,
-                'pronounce': user_word.pronounce,
+                'pronounce': user_word.pronounce.url,
             }
         })
 
