@@ -25,30 +25,39 @@
                 margin: 0 auto;
             }
             table {
-            	font-size: 100%;
-            	border-collapse: collapse;
+                font-size: 100%;
+                border-collapse: collapse;
             }
             table td {
-            	border: 1px solid #eee;
-            	padding: 0.5em 1em;
+                border: 1px solid #eee;
+                padding: 0.5em 1em;
             }
         </style>        
 
     </head>
     <body>
         <div class='w-limit'>
-        	<h1>Статистика пользователей</h1>
-        	<table>
-        	{% for user in users %}
-        		<tr>
-        			<td>{{ user.username }}</td>
-        			<td>{{ user.last_login|date:"[H:i] d.m.Y" }}</td>
-        			<td>{{ user.last_activity|date:"[H:i] d.m.Y" }}</td>
-        			<td>{{ user.avg_ratio }}</td>
-        			<td>{{ user.dict_size }}</td>
-        		</tr>
-        	{% endfor %}
-        	</table>
+            <h1>Статистика пользователей</h1>
+            <table>
+                <tr>
+                    <td>id</td>
+                    <td>Username</td>
+                    <td>last login</td>
+                    <td>last activity</td>
+                    <td>avg ratio</td>
+                    <td>dict size</td>
+                </tr>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.pk }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.last_login|date:"[H:i] d.m.Y" }}</td>
+                    <td>{{ user.last_activity|date:"[H:i] d.m.Y" }}</td>
+                    <td>{{ user.avg_ratio }}</td>
+                    <td>{{ user.dict_size }}</td>
+                </tr>
+            {% endfor %}
+            </table>
         </div> <!-- w-limit -->
     </body>
 </html>
