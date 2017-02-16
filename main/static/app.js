@@ -31,6 +31,7 @@ $(function(){
         inputOffsetLeft: 0,
         inputOffsetWidth: 24,
         autoValueText: true, 
+        minWordCount: 1,
         onSelect: function(i, e){
             var id = e.attr('data-id');
             sendAnswer(id, false);
@@ -165,6 +166,7 @@ $(function(){
         status = PROCESSING;
         $('input.test').removeClass('wrong').removeClass('correct');
         $('.answer').fadeOut();
+        $('#alsuli').empty().hide();
         $.get(appUrls.next, {}, function(ans){
             $('span.word').text(ans.word);
             $('input.test').focus();

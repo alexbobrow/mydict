@@ -4,31 +4,8 @@
     
     alexSuggest
 
-    Версия 4.1
-    bug fices on plain enter old code garbage    
-
-    Версия 4.0
-
-    Все переделано с объектного стиля в обычный, так как объект относится к вызову а не инпуту
-    что вызывает массу путаницы
-
-    data-id больше не обязательное поле, уникальность проверяется по дополнительному параметру
-    uniquePart
-
-    добавлен параметр ignoreRepeat
-
-    добавлена блокировака отправки формы при нажатии на интер по инпуту
-
-    параметр autoValueAttr теперь массив, что позволяет установить любой атрибут
-    а не только data-id как раньше
-
-    новый алгоритм позволяет легко изменять ллюбые параметры индивидуально по каждому инпуту
-
-    по-прежнему уникальная фишка в том, что прекрасно работают новые динамически созданные поля
-
-    ожидаемый контент переделан в html вместо xml
-
-    навигационные элементы переделаны в li вместо a
+    based on v 4.1
+    with changes for moislova
 
     */
 
@@ -40,6 +17,7 @@
 
     var queryTid = 0;
     var blurTid = 0;
+    var xhr = null;
 
 
     window.alexSuggest = function(selector, params){
@@ -68,6 +46,7 @@
             inputOffsetTop: 0,
             inputOffsetLeft: 0,
             inputOffsetWidth: 0,
+            minWordCount: 0,
             /* класс который дополнительно проставляется основному контейнеру */
             setClass: "", 
             /* перед запросом, без параметров */
@@ -118,7 +97,11 @@
             var o = getObject(params, defaultParams, this);
             var i = $(this);
             
+            console.log('clear timeout');
             clearTimeout(queryTid);
+            if (xhr) {
+                xhr.abort();
+            }
             
             var code = (e.charCode)? e.charCode : e.keyCode;
 
@@ -134,18 +117,34 @@
             }
             
             if (code == 13) {
+                console.log('enter');
                 enter(i);
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
             }       
             
-            // далее обработка нажатия любой другой клавиши, предлположительно новая буква
+
+            var wordsCount = i.val().length;
+            if (wordsCount==0) {
+                cancel(i);
+                return false;
+            }
             
+            
+            if (wordsCount<o.minWordCount) {
+                return false;
+            }
+
+
+            // далее обработка нажатия любой другой клавиши, предлположительно новая буква
+            console.log('set timeout');
             queryTid = setTimeout(function(){
+                console.log('timeout callback');
                 o.onQueryBefore(i);
                 o.postParams.value = i.val();
-                $.get(o.url, o.postParams, function(data){
+                xhr = $.get(o.url, o.postParams, function(data){
+                    console.log('suggesr response');
                     o.onQueryAfter(i);
                     showPopup(i, data);
                 }, 'html');
@@ -275,7 +274,7 @@
 
             // калбак
             o.onPlainEnter(i);
-            
+
             $(selectorPopup).empty().hide();
             o.processedUnique = null;
             
