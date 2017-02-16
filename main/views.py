@@ -2,13 +2,14 @@
 
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
+from django.db.models import Max, Avg, Count
 
 
 from .models import Word, Progress, ProgressLog, Report
@@ -200,3 +201,17 @@ def report_word(request):
     return JsonResponse({
         'success': True
     })
+
+
+
+@staff_member_required
+def stata(request):
+    #from django.contrib.auth.models import User
+    #from django.db.models import Max, Avg
+    users = User.objects.all().annotate(
+        last_activity=Max('progress__progresslog__time_created'),
+        avg_ratio=Avg('progress__ratio'),
+        dict_size=Count('progress')
+    )
+
+    return render(request, 'stata.html', {'users': users})

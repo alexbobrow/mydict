@@ -737,6 +737,7 @@ class ProgressLog(models.Model):
     # id supposed
     progress = models.OneToOneField(Progress)
     answered = models.BooleanField(default=False)
+    time_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['id']

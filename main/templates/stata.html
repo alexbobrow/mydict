@@ -1,0 +1,54 @@
+{% load static %}
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Мои слова - стата</title>
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+        <!--<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>-->
+        
+        <style>
+            body {
+                font-family: sans-serif;
+                font-size: 14px;
+                margin-top: 15px;
+            }
+            h1, h2 {
+                font-family: 'Roboto';
+                font-weight: 300;
+            }
+            p {
+                line-height: 1.5em;
+            }
+            .w-limit {
+                max-width: 1000px;
+                margin: 0 auto;
+            }
+            table {
+            	font-size: 100%;
+            	border-collapse: collapse;
+            }
+            table td {
+            	border: 1px solid #eee;
+            	padding: 0.5em 1em;
+            }
+        </style>        
+
+    </head>
+    <body>
+        <div class='w-limit'>
+        	<h1>Статистика пользователей</h1>
+        	<table>
+        	{% for user in users %}
+        		<tr>
+        			<td>{{ user.username }}</td>
+        			<td>{{ user.last_login|date:"[H:i] d.m.Y" }}</td>
+        			<td>{{ user.last_activity|date:"[H:i] d.m.Y" }}</td>
+        			<td>{{ user.avg_ratio }}</td>
+        			<td>{{ user.dict_size }}</td>
+        		</tr>
+        	{% endfor %}
+        	</table>
+        </div> <!-- w-limit -->
+    </body>
+</html>
