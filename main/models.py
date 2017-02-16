@@ -532,6 +532,8 @@ class Progress(models.Model):
         return "id:%s / word_id:%s" % (self.id, self.word_id)
 
 
+
+
     def check_partly(self, answer):
         correct = set(self.word.translation_list())
         answer = set(answer.translation_list())
@@ -539,8 +541,82 @@ class Progress(models.Model):
 
 
 
+    def apply_answer(self, id=None, text=''):
+        """
+        apply user selected answer
+        returns two booleans correct and exact
+        if words match by id - correct true, exact set to true
+        if only one of translation words, then correct true but exact false
+        """
 
-    def apply_answer(self, answer):
+        
+        # reverse translation of wrong or partly correct asnwer
+        # to show to user
+        user_word = None
+
+
+        if id:
+            answer = Word.objects.get(pk=id)
+            exact = self.word == answer
+            if not exact:
+                correct_set = set(self.word.translation_list())
+                answer_set = set(answer.translation_list())
+                partly = len(correct_set.intersection(answer_set)) > 0
+                if partly:
+                    user_word = answer
+            else:
+                partly = False
+        else:
+            answer = None
+            exact = self.word.translation == text
+            if not exact:
+                partly = text in self.word.translation_list()
+            else:
+                partly = False
+
+
+        if exact or partly:
+
+            if self.asked == 0:
+                # first answer and it is right
+                # treat like 3 right answers
+                self.asked=3
+                self.correct_answers=3
+            elif self.asked==3 and self.correct_answers==3:
+                # second right answer in a row
+                # treat like 2 right answers
+                self.asked=5
+                self.correct_answers=5
+            else:
+                # for other right answers adding 1
+                self.correct_answers = self.correct_answers + 1
+                self.asked = self.asked + 1
+            correct = True 
+
+        else:
+            correct = False
+            self.asked = self.asked + 1
+        
+        # ratio filed updated in save() method
+        self.save()
+
+
+
+
+
+        # mark in log that word is answered (no matter correct or not)
+        progress_log = ProgressLog.objects.get(progress=self)
+        progress_log.answered = True
+        progress_log.save()
+
+        return correct, user_word
+
+
+
+
+
+
+    def apply_answerX(self, answer):
         """
         apply user selected answer
         returns two booleans correct and exact

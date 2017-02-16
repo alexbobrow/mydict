@@ -72,26 +72,34 @@ def answer(request):
 
     progress = Progress.objects.get(pk=request.POST['progress_id'], user=request.user)
 
-    if request.POST['answer_id']=='0':
-        # skip mode (plain enter on empty field)
-        answer = None 
+    if 'answer_id' in request.POST:
+        # answer selected via autocomplete
+        #answer = Word.objects.get(pk=request.POST['answer_id'], disabled=False)
+        success, user_word = progress.apply_answer(id=request.POST['answer_id'])
     else:
-        answer = Word.objects.get(pk=request.POST['answer_id'], disabled=False)
+        # answer typed manually
+        # if not match answer is None
+        #answer = progress.check_text_answer(request.POST['answer_text'])
+        success, user_word = progress.apply_answer(text=request.POST['answer_text'])
 
-    correct, exact = progress.apply_answer(answer)
+    #correct, exact = progress.apply_answer(answer)
 
     resp = {
-        'correct': correct,
-        'exact': exact,
-        'correctTranslation': progress.word.translation,
+        'success': success,
+        'correctWord': {
+            'translation': progress.word.translation,
+        }
     }
 
     # adding reverse translation of user selected answer
-    if (not correct or not exact) and not answer is None:
+    if user_word:
         resp.update({
-            'answerWordId': answer.pk,
-            'answerWord': answer.word,
-            'answerTranslation': answer.translation,
+            'userWord': {
+                'id': user_word.pk,
+                'word': user_word.word,
+                'translation': user_word.translation,
+                'pronounce': user_word.pronounce,
+            }
         })
 
     return JsonResponse(resp)

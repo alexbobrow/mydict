@@ -33,20 +33,11 @@ $(function(){
         autoValueText: true, 
         onSelect: function(i, e){
             var id = e.attr('data-id');
-            sendAnswer(id);
+            sendAnswer(id, false);
         },
         onPlainEnter: function(i){
-            var o = i.data('alexSuggest');
-
-            if ($('#alsuli' + " li").length==1) {
-                var id = $('#alsuli' + " li").attr('data-id');
-                sendAnswer(id);
-                return;
-            }
-
-            replay();
-            return;
-
+            //var o = i.data('alexSuggest');
+            sendAnswer(i.val(), true);
         }
     });    
 
@@ -74,10 +65,6 @@ $(function(){
             $('input.test').val('');
             nextOrCorrect();
             e.stopPropagation();
-        }
-        if (status==ANSWERING && code==13 && e.ctrlKey) {
-            // ctrl+enter - skip the word (treated as a wrong answer)
-            sendAnswer(0);
         }
     });
 
@@ -157,10 +144,10 @@ $(function(){
     function nextOrCorrect() {
         // if answer was wrong, show reverse translation of
         // wrong answer
-        if (status==RESULT && (lastResult.correct==false || lastResult.exact==false)) {
+        if (status==RESULT && (lastResult.userWord)) {
             status=CORRECT;
-            $('span.word').text(lastResult.answerWord);
-            $('.answer').text(lastResult.answerTranslation);
+            $('span.word').text(lastResult.userWord.word);
+            $('.answer').text(lastResult.userWord.word.translation);
             return;
         }
         next();
@@ -203,22 +190,27 @@ $(function(){
 
 
 
-
-
-    function sendAnswer(id) {
+    //function sendAnswer(id, is_text) {
+    function sendAnswer(answer, is_text) {
 
         status = PROCESSING;
 
         var data = {
-            answer_id: id,
             progress_id: currentProgressId,
             csrfmiddlewaretoken: csrf,
         }
 
+        if (is_text) {
+            data['answer_text'] = answer;
+        } else {
+            data['answer_id'] = answer;
+        }
+
+
         $.post(appUrls.answer, data, function(ans){
             lastResult = ans;
-            $('.answer').text(ans.correctTranslation).fadeIn();
-            if (ans.correct) {
+            $('.answer').text(ans.correctWord.translation).fadeIn();
+            if (ans.success) {
                 $('input.test').addClass('correct');
             } else {
                 $('input.test').addClass('wrong');
