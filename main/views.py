@@ -12,23 +12,13 @@ from django.contrib import messages
 from django.db.models import Max, Avg, Count
 
 
-from .models import Word, Progress, ProgressLog, Report
+from .models import Word, Progress, Report
 
 
 
 def root(request):
-
-    # internal redirect to login
-    if not request.user.is_authenticated:
-        return login_view(request)
-    
-
+ 
     context = {}
-
-    if request.user.has_perm('main.tester'):
-        context['tester'] = True
-    else:
-        context['tester'] = False
 
     return render(request, 'app.html', context)
 
@@ -37,74 +27,17 @@ def root(request):
 @login_required
 def next(request):
 
-    progress = Progress.objects.getNext(request.user)
-
-    
-    # last 10 words we keep in session
-    # TODO may be store'em in DB
-    """
-    if 'log' in request.session:
-        log = request.session['log']
-        if len(log)>=10:
-            log = log[1:]
-    else:
-        log = []  
-    log.append(progress.pk)
-    request.session['log'] = log
-    progress.debug.append({'key': 'log','value': log})
-    """
-
+    rand, word = Word.objects.get_next()
 
     context = {
-        'word': progress.word.word,
-        'id': progress.pk,
-        'pronounce': progress.word.pronounce.url,
+        'id': word.id,
+        'rand': rand,
+        'word': word.word,
+        'translation': word.translation,
+        'pronounce': word.pronounce.url,
     }
-
-    if request.user.has_perm('main.tester'):
-        context['debug'] = progress.debug
 
     return JsonResponse(context)
-
-
-
-@login_required
-def answer(request):
-
-    progress = Progress.objects.get(pk=request.POST['progress_id'], user=request.user)
-
-    if 'answer_id' in request.POST:
-        # answer selected via autocomplete
-        #answer = Word.objects.get(pk=request.POST['answer_id'], disabled=False)
-        success, user_word = progress.apply_answer(id=request.POST['answer_id'])
-    else:
-        # answer typed manually
-        # if not match answer is None
-        #answer = progress.check_text_answer(request.POST['answer_text'])
-        success, user_word = progress.apply_answer(text=request.POST['answer_text'])
-
-    #correct, exact = progress.apply_answer(answer)
-
-    resp = {
-        'success': success,
-        'correctWord': {
-            'translation': progress.word.translation,
-        }
-    }
-
-    # adding reverse translation of user selected answer
-    if user_word:
-        resp.update({
-            'userWord': {
-                'id': user_word.pk,
-                'word': user_word.word,
-                'translation': user_word.translation,
-                'pronounce': user_word.pronounce.url,
-            }
-        })
-
-    return JsonResponse(resp)
-
 
 
 
@@ -152,18 +85,6 @@ def logout_view(request):
     return redirect(next_url)
 
 
-    
-
-@login_required
-def suggest(request):
-    qs = Word.objects.getSuggest(request.GET['value'])
-    context = {
-        'items': qs
-    }
-    return render(request, 'suggest.html', context)
-
-
-
 
 
 @staff_member_required
@@ -202,16 +123,3 @@ def report_word(request):
         'success': True
     })
 
-
-
-@staff_member_required
-def stata(request):
-    #from django.contrib.auth.models import User
-    #from django.db.models import Max, Avg
-    users = User.objects.all().annotate(
-        last_activity=Max('progress__progresslog__time_created'),
-        avg_ratio=Avg('progress__ratio'),
-        dict_size=Count('progress')
-    )
-
-    return render(request, 'stata.html', {'users': users})

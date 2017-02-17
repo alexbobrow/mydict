@@ -2,70 +2,30 @@ $(function(){
 
     // vars
 
-    var currentProgressId = null;
-
     var csrf = getCookie('csrftoken');
 
     var aud = $('audio')[0];
 
-    var ANSWERING = 0;
-    var RESULT = 1;
-    var CORRECT = 2;
-    var PROCESSING = 3;
+    var wordId = null;
 
-    var status = null;
+    var log = [];
 
-    var debug = window.localStorage.getItem('debug');
-
-    var lastResult = null;
-
+    var logPosition = 0;
 
     // initialization
 
 
-
-    alexSuggest('input.test', {
-        url: appUrls.suggest,
-        uniquePart: 'data-id',
-        inputOffsetTop: 20,
-        inputOffsetLeft: 0,
-        inputOffsetWidth: 24,
-        autoValueText: true, 
-        minWordCount: 1,
-        onSelect: function(i, e){
-            var id = e.attr('data-id');
-            sendAnswer(id, false);
-        },
-        onPlainEnter: function(i){
-            //var o = i.data('alexSuggest');
-            sendAnswer(i.val(), true);
-        }
-    });    
-
-
-    // show debug if needed
-    if (debug==='true') {
-        $('table.debug').show();
-    }
 
 
     // binds
 
     $(window).on('keyup', function(e){
         var code = (e.charCode)? e.charCode : e.keyCode;
-        if ((status==RESULT || status==CORRECT) && code==13) {
-            $('input.test').val('');
-            nextOrCorrect();
+        if (code==13) {
+            next();
         }
-    });
-
-
-    $('input.test').on('keyup', function(e){
-        var code = (e.charCode)? e.charCode : e.keyCode;
-        if ((status==RESULT || status==CORRECT) && code==13) {
-            $('input.test').val('');
-            nextOrCorrect();
-            e.stopPropagation();
+        if (code==8) {
+            prev();
         }
     });
 
@@ -79,12 +39,12 @@ $(function(){
             csrfmiddlewaretoken: csrf,
         }
         $.post(appUrls.disable, data, function(ans){
-            status = null;
             next();
         }, 'json');            
     });
 
 
+    
     $('button[data-action=report]').on('click', function(e){
         if (!confirm('Сообщить о проблеме с этим словом?')) {
             return false;
@@ -97,12 +57,7 @@ $(function(){
             message: message
         }
 
-        if (status==CORRECT) {
-            data['word_id'] = lastResult.answerWordId;
-        } else {
-            data['progress_id'] = currentProgressId;
-        }
-
+        data['word_id'] = lwordId;
 
         $.post(appUrls.report, data, function(ans){
             alert('Спасибо, Ваше сообщение отправлено');
@@ -112,26 +67,21 @@ $(function(){
 
 
 
-    $('div.word').on('click', function(e){
+
+    $('span.word').on('click', function(e){
         replay();
+        e.stopPropagation();
     });
 
 
-    $('a[data-action=toggle-debug]').on('click', function(e){
-        e.preventDefault();
-        if ($('table.debug').is(':visible')) {
-            $('table.debug').hide();
-            window.localStorage.setItem('debug', 'false');
-        } else {
-            $('table.debug').show();
-            window.localStorage.setItem('debug', 'true');
-        }
+    
+    $('body').on('click', function(e){
+        next();
     });
 
 
 
     // private functions
-
 
     function replay() {
         if (aud.src!='') {
@@ -140,87 +90,70 @@ $(function(){
     }
 
 
-
-
-    function nextOrCorrect() {
-        // if answer was wrong, show reverse translation of
-        // wrong answer
-        if (status==RESULT && (lastResult.userWord)) {
-            status=CORRECT;
-            $('span.word').text(lastResult.userWord.word);
-            $('.answer').text(lastResult.userWord.translation);
-            return;
-        }
-        next();
+    function prev() {
+        console.log('prev');
+        var newPos = logPosition-1;
+        console.log('newPos', newPos);
+        var id = log.length + newPos-1;
+        console.log('id', id);
+        if (id < log.length && id >= 0) {
+            var ans = log[id];
+            setWord(ans);
+            logPosition--;
+        }     
+        
     }
-
-
-
-
 
 
     function next() {
-        if (status==PROCESSING || status==ANSWERING) {
-            return false;
+
+
+        if (logPosition<0) {
+            console.log('log pos < 0');
+            var id = log.length + logPosition;
+            console.log('id', id);
+            var ans = log[id];
+            setWord(ans);
+            logPosition++;
+            return
         }
-        status = PROCESSING;
-        $('input.test').removeClass('wrong').removeClass('correct');
-        $('.answer').fadeOut();
-        $('#alsuli').empty().hide();
+
         $.get(appUrls.next, {}, function(ans){
-            $('span.word').text(ans.word);
-            $('input.test').focus();
-
-            aud.src = ans.pronounce;
-
-            if ($('table.debug').length>0) {
-                $('table.debug').empty();
-                $.each(ans.debug, function(k, v){
-                    if (typeof(v)=='object') {
-                        $('table.debug').append("<tr><td>"+v.key+"</td><td>"+v.value+"</td></tr>");
-                    } else {
-                        $('table.debug').append("<tr><td colspan='2'>"+v+"</td></tr>");
-                    }                   
-                });
-            }
-
-            currentProgressId = ans.id;
-            status = ANSWERING;
+            log.push(ans);
+            if (log.length>5) {
+                log.shift();
+            };
+            console.log(log);
+            setWord(ans);
         }, 'json');
+
+    }
+
+    function setWord(ans) {
+        wordId = ans.id;
+        $('span.word').text(ans.word);
+        setFontSize(ans.translation);
+        $('.answer').text(ans.translation);
+        $('input.test').focus();
+        aud.src = ans.pronounce;
     }
 
 
 
-
-    //function sendAnswer(id, is_text) {
-    function sendAnswer(answer, is_text) {
-
-        status = PROCESSING;
-
-        var data = {
-            progress_id: currentProgressId,
-            csrfmiddlewaretoken: csrf,
+    function setFontSize(str) {
+        var len = str.length;
+        var sizeClass = 's1';
+        if (len>20) { 
+            sizeClass = 's2';
         }
-
-        if (is_text) {
-            data['answer_text'] = answer;
-        } else {
-            data['answer_id'] = answer;
+        if (len>30) {
+            sizeClass = 's3';
         }
-
-
-        $.post(appUrls.answer, data, function(ans){
-            lastResult = ans;
-            $('.answer').text(ans.correctWord.translation).fadeIn();
-            if (ans.success) {
-                $('input.test').addClass('correct');
-            } else {
-                $('input.test').addClass('wrong');
-            }
-            status = RESULT;
-        }, 'json');
+        if (len>40) {
+            sizeClass = 's4';
+        }
+        $('.answer').attr('class', 'answer ' + sizeClass);
     }
-
 
     next();
 

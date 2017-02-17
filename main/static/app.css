@@ -94,99 +94,48 @@ body {
 
 
 
-/* suggest */
-
-#alsuli {
-    position: absolute;
-    border: 3px solid #f7f7f7;
-    border-top: none;
-    background-color: #fff;
-}
-
-#alsuli a {
-    display: block;
-    padding: 3px;
-    text-decoration: none;
-    color: #555;
-}
-
-#alsuli ul {
-    padding: 5px 0;
-}
-
-#alsuli li {
-    list-style: none ;
-    padding: 10px 15px;
-}
-
-.alsuli-cur {
-    background-color: #e2e2e2;
-}
-/* end suggest */
-
-
-
-
-
-
-
 .w-limit {
-    max-width: 650px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
 
-
-.word {
-    font-size: 50px;
+.words {
+    font-size: 400%;
     font-family: 'Roboto';
+}
+
+
+@media screen and ( max-width: 800px )  {
+    .words {
+        font-size: 300%;
+        font-family: 'Roboto';
+    }
+}
+
+@media screen and ( max-width: 600px )  {
+    .words {
+        font-size: 200%;
+        font-family: 'Roboto';
+    }
+}
+
+
+div.word {
     margin: 40px 15px 40px 15px;
     text-align: center;
 }
 
-div.text {
-    margin-bottom: 40px;
+span.word {
+    cursor: pointer;
 }
 
-input.test {
-    background-color: #f7f7f7;
-    font-family: 'Roboto';
-    font-weight: 100;
-    font-size: 40px;
-    padding: 10px 15px;
-    border: none;
-    width: 100%;
-    outline: none;
-    transition: color .5s ease, background-color .5s ease;
+span.word:hover {
+    color: #006373;
 }
 
 
-input.wrong {
-    background-color: rgba(255, 0, 0, 0.05);
-    color: rgba(255, 0, 0, 0.15);
-}
 
-input.correct {
-    background-color: rgba(24, 202, 24, 0.08);
-    color: rgba(0,128,0,0.15);
-
-}
-
-
-input.test::-webkit-input-placeholder { color: rgba(0,0,0,.1); }
-input.test::-moz-placeholder          { color: #ddd; }/* Firefox 19+ */
-input.test:-moz-placeholder           { color: #ddd; }/* Firefox 18- */
-input.test:-ms-input-placeholder      { color: #ddd; }    
-
-
-.answer {
-    font-family: 'Roboto';
-    font-weight: 300;
-    font-size: 50px;
-    margin: 40px 15px 40px 15px;
-    text-align: center;
-    color: green;
-}
 
 span.position {
     position: relative;
@@ -206,7 +155,7 @@ div.word:hover span.buttons {
 
 button.disable, button.report {
     position: absolute;
-    top: 13px;
+    top: 19px;
     width: 40px;
     height: 40px;
     border-radius: 40px;
@@ -236,17 +185,38 @@ button.report {
     background-image: url(dislike.png);
     background-size: 17px 17px;
     background-position: center 13px;
-    right: -43px;
+    right: -58px;
 }
 
 button.disable {
     background-image: url(x.png);
     background-size: 19px 19px;
     background-position: center;
-    right: -94px;
+    right: -109px;
 }
 
 
+
+.answer {
+    font-family: 'Roboto';
+    font-weight: 300;
+    margin: 40px 15px 40px 15px;
+    text-align: center;
+    color: green;
+    cursor: default;
+}
+
+.answer.s2 {
+    font-size: 90%;
+}
+
+.answer.s3 {
+    font-size: 80%;
+}
+
+.answer.s4 {
+    font-size: 70%;
+}
 
 
 

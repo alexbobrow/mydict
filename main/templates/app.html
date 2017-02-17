@@ -8,12 +8,9 @@
         <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
         <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
         <script type="text/javascript" src="{% static "app.js" %}"></script>
-        <script type="text/javascript" src="{% static "suggest.js" %}"></script>
         <script type="text/javascript">
             window.appUrls = {
                 next: "{% url 'next' %}",
-                suggest: "{% url 'suggest' %}",
-                answer: "{% url 'answer' %}",
                 report: "{% url 'report' %}",
             };
             {% if request.user.is_staff %}
@@ -23,7 +20,8 @@
     </head>
 
     <body>
-        <div class='w-limit'>
+        <div class='w-limit words'>
+
             <div class='word'>
                 <span class='position'>
                     <span class='word'>&nbsp;</span>
@@ -35,22 +33,19 @@
                     </span>
                 </span>
             </div>
-            <div class='test'>
-                <input class='test' placeholder="начните вводить перевод">
-            </div>
-            <div class='answer' style='display: none'></div>
+
+            <div class='answer'></div>
             {% if tester %}
                 <table class='debug'></table>
             {% endif %}
         </div> <!-- w-limit -->
+
         <audio type="audio/mpeg" autoplay="true"></audio>
 
         <div class="footer-placeholder"></div>
         <div class="footer">
             <ul>
-                <li><a data-action='toggle-debug' href="#">Debug info</a></li>
                 <li><a href="">О программе</a></li>
-                <li><a href="{% url 'logout' %}">Выход</a></li>
             </ul>
         </div>
 
