@@ -524,6 +524,7 @@ class Progress(models.Model):
     user = models.ForeignKey(User)
     asked = models.PositiveIntegerField(default=0)
     correct_answers = models.PositiveIntegerField(default=0)
+    correct_seq = models.PositiveIntegerField(default=0)
     ratio = models.DecimalField(default=0, max_digits=10, decimal_places=9)
 
     objects = ProgressManager()
@@ -577,17 +578,16 @@ class Progress(models.Model):
 
         if exact or partly:
             self.correct_answers = self.correct_answers + 1
+            self.correct_seq = self.correct_seq + 1
             self.asked = self.asked + 1
             correct = True 
         else:
             correct = False
             self.asked = self.asked + 1
+            self.correct_seq = 0
         
         # ratio filed updated in save() method
         self.save()
-
-
-
 
 
         # mark in log that word is answered (no matter correct or not)
@@ -598,58 +598,6 @@ class Progress(models.Model):
         return correct, user_word
 
 
-
-
-
-
-    def apply_answerX(self, answer):
-        """
-        apply user selected answer
-        returns two booleans correct and exact
-        if words match by id - correct true, exact set to true
-        if only one of translation words, then correct true but exact false
-        """
-
-        exact = self.word==answer
-
-        if not exact and not answer is None:
-            partly = self.check_partly(answer)
-        else:
-            partly = False
-
-
-        if exact or partly:
-
-            if self.asked == 0:
-                # first answer and it is right
-                # treat like 3 right answers
-                self.asked=3
-                self.correct_answers=3
-            elif self.asked==3 and self.correct_answers==3:
-                # second right answer in a row
-                # treat like 2 right answers
-                self.asked=5
-                self.correct_answers=5
-            else:
-                # for other right answers adding 1
-                self.correct_answers = self.correct_answers + 1
-                self.asked = self.asked + 1
-            correct = True 
-
-        else:
-            correct = False
-            self.asked = self.asked + 1
-        
-        # ratio filed updated in save() method
-        self.save()
-
-
-        # mark in log that word is answered (no matter correct or not)
-        progress_log = ProgressLog.objects.get(progress=self)
-        progress_log.answered = True
-        progress_log.save()
-
-        return correct, exact
 
 
 
@@ -684,9 +632,26 @@ class Progress(models.Model):
 
             if ratio>1:
                 raise Exception('Wrong ratio (word %s) %s / %s = %s' % (self.pk, self.asked, self.correct_answers, ratio))
-            
-            self.ratio = ratio
 
+
+            # correcting ratio according to correct_seq value
+            seq_all = {
+                1: 0.3,
+                2: 0.6,
+                3: 0.8,
+                4: 1
+            }
+            # calculate min
+            seq_correction = 0
+            if self.correct_seq in seq_all:
+                seq_correction = seq_all[self.correct_seq]
+            elif self.correct_seq > 4:
+                seq_correction = 1
+                
+            if ratio < seq_correction:
+                ratio = seq_correction
+
+            self.ratio = ratio
 
         # parent save method
         return super(Progress, self).save(*args, **kwargs)

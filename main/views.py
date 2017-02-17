@@ -172,7 +172,7 @@ def disable_word(request):
     progress.word.disabled = True
     progress.word.save()
 
-    qs = Progress.objects.get(word=progress.word)
+    qs = Progress.objects.filter(word=progress.word)
     qs.delete()
 
     return JsonResponse({

@@ -11,23 +11,23 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
 
-    	uid = raw_input('Enter user id: ')
+        uid = input('Enter user id: ')
         user = User.objects.get(id=uid)
 
         self.stdout.write('User %s selected: ' % user)
 
         current_count = user.progress_set.count()
         if (current_count<=0):
-        	self.stdout.write('Cancelation. No words in user progress list')
-        	return
+            self.stdout.write('Cancelation. No words in user progress list')
+            return
 
         self.stdout.write('User has %s word(s) in progress list' % current_count)
-        confirm = raw_input('Are you sure you want to delete progress list? (yes/no): ')
+        confirm = input('Are you sure you want to delete progress list? (yes/no): ')
 
         if confirm=='yes':
-        	user.progress_set.all().delete()
-        	self.stdout.write('Deleted')
+            user.progress_set.all().delete()
+            self.stdout.write('Deleted')
         else:
-        	self.stdout.write('Canceled')
+            self.stdout.write('Canceled')
 
         
