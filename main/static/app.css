@@ -122,7 +122,7 @@ body {
 
 
 div.word {
-    margin: 40px 15px 40px 15px;
+    margin: .8em 15px .8em 15px;
     text-align: center;
 }
 
@@ -138,7 +138,7 @@ span.word:hover {
 .answer {
     font-family: 'Roboto';
     font-weight: 300;
-    margin: 40px 15px 40px 15px;
+    margin: .8em 15px .8em 15px;
     text-align: center;
     color: green;
     cursor: default;
@@ -157,20 +157,12 @@ span.word:hover {
 }
 
 
-
-table.debug {
-    display: none;
+.next-click-area {
+    position: absolute;
     width: 100%;
-    margin-top: 50px;
-    font-size: 11px;
-    color: #777;
+    /*background-color: rgba(255,0,0,.2);*/
 }
 
-table.debug td {
-    vertical-align: top;
-    border-bottom: 1px dotted #ddd;
-    padding: 5px;
-}
 
 .footer-placeholder {
     height: 67px;

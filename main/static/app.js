@@ -63,6 +63,7 @@ $(function(){
     });
 
 
+    
     $(window).on('blur', function(e){
         clearTimeout(clickBlockTid);
         clickBlock = true;
@@ -76,6 +77,7 @@ $(function(){
             console.log('release on focus');
         }, 300);
     });
+    
 
 
     $('button[data-action=disable]').on('click', function(e){
@@ -101,6 +103,8 @@ $(function(){
 
     $('button[data-action=delete]').on('click', delete2);
 
+    $(window).on('resize', resize);
+
     $('span.word').on('click', function(e){
         replay();
         e.stopPropagation();
@@ -108,7 +112,7 @@ $(function(){
 
     
 
-
+    
     $(document).on('selectionchange', function(e){
         // block click if user selecting text
         var s = window.getSelection();
@@ -124,8 +128,29 @@ $(function(){
             }
         }
     });
-    
+
+
+
     $('body').on('click', function(e){
+        click();
+    });
+
+    
+    $('.next-click-area').on('click touchend', function(e){
+        click();
+    });
+
+
+
+    $('.footer a').on('click', function(e){
+        e.stopPropagation();
+    });
+
+
+
+    // private functions
+
+    function click() {
         if (!clickBlock) {
             console.log('next by click on body');
             next();
@@ -137,15 +162,8 @@ $(function(){
             console.log('relese after click when blocked');
             clickBlock = false;
         }
-    });
+    }
 
-    $('.footer a').on('click', function(e){
-        e.stopPropagation();
-    });
-
-
-
-    // private functions
 
     function replay() {
         if (aud.src!='') {
@@ -204,6 +222,8 @@ $(function(){
 
         var ya = 'https://translate.yandex.kz/?lang=en-ru&text=' + ans.word;
         $('a[data-action=yandex]').attr('href', ya);
+
+        resize();
 
     }
 
@@ -343,10 +363,31 @@ $(function(){
     }
 
 
+    function resize() {
+
+        var marker = $('.pos-marker').position();
+
+        var top = marker.top;
+        var fh = $('.footer').height();
+        var bh = $(window).height();
+
+        var ch = bh - fh - top;
+        $('.next-click-area').css({
+            top: top + 'px',
+            height: ch + 'px'
+        });
+
+        $('.footer-placeholder').css({
+            height: fh + 'px'
+        });
+
+    }
+
 
 
 
     console.log('next initial');
+
     next();
 
 
