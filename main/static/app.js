@@ -137,6 +137,7 @@ $(function(){
 
     
     $('.next-click-area').on('click touchend', function(e){
+        e.stopPropagation();
         click();
     });
 
