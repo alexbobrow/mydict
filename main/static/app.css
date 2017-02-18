@@ -131,70 +131,8 @@ span.word {
 }
 
 span.word:hover {
-    color: #006373;
+    border-bottom: 0.05em solid #ddd;
 }
-
-
-
-
-span.position {
-    position: relative;
-}
-
-span.buttons {
-    position: absolute;
-    top: 0;
-    right: 0px;
-    opacity: 0;
-    transition: opacity linear 250ms;
-}
-
-div.word:hover span.buttons {
-    opacity: 1;
-}
-
-button.disable, button.report {
-    position: absolute;
-    top: 19px;
-    width: 40px;
-    height: 40px;
-    border-radius: 40px;
-    border: 1px solid #000;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    opacity: .3;
-    cursor: pointer;
-    transition: opacity linear 100ms;
-    outline: none;
-}
-
-button.disable:focus, button.report:focus {
-    opacity: 1;
-}
-
-button.disable:hover, button.report:hover {
-    opacity: 1;
-}
-
-button.disable:active, button.report:active {
-    background-color: #eee;
-    transform: scale(.95);
-}
-
-button.report {
-    background-image: url(dislike.png);
-    background-size: 17px 17px;
-    background-position: center 13px;
-    right: -58px;
-}
-
-button.disable {
-    background-image: url(x.png);
-    background-size: 19px 19px;
-    background-position: center;
-    right: -109px;
-}
-
 
 
 .answer {
@@ -266,4 +204,20 @@ table.debug td {
     font-size: 12px;
     text-decoration: none;
     border-bottom: 1px solid #ddd;
+}
+
+.footer button.link {
+    padding: 0; 
+    border: none;
+    background-color: transparent;
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #a5a5a5;
+    border-bottom: 1px dotted #bbb;
+    cursor: pointer;
+}
+
+.footer a:hover,
+.footer button.link:hover {
+    color: #000;
 }

@@ -11,10 +11,16 @@
         <script type="text/javascript">
             window.appUrls = {
                 next: "{% url 'next' %}",
-                report: "{% url 'report' %}",
             };
+            {% if request.user.is_authenticated %}
+                window.isAuthenticated = true;
+                window.appUrls['skip'] = "{% url 'skip' %}";
+                window.appUrls['report'] = "{% url 'report' %}";
+            {% endif %}
             {% if request.user.is_staff %}
-                window.appUrls['disable'] = "{% url 'disable' %}";
+                window.isStaff = true;
+                window.appUrls['delete'] = "{% url 'delete' %}";
+                window.appUrls['update'] = "{% url 'update' %}";
             {% endif %}
         </script>
     </head>
@@ -23,15 +29,7 @@
         <div class='w-limit words'>
 
             <div class='word'>
-                <span class='position'>
-                    <span class='word'>&nbsp;</span>
-                    <span class='buttons'>
-                        <button title='Сообщить о проблеме' class='report' data-action='report'></button>
-                        {% if request.user.is_staff %}
-                        <button title='Отключить слово' class='disable' data-action='disable'></button>
-                        {% endif %}
-                    </span>
-                </span>
+                <span class='word'>&nbsp;</span>
             </div>
 
             <div class='answer'></div>
@@ -46,6 +44,18 @@
         <div class="footer">
             <ul>
                 <li><a href="">О программе</a></li>
+                <li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>
+                <li><button title='Не показывать это слово в будущем (Ctrl+Enter)' class='link' data-action='skip'>Исключить</button></li>
+                {% if request.user.is_staff %}
+                    <li><button class='link' data-action='update'>Изменить</button></li>
+                    <li><button class='link' data-action='delete'>Удалить</button></li>
+                {% endif %}
+                <li><a data-action='yandex' target="_blank" href="#">Яндекс.Переводчик</a></li>
+                {% if request.user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Выход</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Вход</a></li>
+                {% endif %}
             </ul>
         </div>
 

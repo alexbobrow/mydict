@@ -6,15 +6,17 @@ from . import views_tmp as tmp
 urlpatterns = [
 
     url(r'^$', views.root),
-    #url(r'^login', views.login_view),
-    #url(r'^logout', views.logout_view, name='logout'),
+    url(r'^login', views.login_view, name='login'),
+    url(r'^logout', views.logout_view, name='logout'),
 
 
     url(r'^api/next$', views.next, name='next'),
     #url(r'^api/suggest$', views.suggest, name='suggest'),
     #url(r'^api/answer$', views.answer, name='answer'),
     url(r'^api/report-word$', views.report_word, name='report'),
-    url(r'^api/disable-word$', views.disable_word, name='disable'),
+    url(r'^api/skip-word$', views.skip_word, name='skip'),
+    url(r'^api/delete-word$', views.delete_word, name='delete'),
+    url(r'^api/update-word$', views.update_word, name='update'),
 
     #url(r'^admin/stata/$', views.stata),    
 

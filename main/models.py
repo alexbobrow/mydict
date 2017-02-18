@@ -9,7 +9,7 @@ import random
 
 
 from django.db import models
-from django.db.models import Avg, Q
+from django.db.models import Min
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -34,11 +34,55 @@ def pronounce_full_path(instance, filename):
 class WordManager(models.Manager):
 
 
-    def get_next(self):
-        count = self.filter(disabled=False).count()
+
+    def get_random_entry(self, qs):
+        count = qs.count()
         rand = random.randint(0,count-1)
-        word = self.filter(disabled=False)[rand:(rand+1)].first()
-        return rand, word
+        return qs[rand]
+
+
+    def get_next(self, request):
+
+        user = request.user
+
+        if user.is_authenticated:
+
+            # shown words are present in Progress model
+            # first we try to find words that are not showed
+            exclude = Progress.objects.filter(user=user).values('word_id')
+            words = Word.objects.filter(disabled=False).exclude(id__in=exclude)
+            count = words.count()
+
+            if count > 0:
+                # have not showed words
+                word = self.get_random_entry(words)
+
+            else:
+                # all words shoed. Now must give priority to words with less `showed`
+                qs = Progress.objects.filter(user=user, skip=False, word__disabled=False)
+                mini = qs.aggregate(Min('showed'))
+                mini = mini['showed__min']
+
+                qs = qs.filter(showed=mini)
+                progress = self.get_random_entry(qs)
+                word = progress.word
+
+            progess, created = Progress.objects.get_or_create(
+                user=user,
+                word=word,
+                defaults={'showed':1}
+            )
+
+            if not created:
+                progess.showed = progess.showed + 1
+                progess.save()
+
+        else:          
+            qs = self.filter(disabled=False)
+            word = self.get_random_entry(qs)
+
+
+        return word
 
 
 
@@ -51,6 +95,7 @@ class Word(models.Model):
     """
     word = models.CharField(max_length=255)
     translation = models.TextField(max_length=500, null=True, default=None)
+    old_translation = models.TextField(max_length=500)
     base = models.CharField(max_length=255, null=True, default=None)
     time_created = models.DateTimeField(auto_now_add=True)
     time_updated = models.DateTimeField(auto_now=True)
