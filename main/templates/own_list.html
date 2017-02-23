@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+
+{% for word in words %}
+    {{ word.word.word }}<br />
+{% endfor %}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if words.has_previous %}
+            <a href="?page={{ words.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ words.number }} of {{ words.paginator.num_pages }}.
+        </span>
+
+        {% if words.has_next %}
+            <a href="?page={{ words.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock body %}

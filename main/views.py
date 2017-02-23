@@ -1,5 +1,4 @@
 
-
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
@@ -9,8 +8,11 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
+from django.urls import reverse
+
 from django.db.models import Max, Avg, Count
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Word, Progress, Report
 
@@ -57,6 +59,64 @@ def next(request):
         'pronounce': word.pronounce.url,
     }
     return JsonResponse(context)
+
+
+
+
+
+def freq_list(request):
+    context = {}
+
+    qs = Word.objects.filter(disabled=False)
+    paginator = Paginator(qs, 1000) # Show 25 contacts per page
+
+    page = request.GET.get('page', 1)
+    try:
+        words = paginator.page(page)
+    except PageNotAnInteger:
+        return redirect(reverse('freq_list'))
+    except EmptyPage:
+        url = "%s?page=%s" % (reverse('freq_list'), paginator.num_pages)
+        return redirect(url)
+
+    context['words'] = words
+
+    return render(request, 'freq_list.html', context)
+
+def own_list(request):
+    context = {}
+
+    context = {}
+
+    qs = Progress.objects.filter(user=request.user, word__disabled=False).select_related('word')
+    paginator = Paginator(qs, 1000) # Show 25 contacts per page
+
+    page = request.GET.get('page', 1)
+    try:
+        words = paginator.page(page)
+    except PageNotAnInteger:
+        return redirect(reverse('freq_list'))
+    except EmptyPage:
+        url = "%s?page=%s" % (reverse('freq_list'), paginator.num_pages)
+        return redirect(url)
+
+    context['words'] = words
+
+    return render(request, 'own_list.html', context)
+
+
+def freq_cards(request):
+    context = {}
+    return render(request, 'own_list.html', context)
+
+
+def own_cards(request):
+    pass
+
+
+
+
+
 
 
 
