@@ -50,10 +50,10 @@ def root(request):
 
 
 
-def next(request):
+def freq_next(request):
     word = Word.objects.get_next(request)
     context = {
-        'id': word.id,
+        'word_id': word.id,
         'word': word.word,
         'translation': word.translation,
         'pronounce': word.pronounce.url,
@@ -61,9 +61,21 @@ def next(request):
     return JsonResponse(context)
 
 
+@login_required_code
+def own_next(request):
+    progress = Progress.objects.get_next(request)
+    context = {
+        'progressId': progress.id,
+        'wordId': progress.word.id,
+        'word': progress.word.word,
+        'translation': progress.word.translation,
+        'pronounce': progress.word.pronounce.url,
+    }
+    return JsonResponse(context)
 
 
 
+@login_required
 def freq_list(request):
     context = {}
 
@@ -83,6 +95,9 @@ def freq_list(request):
 
     return render(request, 'freq_list.html', context)
 
+
+
+@login_required
 def own_list(request):
     context = {}
 
@@ -105,13 +120,18 @@ def own_list(request):
     return render(request, 'own_list.html', context)
 
 
+
 def freq_cards(request):
     context = {}
-    return render(request, 'own_list.html', context)
+    context['type'] = 'freq'
+    return render(request, 'cards.html', context)
 
 
+@login_required
 def own_cards(request):
-    pass
+    context = {}
+    context['type'] = 'own'
+    return render(request, 'cards.html', context)
 
 
 

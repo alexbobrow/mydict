@@ -214,7 +214,8 @@ $(function(){
 
 
     function setWord(ans) {
-        wordId = ans.id;
+        wordId = ans.wordId;
+        progressId = ans.progessId;
         $('span.word').text(ans.word);
         setFontSize(ans.translation);
         $('.answer').text(ans.translation);

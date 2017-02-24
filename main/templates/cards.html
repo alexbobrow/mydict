@@ -10,7 +10,11 @@
         <script type="text/javascript" src="{% static "app.js" %}"></script>
         <script type="text/javascript">
             window.appUrls = {
-                next: "{% url 'next' %}",
+                {% if type == 'freq' %}
+                    next: "{% url 'freq_next' %}",
+                {% elif type == 'own' %}
+                    next: "{% url 'own_next' %}",
+                {% endif %}
             };
             {% if request.user.is_authenticated %}
                 window.isAuthenticated = true;

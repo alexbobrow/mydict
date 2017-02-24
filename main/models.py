@@ -59,7 +59,8 @@ class WordManager(models.Manager):
 
             else:
                 # all words shoed. Now must give priority to words with less `showed`
-                qs = Progress.objects.filter(user=user, skip=False, word__disabled=False)
+                # TODO add suitable indexes, potentially show queries
+                qs = Progress.objects.filter(user=user, word__isnull=False, word__disabled=False)
                 mini = qs.aggregate(Min('showed'))
                 mini = mini['showed__min']
 
@@ -181,13 +182,77 @@ class Pronounce(models.Model):
 
 
 
+class ProgressManager(models.Manager):
+
+
+    def get_random_entry(self, qs):
+        count = qs.count()
+        rand = random.randint(0,count-1)
+        return qs[rand]
+
+
+
+    def get_next(self, request):
+
+        qs = Progress.objects.filter(user=request.user, added=True)
+        count = qs.count()
+        if count>0:
+
+            mini = qs.aggregate(Min('showed'))
+            mini = mini['showed__min']
+            qs = qs.filter(showed=mini)
+
+            progress = self.get_random_entry(qs)
+            word = progress.word
+
+            progress.showed = progress.showed + 1
+            progress.save()
+
+            return progress
+        
+        else:
+
+            return None
+
+
 
 
 class Progress(models.Model):
-    word = models.ForeignKey(Word)
+    word = models.ForeignKey(Word, null=True)
     user = models.ForeignKey(User)
     showed = models.PositiveIntegerField(default=0)
-    skip = models.BooleanField(default=False)
+    added = models.BooleanField(default=False)
+    
+    user_word = models.CharField(max_length=255)
+    user_translation = models.CharField(max_length=255)
+    user_comment = models.CharField(max_length=255)
+
+    objects = ProgressManager()
+
+
+    def get_word(self):
+
+        if self.user_word != '':
+            return self.user_word
+        else:
+            if self.word:            
+                return self.word.word
+            else:
+                return '--Word not set--'
+
+
+
+    def get_translation(self):
+        
+        if self.user_translation != '':
+            return self.user_translation
+        else:
+            if self.word:            
+                return self.word.translation
+            else:
+                return '--Translation not set--'
+
+
     
     def __str__(self):
         return "id:%s / word_id:%s" % (self.id, self.word_id)
