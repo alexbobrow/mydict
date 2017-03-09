@@ -47,12 +47,11 @@
 
         <div class="footer">
             <ul>
-                <li><a href="">О программе</a></li>
+                <li><a href="/">Меню</a></li>
                 <li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>
-                <li><button title='Не показывать это слово в будущем (Ctrl+Enter)' class='link' data-action='skip'>Исключить</button></li>
                 {% if request.user.is_staff %}
-                    <li><button class='link' data-action='update'>Изменить</button></li>
-                    <li><button class='link' data-action='delete'>Удалить</button></li>
+                    <li><button class='link red' data-action='update'>Изменить</button></li>
+                    <li><button class='link red' data-action='delete'>Удалить</button></li>
                 {% endif %}
                 <li><a data-action='yandex' target="_blank" href="#">Яндекс.Переводчик</a></li>
                 {% if request.user.is_authenticated %}

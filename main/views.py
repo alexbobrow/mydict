@@ -45,7 +45,7 @@ def login_required_code(fn):
 
 def root(request):
     context = {}
-    return render(request, 'app.html', context)
+    return render(request, 'home.html', context)
 
 
 

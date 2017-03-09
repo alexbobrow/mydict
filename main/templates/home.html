@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+
+<div class="w-limit">
+    <div class="a-m">
+        <h1 class='home'>Мои слова</h1>
+
+        <p class='home'>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+        <ul class='home'>
+            <li>Частотный словарь:</li>
+            <li class='a-mb30'>
+                <a href="{% url 'freq_cards' %}">Карточки</a> /
+                <a href="{% url 'freq_list' %}">Список</a>
+            </li>
+            <li>Личный словарь:</li>
+            <li class='a-mb30'>
+                <a href="{% url 'own_cards' %}">Карточки</a> /
+                <a href="{% url 'own_list' %}">Список</a>
+            </li>
+            <li><a href="">О программе</a></li>
+            <li><a href="{% url 'login' %}">Вход</a></li>
+        </ul>
+
+        <!--<ul class='home'>
+            <li><a href="{% url 'freq_cards' %}">Частотный словарь - карточки</a></li>
+            <li><a href="{% url 'freq_list' %}">Частотный словарь - список</a></li>
+            <li><a href="{% url 'own_cards' %}">Личный словарь - карточки</a></li>
+            <li><a href="{% url 'own_list' %}">Личный словарь - список</a></li>
+            <li><a href="">О программе</a></li>
+            <li><a href="{% url 'login' %}">Вход</a></li>
+        </ul>-->
+    </div>
+</div>
+
+{% endblock body %}
