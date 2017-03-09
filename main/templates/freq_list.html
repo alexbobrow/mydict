@@ -1,15 +1,39 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
+{% block head %}
+    <script type="text/javascript">
+        window.appUrls = {
+            next: "{% url 'freq_next' %}",
+        };
+    </script>
+
+{% endblock head %}
+
 {% block body %}
 
 
-{% for word in words %}
-    {{ word.word }}<br />
-{% endfor %}
+<div class='freq-table'>
+    {% for word in words %}
+        <div class='freq-row{% if word.progress_set.all.0 %} added{% endif %}'>
+            <div class='col-1'>
+                {% if word.progress_set.all.0 %}
+                    <button data-action='remove-from-dict'>удалить</button>
+                {% else %}
+                    <button data-action='add-to-dict'>добавить</button>
+                {% endif %}
+                <button data-action='pronounce' data-url='{{ word.pronounce.url }}'>З</button>
+                {{ word.word }}
+            </div>
+            <div class='col-2'>{{ word.translation }}</div>
+        </div>
+    {% endfor %}
+</div>
 
 <div class="pagination">
     <span class="step-links">
+
         {% if words.has_previous %}
             <a href="?page={{ words.previous_page_number }}">previous</a>
         {% endif %}

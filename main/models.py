@@ -211,8 +211,7 @@ class ProgressManager(models.Manager):
             return progress
         
         else:
-
-            return None
+            raise Progress.DoesNotExist()
 
 
 

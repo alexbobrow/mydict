@@ -10,7 +10,7 @@ from django.contrib import messages
 
 from django.urls import reverse
 
-from django.db.models import Max, Avg, Count
+from django.db.models import Max, Avg, Count, Prefetch
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -63,7 +63,10 @@ def freq_next(request):
 
 @login_required_code
 def own_next(request):
-    progress = Progress.objects.get_next(request)
+    try:
+        progress = Progress.objects.get_next(request)
+    except Progress.DoesNotExist:
+        return JsonResponse({'error': 'Your dictionary is empty'})
     context = {
         'progressId': progress.id,
         'wordId': progress.word.id,
@@ -75,12 +78,16 @@ def own_next(request):
 
 
 
+
 @login_required
 def freq_list(request):
     context = {}
 
-    qs = Word.objects.filter(disabled=False)
-    paginator = Paginator(qs, 1000) # Show 25 contacts per page
+    pqs = Progress.objects.filter(user=request.user, added=True)
+    qs = Word.objects.filter(disabled=False).prefetch_related(Prefetch('progress_set', queryset=pqs))
+
+
+    paginator = Paginator(qs, 1000)
 
     page = request.GET.get('page', 1)
     try:
@@ -97,14 +104,15 @@ def freq_list(request):
 
 
 
+
 @login_required
 def own_list(request):
     context = {}
 
     context = {}
 
-    qs = Progress.objects.filter(user=request.user, word__disabled=False).select_related('word')
-    paginator = Paginator(qs, 1000) # Show 25 contacts per page
+    qs = Progress.objects.filter(user=request.user, added=True, word__disabled=False).select_related('word')
+    paginator = Paginator(qs, 1000)
 
     page = request.GET.get('page', 1)
     try:
@@ -234,3 +242,30 @@ def update_word(request):
     return JsonResponse({
         'success': True
     })
+
+
+
+
+@login_required_code
+def add_word(request):
+
+    word = Word.objects.get(pk=request.POST['word_id'])
+
+    progress, created = Progress.word.get_or_create(
+        word=word,
+        user=request.user,
+    )
+
+    progress.added = True
+    progress.save()
+    
+    """    
+    user_word = models.CharField(max_length=255)
+    user_translation = models.CharField(max_length=255)
+    user_comment = models.CharField(max_length=255)
+    """
+
+    return JsonResponse({
+        'success': True
+    })
+

@@ -146,3 +146,24 @@ ul.home a:hover {
     color: #000;
     border-bottom: 1px solid #999;
 }
+
+
+
+/* freq list page  */
+
+.freq-table {
+    display: table;
+    border-collapse: collapse;
+}
+
+.freq-row {
+    display: table-row;
+    
+}
+
+.freq-row .col-1,
+.freq-row .col-2 {
+    display: table-cell;
+    padding: 10px;
+    border: 1px solid #eee;
+}

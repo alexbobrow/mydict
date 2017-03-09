@@ -28,7 +28,7 @@ $(function(){
         },
         error: function(xhr, status, error){
             alert('При выполнении запроса произошла ошибка.\n'+ status + '\n' + error);
-        }
+        },
     });
 
 
@@ -202,6 +202,10 @@ $(function(){
         }
 
         $.get(appUrls.next, {}, function(ans){
+            if (ans.error) {
+                alert(ans.error);
+                return false;
+            }
             log.push(ans);
             if (log.length>5) {
                 log.shift();
