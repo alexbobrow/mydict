@@ -151,19 +151,66 @@ ul.home a:hover {
 
 /* freq list page  */
 
-.freq-table {
+.words-table {
     display: table;
     border-collapse: collapse;
 }
 
-.freq-row {
+.words-row {
     display: table-row;
     
 }
 
-.freq-row .col-1,
-.freq-row .col-2 {
+.words-row .col-1,
+.words-row .col-2 {
     display: table-cell;
     padding: 10px;
     border: 1px solid #eee;
+}
+
+
+
+.words-row button.add,
+.words-row button.remove {
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-align: right;
+    border-bottom: 1px dotted;
+    color: #555;
+    cursor: pointer;
+}
+
+.words-row button.add:hover,
+.words-row button.remove:hover {
+    color: #2276b9;
+}
+
+.words-row button.add:active,
+.words-row button.remove:active {
+    transform: scale(0.90);
+}
+
+
+.freq-row button.remove {
+    display: none;
+}
+
+
+.words-row.added button.add {
+    display: none;
+}
+
+.words-row.added button.remove {
+    display: inline-block;
+}
+
+.words-row span.add-remove {
+    display: inline-block;
+    width: 70px;
+}
+
+.words-row button.pronounce {
+    margin-right: 20px;
+    width: 20px;
 }

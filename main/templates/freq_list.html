@@ -5,8 +5,10 @@
 {% block head %}
     <script type="text/javascript">
         window.appUrls = {
-            next: "{% url 'freq_next' %}",
+            remove: "{% url 'remove_word' %}",
+            add: "{% url 'add_word' %}",
         };
+        window.csrf = "{{ csrf_token }}";
     </script>
 
 {% endblock head %}
@@ -14,16 +16,15 @@
 {% block body %}
 
 
-<div class='freq-table'>
+<div class='words-table'>
     {% for word in words %}
-        <div class='freq-row{% if word.progress_set.all.0 %} added{% endif %}'>
+        <div data-word-id='{{ word.pk }}' class='words-row freq-row{% if word.progress_set.all.0 %} added{% endif %}'>
             <div class='col-1'>
-                {% if word.progress_set.all.0 %}
-                    <button data-action='remove-from-dict'>удалить</button>
-                {% else %}
-                    <button data-action='add-to-dict'>добавить</button>
-                {% endif %}
-                <button data-action='pronounce' data-url='{{ word.pronounce.url }}'>З</button>
+                <span class='add-remove'>
+                    <button class='remove' data-action='remove-from-dict'>удалить</button>
+                    <button class='add' data-action='add-to-dict'>добавить</button>
+                </span>
+                <button class='pronounce' data-action='pronounce' data-url='{{ word.pronounce.url }}'>З</button>
                 {{ word.word }}
             </div>
             <div class='col-2'>{{ word.translation }}</div>

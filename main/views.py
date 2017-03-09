@@ -87,7 +87,7 @@ def freq_list(request):
     qs = Word.objects.filter(disabled=False).prefetch_related(Prefetch('progress_set', queryset=pqs))
 
 
-    paginator = Paginator(qs, 1000)
+    paginator = Paginator(qs, 100)
 
     page = request.GET.get('page', 1)
     try:
@@ -99,6 +99,7 @@ def freq_list(request):
         return redirect(url)
 
     context['words'] = words
+    context['type'] = 'freq'
 
     return render(request, 'freq_list.html', context)
 
@@ -124,6 +125,7 @@ def own_list(request):
         return redirect(url)
 
     context['words'] = words
+    context['type'] = 'own'
 
     return render(request, 'own_list.html', context)
 
@@ -251,7 +253,7 @@ def add_word(request):
 
     word = Word.objects.get(pk=request.POST['word_id'])
 
-    progress, created = Progress.word.get_or_create(
+    progress, created = Progress.objects.get_or_create(
         word=word,
         user=request.user,
     )
@@ -269,3 +271,17 @@ def add_word(request):
         'success': True
     })
 
+
+
+@login_required_code
+def remove_word(request):
+
+    word = Word.objects.get(pk=request.POST['word_id'])
+
+    progress = Progress.objects.get(word=word, user=request.user)
+    progress.added = False
+    progress.save()
+
+    return JsonResponse({
+        'success': True
+    })
