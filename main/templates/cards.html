@@ -1,3 +1,4 @@
+
 {% load static %}
 <html>
     <head>
@@ -9,18 +10,14 @@
         <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
         <script type="text/javascript" src="{% static "app.js" %}"></script>
         <script type="text/javascript">
+            window.cardsType = "{{ type }}";
+            window.isAuthenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
             window.appUrls = {
-                {% if type == 'freq' %}
-                    next: "{% url 'freq_next' %}",
-                {% elif type == 'own' %}
-                    next: "{% url 'own_next' %}",
-                {% endif %}
+                next: "{% if type == 'freq' %}{% url 'freq_next' %}{% elif type == 'own' %}{% url 'own_next' %}{% endif %}",
+                report: "{% url 'report' %}",
+                add: "{% url 'add_word' %}",
+                remove: "{% url 'remove_word' %}",
             };
-            {% if request.user.is_authenticated %}
-                window.isAuthenticated = true;
-                window.appUrls['skip'] = "{% url 'skip' %}";
-                window.appUrls['report'] = "{% url 'report' %}";
-            {% endif %}
             {% if request.user.is_staff %}
                 window.isStaff = true;
                 window.appUrls['delete'] = "{% url 'delete' %}";
@@ -31,35 +28,44 @@
 
     <body>
         <div class='w-limit words'>
-
             <div class='word'>
                 <span class='word'>&nbsp;</span>
             </div>
             <div class='answer'></div>
-            <div class='pos-marker'></div>
         </div> <!-- w-limit -->
 
         <audio type="audio/mpeg" autoplay="true"></audio>
 
-        <div class='next-click-area'></div>
-
         <div class="footer-placeholder"></div>
 
-        <div class="footer">
-            <ul>
-                <li><a href="/">Меню</a></li>
-                <li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>
-                {% if request.user.is_staff %}
-                    <li><button class='link red' data-action='update'>Изменить</button></li>
-                    <li><button class='link red' data-action='delete'>Удалить</button></li>
-                {% endif %}
-                <li><a data-action='yandex' target="_blank" href="#">Яндекс.Переводчик</a></li>
-                {% if request.user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Выход</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Вход</a></li>
-                {% endif %}
-            </ul>
+
+        <div class='sticked'>
+
+            <div class='buttons add'>
+                <button class='remove default' data-action='remove-from-dict'>
+                    <span class='default'>удалить</span>
+                    <span class='done'>удалено</span>
+                </button>
+                <button class='add default' data-action='add-to-dict'>
+                    <span class='default'>добавить</span>
+                    <span class='done'>добавлено</span>
+                </button>
+                <button class='next'>следующее</button>
+            </div>
+
+
+            <div class="footer">
+                <ul>
+                    <li><a href="/">Меню</a></li>
+                    {% if type == 'freq' %}<li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>{% endif %}
+                    {% if request.user.is_staff %}
+                        <li><button class='link red' data-action='update'>Изменить</button></li>
+                        <li><button class='link red' data-action='delete'>Удалить</button></li>
+                    {% endif %}
+                    <li><a data-action='yandex' target="_blank" href="#">Яндекс.Переводчик</a></li>
+                </ul>
+            </div>
+
         </div>
 
     </body>

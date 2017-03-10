@@ -9,6 +9,7 @@
             add: "{% url 'add_word' %}",
         };
         window.csrf = "{{ csrf_token }}";
+        window.listType = "{{ type }}";
     </script>
 
 {% endblock head %}

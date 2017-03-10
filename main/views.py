@@ -53,7 +53,7 @@ def root(request):
 def freq_next(request):
     word = Word.objects.get_next(request)
     context = {
-        'word_id': word.id,
+        'wordId': word.id,
         'word': word.word,
         'translation': word.translation,
         'pronounce': word.pronounce.url,
@@ -189,16 +189,6 @@ def logout_view(request):
 
 
 
-
-@login_required_code
-def skip_word(request):
-    progress = Progress.objects.get(word__id=request.POST['word_id'])
-    progress.skip = True
-    progress.save()
-
-    return JsonResponse({
-        'success': True
-    })
 
 
 

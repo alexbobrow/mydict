@@ -12,10 +12,6 @@ $(function(){
 
     var logPosition = 0;
 
-    var clickBlockTid = null;
-
-    var clickBlock = false;
-
     var selCollapsed = true;
 
     // initialization
@@ -63,21 +59,7 @@ $(function(){
     });
 
 
-    
-    $(window).on('blur', function(e){
-        clearTimeout(clickBlockTid);
-        clickBlock = true;
-        console.log('block on blur');
-    });
-
-
-    $(window).on('focus', function(e){
-        clickBlockTid = setTimeout(function(){
-            clickBlock = false;
-            console.log('release on focus');
-        }, 300);
-    });
-    
+   
 
 
     $('button[data-action=disable]').on('click', function(e){
@@ -110,60 +92,23 @@ $(function(){
         e.stopPropagation();
     });
 
-    
 
-    
-    $(document).on('selectionchange', function(e){
-        // block click if user selecting text
-        var s = window.getSelection();
-        if (!s.isCollapsed) {
-            clickBlock = true;
-            selCollapsed = false;
-            console.log('block on select');
-        } else {
-            if (!selCollapsed) {
-                console.log('block on just collapsed');
-                selCollapsed = true;
-                clickBlock = true;
-            }
-        }
+    $('button.next').on('click', function(e){
+        next();
     });
 
 
+    $('button[data-action=add-to-dict]').on('click', addToDict);
 
-    $('body').on('click', function(e){
-        click();
-    });
-
-    
-    $('.next-click-area').on('click touchend', function(e){
-        e.stopPropagation();
-        click();
-    });
+    $('button[data-action=remove-from-dict]').on('click', removeFromDict);
 
 
 
-    $('.footer a').on('click', function(e){
-        e.stopPropagation();
-    });
 
 
 
     // private functions
 
-    function click() {
-        if (!clickBlock) {
-            console.log('next by click on body');
-            next();
-        } else {
-            if (!selCollapsed) {
-                return false;
-            }
-            // release if blocked by selection
-            console.log('relese after click when blocked');
-            clickBlock = false;
-        }
-    }
 
 
     function replay() {
@@ -371,17 +316,7 @@ $(function(){
 
     function resize() {
 
-        var marker = $('.pos-marker').position();
-
-        var top = marker.top;
-        var fh = $('.footer').height();
-        var bh = $(window).height();
-
-        var ch = bh - fh - top;
-        $('.next-click-area').css({
-            top: top + 'px',
-            height: ch + 'px'
-        });
+        var fh = $('.sticked').height();
 
         $('.footer-placeholder').css({
             height: fh + 'px'
@@ -389,11 +324,59 @@ $(function(){
 
     }
 
+    var tidConfirm = null;
+
+
+
+    function addToDict() {
+        addRemoveDict(true);
+    }
+
+    function removeFromDict() {
+        addRemoveDict(false);
+    }
+
+    function updateButton(btn, status) {
+        btn.removeClass('processing');
+        btn.removeClass('default');
+        btn.removeClass('done');
+        btn.addClass(status);
+    }
+
+
+
+    function addRemoveDict(isAdd) {
+        if (isAdd) {
+            var btn = $('button[data-action=add-to-dict]');
+            var url = appUrls.add;
+            var newClass = 'remove';
+        } else {
+            var btn = $('button[data-action=remove-from-dict]');
+            var url = appUrls.remove;
+            var newClass = 'add';
+        }        
+        updateButton(btn, 'processing');
+        $.post(url, {word_id: wordId}, function(ans){
+            if (ans.error) {
+                alert(ans.error);
+                updateButton(btn, 'default');
+                return false;
+            }
+            updateButton(btn, 'done');
+            tidConfirm = setTimeout(function(){
+                updateButton(btn, 'default');
+                $('.buttons').attr('class', 'buttons ' + newClass);
+            }, 2000);
+
+        }, 'json');
+    }
+
+
+
 
 
 
     console.log('next initial');
-
     next();
 
 

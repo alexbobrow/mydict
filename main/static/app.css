@@ -157,22 +157,93 @@ span.word:hover {
 }
 
 
-.next-click-area {
+
+.sticked {
     position: absolute;
     width: 100%;
-    /*background-color: rgba(255,0,0,.2);*/
+    bottom: 0;
+    left: 0;
 }
+
 
 
 .footer-placeholder {
     height: 67px;
 }
 
+
+.buttons {
+    text-align: center; 
+    font-size: 170%;
+    padding-bottom: 2em;
+}
+
+.buttons button {
+    font-family: 'Roboto';
+    font-weight: 300;
+    background-color: transparent;
+    border: 1px solid #aaa;
+    border-radius: 2em;
+    color: #555;
+    width: 8em;
+    height: 2.5em;
+    outline: none;
+    margin-right: .7em;
+    font-size: inherit;
+}
+
+.buttons button:last-of-type {
+    margin-right: 0;
+}
+
+.buttons button.add:hover {
+    color: green;
+    border: 1px solid green;
+}
+
+.buttons button.remove:hover {
+    color: red;
+    border: 1px solid red;
+}
+
+.buttons button.next:hover {
+    color: green;
+    border: 1px solid green;
+}
+
+.buttons button:active {
+    position: relative;
+    top: 1px;
+    left: 1px;
+}
+
+.buttons button.add,
+.buttons button.remove {
+    display: none;
+}
+
+.buttons.add button.add,
+.buttons.remove button.remove {
+    display: inline-block;
+}
+
+.buttons span.default, 
+.buttons span.done {
+    display: none;
+}
+
+button.default span.default,
+button.processing span.default,
+button.done span.done {
+    display: inline-block;
+}
+
+button.processing {
+    opacity: .5;
+}
+
+
 .footer {
-    position: absolute;
-    width: 100%;
-    left:0;
-    bottom: 0;
     border-top: 1px solid #eee;
     text-align: center;
 }
