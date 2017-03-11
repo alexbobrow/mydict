@@ -254,6 +254,13 @@ class Progress(models.Model):
             return self.word.translation
 
 
+    def is_changed(self):
+        if self.user_translation != '':
+            return True
+        else:
+            return False
+
+
     
     def __str__(self):
         return "id:%s / word_id:%s" % (self.id, self.word_id)

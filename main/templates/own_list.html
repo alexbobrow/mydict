@@ -28,9 +28,10 @@
                 <button class='pronounce' data-action='pronounce' data-url='{{ progress.word.pronounce.url }}'></button>
                 {{ progress.word.word }}
             </div>
-            <div class='col-2 translation idle'>
+            <div class='col-2 translation idle{% if progress.is_changed %} custom{% endif %}'>
                 <div class="idle field">
                     <span class='hover'>{{ progress.get_translation }}</span>
+                    <span class='custom' title='Это Ваш вариант перевода'></span>
                 </div>
                 <div class="edit edit-translation">
                     <form class=''>

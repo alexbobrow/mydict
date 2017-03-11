@@ -267,6 +267,24 @@ ul.home a:hover {
     display: block;
 }
 
+.translation span.custom {
+    margin-left: 5px;
+    opacity: .4;
+    width: 16px;
+    height: 16px;
+    background-image: url(edited.svg);
+    background-size: contain;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    vertical-align: middle;
+    display: none;
+    cursor: help;
+}
+
+.translation.custom span.custom {
+    display: inline-block;
+}
 
 .edit-translation
 

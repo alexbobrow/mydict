@@ -70,6 +70,7 @@ $(function(){
 		setEditStatus(col, 'idle');
 		$.post(appUrls.update, data, function(ans){
 			col.find('span.hover').text(input.val());
+			col.addClass('custom');
 		}, 'json');
 
 	});
@@ -92,6 +93,7 @@ $(function(){
 		$.post(appUrls.reset, {word_id: id}, function(ans){
 			col.find('span.hover').text(ans.translation);
 			col.find('input[name=translation]').val(ans.translation);
+			col.removeClass('custom');
 		}, 'json');
 
 
