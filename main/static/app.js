@@ -8,6 +8,8 @@ $(function(){
 
     var wordId = null;
 
+    var word = null;
+
     var log = [];
 
     var logPosition = 0;
@@ -167,6 +169,8 @@ $(function(){
 
         clearTimeout(tidConfirm);
         
+        word = ans;
+
         wordId = ans.wordId;
         progressId = ans.progessId;
         $('span.word').text(ans.word);
@@ -251,19 +255,14 @@ $(function(){
 
 
 
-    function update(e) {
-
-        if (typeof(e)!=='undefined') {
-            e.stopPropagation();
-        }      
+    function update() {
 
         if (!window.isStaff) {
             return false;
         }
         
-        var word = $('span.word').text();
-        var answer = $('.answer').text();
-        var newAnswer = prompt('Обновить перевод для ' + word, answer);
+
+        var newAnswer = prompt('Обновить перевод для ' + word.word, word.translation);
 
         if (newAnswer===null) {
             return false;
@@ -275,6 +274,7 @@ $(function(){
                 return false;
             }
             $('.answer').text(newAnswer);
+            word.translation = newAnswer;
         }, 'json');
     }
 
@@ -355,7 +355,8 @@ $(function(){
                 return false;
             }
             updateButton(btn, 'done');
-            updateLog('added', isAdd);
+            word.added = isAdd;
+            //updateLog('added', isAdd);
             tidConfirm = setTimeout(function(){
                 updateButton(btn, 'default');
                 $('.buttons').attr('class', 'buttons ' + newClass);
@@ -365,19 +366,6 @@ $(function(){
         }, 'json');
     }
 
-
-
-    function updateLog(name, value) {
-        var id = log.length - logPosition - 1;
-        console.log('updateLog');
-        console.log(id);
-        if (id < log.length && id >= 0) {
-            console.log('setting to');
-            console.log(log[id]);
-            console.log(value);
-            log[id][name] = value;
-        }     
-    }
 
 
 
