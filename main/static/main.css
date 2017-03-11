@@ -176,7 +176,9 @@ ul.home a:hover {
 
 
 .words-row button.add,
-.words-row button.remove {
+.words-row button.remove,
+.edit-translation input[type=submit],
+.edit-translation button {
     background: transparent;
     border: none;
     padding: 0;
@@ -186,15 +188,20 @@ ul.home a:hover {
     cursor: pointer;
     outline: none;
     vertical-align: middle;
+    font-size: 14px;
 }
 
 .words-row button.add:hover,
-.words-row button.remove:hover {
+.words-row button.remove:hover,
+.edit-translation input[type=submit]:hover,
+.edit-translation button:hover {
     color: #2276b9;
 }
 
 .words-row button.add:active,
-.words-row button.remove:active {
+.words-row button.remove:active,
+.edit-translation input[type=submit]:active,
+.edit-translation button:active {
     transform: scale(0.90);
 }
 
@@ -243,4 +250,38 @@ ul.home a:hover {
     color: green;
     font-weight: bold;
     vertical-align: middle;
+}
+
+
+.words-row span.hover:hover {
+    background-color: rgba(255, 255, 0, 0.38);
+}
+
+.translation .idle,
+.translation .edit {
+    display: none;
+}
+
+.translation.idle .idle,
+.translation.edit .edit {
+    display: block;
+}
+
+
+.edit-translation
+
+.edit-translation form {}
+
+.edit-translation input[type=text] {
+    min-width: 300px;
+    max-width: 450px;
+    font-size: 14px;
+    border: none;
+    outline: none;
+    margin-bottom: 5px;
+}
+
+.edit-translation input[type=submit],
+.edit-translation button {
+    margin-right: 10px;
 }

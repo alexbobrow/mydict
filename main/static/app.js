@@ -208,8 +208,8 @@ $(function(){
 
     function setWord(ans) {
 
-        console.log(log);
-        console.log(logPosition);
+        //console.log(log);
+        //console.log(logPosition);
 
         clearTimeout(tidConfirm);
         

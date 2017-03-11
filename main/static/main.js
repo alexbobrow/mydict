@@ -46,4 +46,50 @@ $(function(){
 		aud.src = $(this).attr('data-url');
 	});
 
+	$('body').on('click', '.words-row span.hover', function(e){
+		var col = $(this).closest('.translation');
+		var i = col.find('input[type=text]');
+		setEditStatus(col, 'edit');
+		i[0].selectionStart = i[0].selectionStart = i.val().length;
+		i.focus();
+	});
+
+
+	function setEditStatus(col, status) {
+		col.removeClass('idle');
+		col.removeClass('edit');
+		col.addClass(status);
+	}
+
+
+	$('body').on('submit', '.edit-translation form', function(e){
+		e.preventDefault();
+		var col = $(this).closest('.translation');
+		var input = col.find('input[name=translation]');
+		var data = $(this).serializeArray();
+		setEditStatus(col, 'idle');
+		$.post(appUrls.update, data, function(ans){
+			col.find('span.hover').text(input.val());
+		}, 'json');
+
+	});
+
+
+
+	$('body').on('click', 'button[data-action=translation-cancel]', function(e){
+		e.preventDefault();
+		var col = $(this).closest('.translation');
+		setEditStatus(col, 'idle');
+	});
+
+
+	$('body').on('click', 'button[data-action=translation-reset]', function(e){
+		e.preventDefault();
+		var col = $(this).closest('.translation');
+		setEditStatus(col, 'idle');
+	});
+
+	
+
+
 }); // dom ready

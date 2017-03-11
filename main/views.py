@@ -263,6 +263,24 @@ def user_update_word(request):
 
 
 
+@login_required_code
+def user_reset_word(request):
+
+    word = Word.objects.get(pk=request.POST['word_id'])
+
+    progress, created = Progress.objects.get_or_create(
+        word=word,
+        user=request.user,
+    )
+
+    progress.user_translation = ''
+    progress.save()
+
+    return JsonResponse({
+        'success': True
+    })
+
+
 
 @login_required_code
 def add_word(request):

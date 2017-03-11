@@ -5,6 +5,8 @@
     <script type="text/javascript">
         window.appUrls = {
             remove: "{% url 'remove_word' %}",
+            update: "{% url 'user_update' %}",
+            reset: "{% url 'user_reset' %}",
         };
         window.csrf = "{{ csrf_token }}";
         window.listType = "{{ type }}";
@@ -26,7 +28,22 @@
                 <button class='pronounce' data-action='pronounce' data-url='{{ progress.word.pronounce.url }}'></button>
                 {{ progress.word.word }}
             </div>
-            <div class='col-2'>{{ progress.get_translation }}</div>
+            <div class='col-2 translation idle'>
+                <div class="idle field">
+                    <span class='hover'>{{ progress.get_translation }}</span>
+                </div>
+                <div class="edit edit-translation">
+                    <form class=''>
+                        <div>
+                            <input autocomplete='off' type="text" name="translation" value='{{ progress.get_translation }}'>
+                        </div>
+                        <input type="hidden" name="word_id" value='{{ progress.word.id }}'>
+                        <input type="submit" value='ok'>
+                        <button data-action='translation-cancel'>отмена</button>
+                        <button data-action='translation-reset'>первоначальный</button>
+                    </form>
+                </div>
+            </div>
         </div>
     {% endfor %}
 </div>
