@@ -277,7 +277,8 @@ def user_reset_word(request):
     progress.save()
 
     return JsonResponse({
-        'success': True
+        'success': True,
+        'translation': word.translation,
     })
 
 

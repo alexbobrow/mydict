@@ -86,7 +86,16 @@ $(function(){
 	$('body').on('click', 'button[data-action=translation-reset]', function(e){
 		e.preventDefault();
 		var col = $(this).closest('.translation');
+		var id = col.find('input[name=word_id]').val();
 		setEditStatus(col, 'idle');
+
+		$.post(appUrls.reset, {word_id: id}, function(ans){
+			col.find('span.hover').text(ans.translation);
+			col.find('input[name=translation]').val(ans.translation);
+		}, 'json');
+
+
+
 	});
 
 	
