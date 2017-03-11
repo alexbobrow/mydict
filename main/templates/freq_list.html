@@ -25,7 +25,7 @@
                     <button class='remove' data-action='remove-from-dict'>удалить</button>
                     <button class='add' data-action='add-to-dict'>добавить</button>
                 </span>
-                <button class='pronounce' data-action='pronounce' data-url='{{ word.pronounce.url }}'>З</button>
+                <button class='pronounce' data-action='pronounce' data-url='{{ word.pronounce.url }}'></button>
                 <span class='en'>{{ word.word }}</span>
             </div>
             <div class='col-2'>{{ word.translation }}</div>
@@ -49,5 +49,7 @@
         {% endif %}
     </span>
 </div>
+
+<audio type="audio/mpeg" autoplay="true"></audio>
 
 {% endblock body %}

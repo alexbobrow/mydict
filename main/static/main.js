@@ -1,5 +1,7 @@
 $(function(){
 
+	var aud = $('audio')[0];
+
 	// init
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
@@ -40,5 +42,8 @@ $(function(){
 	});
 
 
+	$('body').on('click', 'button[data-action=pronounce]', function(e){
+		aud.src = $(this).attr('data-url');
+	});
 
 }); // dom ready
