@@ -53,39 +53,35 @@ def root(request):
 def freq_next(request):
 
     word = Word.objects.get_next(request)
-    context = {
-        'wordId': word.id,
-        'word': word.word,
-        'translation': word.translation,
-        'pronounce': word.pronounce.url,
-        'added': False,
-    }
 
-    if request.user.is_authenticated:
-        try:
-            progress = Progress.objects.get(word=word, user=request.user, added=True)
-            context['added'] = True
-        except Progress.DoesNotExist:
-            pass
-
+    context = {}
+    context['wordId'] = word.id
+    context['word'] = word.word
+    context['translation'] = word.get_translation()
+    context['pronounce'] = word.pronounce.url
+    context['added'] = word.get_added()
+    
 
     return JsonResponse(context)
 
 
 @login_required_code
 def own_next(request):
+
+    context = {}
+
     try:
         progress = Progress.objects.get_next(request)
     except Progress.DoesNotExist:
         return JsonResponse({'error': 'Your dictionary is empty'})
-    context = {
-        'progressId': progress.id,
-        'wordId': progress.word.id,
-        'word': progress.word.word,
-        'translation': progress.word.translation,
-        'pronounce': progress.word.pronounce.url,
-        'added': progress.added,
-    }
+
+    context['added'] = progress.added    
+    context['wordId'] = progress.word.id
+    context['word'] = progress.word.word
+    context['translation'] = progress.get_translation()
+    context['pronounce'] = progress.word.pronounce.url
+    context['added'] = progress.added
+    
     return JsonResponse(context)
 
 
@@ -120,8 +116,6 @@ def freq_list(request):
 
 @login_required
 def own_list(request):
-    context = {}
-
     context = {}
 
     qs = Progress.objects.filter(user=request.user, added=True, word__disabled=False).select_related('word')

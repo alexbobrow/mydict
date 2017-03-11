@@ -50,7 +50,8 @@ class WordManager(models.Manager):
             # shown words are present in Progress model
             # first we try to find words that are not showed
             exclude = Progress.objects.filter(user=user, added=True).values('word_id')
-            words = Word.objects.filter(disabled=False).exclude(id__in=exclude)
+            #words = Word.objects.filter(disabled=False).exclude(id__in=exclude)
+            words = Word.objects.filter(disabled=False).filter(id__gt=100, id__lt=110)
             count = words.count()
 
             if count > 0:
@@ -76,6 +77,9 @@ class WordManager(models.Manager):
             if not created:
                 progess.showed = progess.showed + 1
                 progess.save()
+
+            # cache prgress, used in get_added() and get_translation()
+            word._current_progress = progess
 
         else:          
             qs = self.filter(disabled=False)
@@ -119,6 +123,20 @@ class Word(models.Model):
 
 
 
+    def get_translation(self):
+        # only works for word went through WordManager.get_next()
+        if self._current_progress and self._current_progress.user_translation != '':
+            return self._current_progress.user_translation
+        else:
+            return self.translation
+
+
+    def get_added(self):
+        # only works for word went through WordManager.get_next()
+        if self._current_progress:
+            return self._current_progress.added
+        else:
+            return False
 
 
 
@@ -219,24 +237,12 @@ class Progress(models.Model):
     word = models.ForeignKey(Word, null=True)
     user = models.ForeignKey(User)
     showed = models.PositiveIntegerField(default=0)
-    added = models.BooleanField(default=False)
-    
-    user_word = models.CharField(max_length=255)
+    added = models.BooleanField(default=False)   
+
     user_translation = models.CharField(max_length=255)
-    user_comment = models.CharField(max_length=255)
 
     objects = ProgressManager()
 
-
-    def get_word(self):
-
-        if self.user_word != '':
-            return self.user_word
-        else:
-            if self.word:            
-                return self.word.word
-            else:
-                return '--Word not set--'
 
 
 
@@ -245,10 +251,7 @@ class Progress(models.Model):
         if self.user_translation != '':
             return self.user_translation
         else:
-            if self.word:            
-                return self.word.translation
-            else:
-                return '--Translation not set--'
+            return self.word.translation
 
 
     
