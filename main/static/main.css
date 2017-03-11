@@ -161,6 +161,11 @@ ul.home a:hover {
     
 }
 
+.words-row.added {
+    background-color: rgba(0, 128, 0, 0.06);
+}
+
+
 .words-row .col-1,
 .words-row .col-2 {
     display: table-cell;
@@ -179,6 +184,7 @@ ul.home a:hover {
     border-bottom: 1px dotted;
     color: #555;
     cursor: pointer;
+    outline: none;
 }
 
 .words-row button.add:hover,
@@ -213,4 +219,9 @@ ul.home a:hover {
 .words-row button.pronounce {
     margin-right: 20px;
     width: 20px;
+}
+
+.words-row.added span.en {
+    color: green;
+    font-weight: bold;
 }

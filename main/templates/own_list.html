@@ -26,7 +26,7 @@
                 <button class='pronounce' data-action='pronounce' data-url='{{ word.pronounce.url }}'>З</button>
                 {{ progress.word.word }}
             </div>
-            <div class='col-2'>{{ progress.word.translation }}</div>
+            <div class='col-2'>{{ progress.get_translation }}</div>
         </div>
     {% endfor %}
 </div>
