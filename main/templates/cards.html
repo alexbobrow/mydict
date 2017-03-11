@@ -17,11 +17,12 @@
                 report: "{% url 'report' %}",
                 add: "{% url 'add_word' %}",
                 remove: "{% url 'remove_word' %}",
+                userUpdate: "{% url 'user_update' %}",
             };
             {% if request.user.is_staff %}
                 window.isStaff = true;
                 window.appUrls['delete'] = "{% url 'delete' %}";
-                window.appUrls['update'] = "{% url 'update' %}";
+                window.appUrls['adminUpdate'] = "{% url 'admin_update' %}";
             {% endif %}
         </script>
     </head>

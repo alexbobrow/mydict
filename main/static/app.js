@@ -143,7 +143,12 @@ $(function(){
     $('button[data-action=remove-from-dict]').on('click', removeFromDict);
 
 
-
+    $('button[data-action=add-to-dict], button[data-action=remove-from-dict], button.next').on('keypress', function(e){
+        // prevent double next action if buttons is focused
+        // because pressing Enter is binded on Window
+        e.stopImmediatePropagation();
+        e.preventDefault();
+    });
 
 
 
@@ -257,7 +262,7 @@ $(function(){
 
 
 
-    function check_authenticated(name) {
+    function checkAuthenticated(name) {
         if (!window.isAuthenticated) {
             alert('Для работы функции "'+name+'" необходимо авторизоваться.');
             return false;
@@ -273,7 +278,7 @@ $(function(){
             e.stopPropagation();
         }
 
-        if (!check_authenticated('Сообщить об ошибке')) {
+        if (!checkAuthenticated('Сообщить об ошибке')) {
             return false;
         }
 
@@ -293,6 +298,31 @@ $(function(){
 
 
 
+    function userUpdate() {
+
+        if (!checkAuthenticated('Изменить перевод')) {
+            return false;
+        }
+
+        var newAnswer = prompt('Обновить перевод для ' + word.word  + "\n" + 'Перевод будет изменен индивидуально для Вас', word.translation);
+
+        if (newAnswer===null) {
+            return false;
+        }      
+
+        $.post(appUrls.userUpdate, {word_id: wordId, translation: newAnswer}, function(ans){
+            if (ans.error) {
+                alert(ans.error);
+                return false;
+            }
+            $('.answer').text(newAnswer);
+            word.translation = newAnswer;
+        }, 'json');
+
+    }
+
+
+
 
     function adminUpdate() {
 
@@ -300,13 +330,13 @@ $(function(){
             return false;
         }
         
-        var newAnswer = prompt('Обновить перевод для ' + word.word, word.translation);
+        var newAnswer = prompt('Для всех!!!' + "\n" +  'Обновить перевод для ' + word.word, word.translation);
 
         if (newAnswer===null) {
             return false;
         }      
 
-        $.post(appUrls.update, {word_id: wordId, translation: newAnswer}, function(ans){
+        $.post(appUrls.adminUpdate, {word_id: wordId, translation: newAnswer}, function(ans){
             if (ans.error) {
                 alert(ans.error);
                 return false;
@@ -316,10 +346,6 @@ $(function(){
         }, 'json');
     }
 
-
-    function userUpdate() {
-        alert('userUpdate');
-    }
 
 
     function disable(e) {

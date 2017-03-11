@@ -236,12 +236,32 @@ def delete_word(request):
 
 
 @staff_required_code
-def update_word(request):
+def admin_update_word(request):
 
     word = Word.objects.get(pk=request.POST['word_id'])
     word.old_translation = word.translation
     word.translation = request.POST['translation']
     word.save()
+
+    return JsonResponse({
+        'success': True
+    })
+
+
+
+@login_required_code
+def user_update_word(request):
+
+    word = Word.objects.get(pk=request.POST['word_id'])
+
+    progress, created = Progress.objects.get_or_create(
+        word=word,
+        user=request.user,
+    )
+
+    progress.user_translation = request.POST['translation']
+    progress.save()
+
 
     return JsonResponse({
         'success': True

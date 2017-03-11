@@ -22,7 +22,8 @@ urlpatterns = [
     #url(r'^api/answer$', views.answer, name='answer'),
     url(r'^api/report-word$', views.report_word, name='report'),
     url(r'^api/delete-word$', views.delete_word, name='delete'),
-    url(r'^api/update-word$', views.update_word, name='update'),
+    url(r'^api/admin-update-word$', views.admin_update_word, name='admin_update'),
+    url(r'^api/user-update-word$', views.user_update_word, name='user_update'),
 
     url(r'^api/add-word$', views.add_word, name='add_word'),
     url(r'^api/remove-word$', views.remove_word, name='remove_word'),
