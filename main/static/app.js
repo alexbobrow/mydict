@@ -35,30 +35,61 @@ $(function(){
     // binds
 
     $(window).on('keyup', function(e){
+
         var code = (e.charCode)? e.charCode : e.keyCode;
+
         if (code==13) {
             if (e.ctrlKey) {
-                //skip();
-            } else if (e.shiftKey) {
+                // report
                 report();
             } else {
                 console.log('next by enter');
                 next();
             }
         }
+
+        // backspace
         if (code==8) {
             prev();
         }
+
+        // space
         if (code==32) {
             replay();
         }
+
+        // delete
         if (code==46) {
-            delete2();
+            if (e.ctrlKey) {
+                // admin disable word if ctrl
+                disable();
+            } else {
+                // remove from dict on plain delete
+                if (word.added) {
+                    removeFromDict();
+                }
+            }
+            
         }
+
+        // insert
         if (code==45) {
-            update();
+            if (e.ctrlKey) {
+                adminUpdate();
+            } else {
+                userUpdate();
+            }
+            
         }
-        //console.log(code);
+
+        // plus
+        if (code==107) {
+            if (!word.added) {
+                addToDict();
+            }            
+        }
+        
+        console.log(code);
     });
 
 
@@ -82,9 +113,17 @@ $(function(){
    
     $('button[data-action=report]').on('click', report);
 
-    $('button[data-action=update]').on('click', update);
 
-    $('button[data-action=delete]').on('click', delete2);
+    $('button[data-action=update]').on('click', function(e){
+        if (e.ctrlKey) {
+            adminUpdate();
+        } else {
+            userUpdate();
+        }
+
+    });
+
+    $('button[data-action=delete]').on('click', disable);
 
     $(window).on('resize', resize);
 
@@ -255,13 +294,12 @@ $(function(){
 
 
 
-    function update() {
+    function adminUpdate() {
 
         if (!window.isStaff) {
             return false;
         }
         
-
         var newAnswer = prompt('Обновить перевод для ' + word.word, word.translation);
 
         if (newAnswer===null) {
@@ -279,9 +317,12 @@ $(function(){
     }
 
 
+    function userUpdate() {
+        alert('userUpdate');
+    }
 
 
-    function delete2(e) {
+    function disable(e) {
 
         if (typeof(e)!=='undefined') {
             e.stopPropagation();
@@ -324,9 +365,11 @@ $(function(){
         addRemoveDict(true);
     }
 
+
     function removeFromDict() {
         addRemoveDict(false);
     }
+
 
     function updateButton(btn, status) {
         btn.removeClass('processing');

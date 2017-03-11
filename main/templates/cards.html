@@ -58,10 +58,8 @@
                 <ul>
                     <li><a href="/">Меню</a></li>
                     {% if type == 'freq' %}<li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>{% endif %}
-                    {% if request.user.is_staff %}
-                        <li><button class='link red' data-action='update'>Изменить</button></li>
-                        <li><button class='link red' data-action='delete'>Удалить</button></li>
-                    {% endif %}
+                    {% if type == 'freq' and request.user.is_staff %}<li><button class='link red' data-action='delete'>Удалить</button></li>{% endif %}
+                    {% if type == 'own' or request.user.is_staff %}<li><button class='link red' data-action='update'>Изменить</button></li>{% endif %}   
                     <li><a data-action='yandex' target="_blank" href="#">Яндекс.Переводчик</a></li>
                 </ul>
             </div>
