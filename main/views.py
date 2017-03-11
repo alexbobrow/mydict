@@ -51,13 +51,24 @@ def root(request):
 
 
 def freq_next(request):
+
     word = Word.objects.get_next(request)
     context = {
         'wordId': word.id,
         'word': word.word,
         'translation': word.translation,
         'pronounce': word.pronounce.url,
+        'added': False,
     }
+
+    if request.user.is_authenticated:
+        try:
+            progress = Progress.objects.get(word=word, user=request.user, added=True)
+            context['added'] = True
+        except Progress.DoesNotExist:
+            pass
+
+
     return JsonResponse(context)
 
 
@@ -73,6 +84,7 @@ def own_next(request):
         'word': progress.word.word,
         'translation': progress.word.translation,
         'pronounce': progress.word.pronounce.url,
+        'added': progress.added,
     }
     return JsonResponse(context)
 

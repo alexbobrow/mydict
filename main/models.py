@@ -49,14 +49,13 @@ class WordManager(models.Manager):
 
             # shown words are present in Progress model
             # first we try to find words that are not showed
-            exclude = Progress.objects.filter(user=user).values('word_id')
+            exclude = Progress.objects.filter(user=user, added=True).values('word_id')
             words = Word.objects.filter(disabled=False).exclude(id__in=exclude)
             count = words.count()
 
             if count > 0:
                 # have not showed words
                 word = self.get_random_entry(words)
-
             else:
                 # all words shoed. Now must give priority to words with less `showed`
                 # TODO add suitable indexes, potentially show queries

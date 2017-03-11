@@ -14,6 +14,7 @@ $(function(){
 
     var selCollapsed = true;
 
+
     // initialization
 
     $.ajaxSetup({
@@ -35,7 +36,7 @@ $(function(){
         var code = (e.charCode)? e.charCode : e.keyCode;
         if (code==13) {
             if (e.ctrlKey) {
-                skip();
+                //skip();
             } else if (e.shiftKey) {
                 report();
             } else {
@@ -55,7 +56,7 @@ $(function(){
         if (code==45) {
             update();
         }
-        console.log(code);
+        //console.log(code);
     });
 
 
@@ -78,8 +79,6 @@ $(function(){
 
    
     $('button[data-action=report]').on('click', report);
-
-    $('button[data-action=skip]').on('click', skip);
 
     $('button[data-action=update]').on('click', update);
 
@@ -126,10 +125,9 @@ $(function(){
         //console.log('id', id);
         if (id < log.length && id >= 0) {
             var ans = log[id];
-            setWord(ans);
             logPosition--;
+            setWord(ans);
         }     
-        
     }
 
 
@@ -163,6 +161,12 @@ $(function(){
 
 
     function setWord(ans) {
+
+        console.log(log);
+        console.log(logPosition);
+
+        clearTimeout(tidConfirm);
+        
         wordId = ans.wordId;
         progressId = ans.progessId;
         $('span.word').text(ans.word);
@@ -173,6 +177,19 @@ $(function(){
 
         var ya = 'https://translate.yandex.kz/?lang=en-ru&text=' + ans.word;
         $('a[data-action=yandex]').attr('href', ya);
+
+        var btn1 = $('button[data-action=add-to-dict]');
+        var btn2 = $('button[data-action=remove-from-dict]');
+        updateButton(btn1, 'default');
+        updateButton(btn2, 'default');
+
+        if (ans.added) {
+            $('.buttons').addClass('remove');
+            $('.buttons').removeClass('add');
+        } else {
+            $('.buttons').addClass('add');
+            $('.buttons').removeClass('remove');
+        }
 
         resize();
 
@@ -230,31 +247,6 @@ $(function(){
         }, 'json');
     }
 
-
-
-    function skip(e) {
-
-        if (typeof(e)!=='undefined') {
-            e.stopPropagation();
-        }      
-        
-        if (!check_authenticated('Исключить/Не показывать')) {
-            return false;
-        }
-
-        var word = $('span.word').text();
-        if (!confirm('Исключить слово "'+word+'"?\nДанное слово больше не будет вам показываться.')) {
-            return false;
-        }
-        $.post(appUrls.skip, {word_id: wordId}, function(ans){
-            if (ans.error) {
-                alert(ans.error);
-                return false;
-            }
-            console.log('next by skip cb');
-            next();
-        }, 'json');
-    }
 
 
 
@@ -363,14 +355,29 @@ $(function(){
                 return false;
             }
             updateButton(btn, 'done');
+            updateLog('added', isAdd);
             tidConfirm = setTimeout(function(){
                 updateButton(btn, 'default');
                 $('.buttons').attr('class', 'buttons ' + newClass);
             }, 2000);
 
+
         }, 'json');
     }
 
+
+
+    function updateLog(name, value) {
+        var id = log.length - logPosition - 1;
+        console.log('updateLog');
+        console.log(id);
+        if (id < log.length && id >= 0) {
+            console.log('setting to');
+            console.log(log[id]);
+            console.log(value);
+            log[id][name] = value;
+        }     
+    }
 
 
 
