@@ -23,7 +23,11 @@
                 <a href="{% url 'own_list' %}">Список</a>
             </li>
             <li><a href="">О программе</a></li>
-            <li><a href="{% url 'login' %}">Вход</a></li>
+            {% if request.user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">Выход</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Вход</a></li>
+            {% endif %}
         </ul>
 
         <!--<ul class='home'>
