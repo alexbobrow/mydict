@@ -92,7 +92,13 @@ def freq_list(request):
     context = {}
 
     pqs = Progress.objects.filter(user=request.user, added=True)
-    qs = Word.objects.filter(disabled=False).prefetch_related(Prefetch('progress_set', queryset=pqs))
+    qs = Word.objects.filter(disabled=False)
+
+    if 'q' in request.GET:
+        qs = qs.filter(word__icontains=request.GET['q'])
+        context['q'] = request.GET['q']
+
+    qs = qs.prefetch_related(Prefetch('progress_set', queryset=pqs))
 
 
     paginator = Paginator(qs, 100)
@@ -118,7 +124,15 @@ def freq_list(request):
 def own_list(request):
     context = {}
 
-    qs = Progress.objects.filter(user=request.user, added=True, word__disabled=False).select_related('word')
+    qs = Progress.objects.filter(user=request.user, added=True, word__disabled=False)
+
+    if 'q' in request.GET:
+        qs = qs.filter(word__word__icontains=request.GET['q'])
+        context['q'] = request.GET['q']
+
+    qs = qs.select_related('word')
+
+
     paginator = Paginator(qs, 1000)
 
     page = request.GET.get('page', 1)

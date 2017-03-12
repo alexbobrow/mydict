@@ -143,7 +143,7 @@ $(function(){
     $('button[data-action=remove-from-dict]').on('click', removeFromDict);
 
 
-    $('button[data-action=add-to-dict], button[data-action=remove-from-dict], button.next').on('keypress', function(e){
+    $('button[data-action=add-to-dict], button[data-action=remove-from-dict], button.next').on('keypress keydown keyup', function(e){
         // prevent double next action if buttons is focused
         // because pressing Enter is binded on Window
         e.stopImmediatePropagation();

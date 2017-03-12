@@ -17,53 +17,67 @@
 
 {% block body %}
 
+<div class="w-limit">
+    <div class="a-m">
 
-<div class='words-table'>
-    {% for progress in words %}
-        <div data-word-id='{{ progress.word.pk }}' class='words-row own-row'>
-            <div class='col-1'>
-                <span class='add-remove'>
-                    <button class='remove' data-action='remove-from-dict'>удалить</button>
-                </span>
-                <button class='pronounce' data-action='pronounce' data-url='{{ progress.word.pronounce.url }}'></button>
-                {{ progress.word.word }}
-            </div>
-            <div class='col-2 translation idle{% if progress.is_changed %} custom{% endif %}'>
-                <div class="idle field">
-                    <span class='hover'>{{ progress.get_translation }}</span>
-                    <span class='custom' title='Это Ваш вариант перевода'></span>
-                </div>
-                <div class="edit edit-translation">
-                    <form class=''>
-                        <div>
-                            <input autocomplete='off' type="text" name="translation" value='{{ progress.get_translation }}'>
+        <h1>Добавленные</h1>
+
+        <form class='search'>
+            <input type="search" name="q" placeholder="Поиск"{% if q %} value='{{ q }}'{% endif %}>
+            <input type="submit" name="" value='ok'>
+            {% if q %}
+                <a href="{% url 'own_list' %}">сброс</a>
+            {% endif %}
+        </form>
+
+        <div class='words-table a-mb'>
+            {% for progress in words %}
+                <div data-word-id='{{ progress.word.pk }}' class='words-row own-row'>
+                    <div class='col-1'>
+                        <span class='add-remove'>
+                            <button class='remove' data-action='remove-from-dict'>удалить</button>
+                        </span>
+                        <button class='pronounce' data-action='pronounce' data-url='{{ progress.word.pronounce.url }}'></button>
+                        {{ progress.word.word }}
+                    </div>
+                    <div class='col-2 translation idle{% if progress.is_changed %} custom{% endif %}'>
+                        <div class="idle field">
+                            <span class='hover'>{{ progress.get_translation }}</span>
+                            <span class='custom' title='Это Ваш вариант перевода'></span>
                         </div>
-                        <input type="hidden" name="word_id" value='{{ progress.word.id }}'>
-                        <input type="submit" value='ok'>
-                        <button data-action='translation-cancel'>отмена</button>
-                        <button data-action='translation-reset'>первоначальный</button>
-                    </form>
+                        <div class="edit edit-translation">
+                            <form class=''>
+                                <div>
+                                    <input autocomplete='off' type="text" name="translation" value='{{ progress.get_translation }}'>
+                                </div>
+                                <input type="hidden" name="word_id" value='{{ progress.word.id }}'>
+                                <input type="submit" value='ok'>
+                                <button data-action='translation-cancel'>отмена</button>
+                                <button data-action='translation-reset'>первоначальный</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-</div>
 
 
-<div class="pagination">
-    <span class="step-links">
-        {% if words.has_previous %}
-            <a href="?page={{ words.previous_page_number }}">previous</a>
-        {% endif %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if words.has_previous %}
+                    <a href="?page={{ words.previous_page_number }}">previous</a>
+                {% endif %}
 
-        <span class="current">
-            Page {{ words.number }} of {{ words.paginator.num_pages }}.
-        </span>
+                <span class="current">
+                    Page {{ words.number }} of {{ words.paginator.num_pages }}.
+                </span>
 
-        {% if words.has_next %}
-            <a href="?page={{ words.next_page_number }}">next</a>
-        {% endif %}
-    </span>
+                {% if words.has_next %}
+                    <a href="?page={{ words.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
 </div>
 
 <audio type="audio/mpeg" autoplay="true"></audio>

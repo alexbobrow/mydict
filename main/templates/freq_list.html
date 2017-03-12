@@ -16,38 +16,53 @@
 
 {% block body %}
 
+<div class="w-limit">
+    <div class="a-m">
 
-<div class='words-table'>
-    {% for word in words %}
-        <div data-word-id='{{ word.pk }}' class='words-row freq-row{% if word.progress_set.all.0 %} added{% endif %}'>
-            <div class='col-1'>
-                <span class='add-remove'>
-                    <button class='remove' data-action='remove-from-dict'>удалить</button>
-                    <button class='add' data-action='add-to-dict'>добавить</button>
-                </span>
-                <button class='pronounce' data-action='pronounce' data-url='{{ word.pronounce.url }}'></button>
-                <span class='en'>{{ word.word }}</span>
-            </div>
-            <div class='col-2'>{{ word.translation }}</div>
+        <h1>Частотный словарь</h1>
+
+        <form class='search'>
+            <input type="search" name="q" placeholder="Поиск"{% if q %} value='{{ q }}'{% endif %}>
+            <input type="submit" name="" value='ok'>
+            {% if q %}
+                <a href="{% url 'freq_list' %}">сброс</a>
+            {% endif %}
+        </form>
+
+        <div class='words-table a-mb'>
+            {% for word in words %}
+                <div data-word-id='{{ word.pk }}' class='words-row freq-row{% if word.progress_set.all.0 %} added{% endif %}'>
+                    <div class='col-1'>
+                        <span class='add-remove'>
+                            <button class='remove' data-action='remove-from-dict'>удалить</button>
+                            <button class='add' data-action='add-to-dict'>добавить</button>
+                        </span>
+                        <button class='pronounce' data-action='pronounce' data-url='{{ word.pronounce.url }}'></button>
+                        <span class='en'>{{ word.word }}</span>
+                    </div>
+                    <div class='col-2'>{{ word.translation }}</div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-</div>
 
-<div class="pagination">
-    <span class="step-links">
+        <div class="pagination">
+            <span class="step-links">
 
-        {% if words.has_previous %}
-            <a href="?page={{ words.previous_page_number }}">previous</a>
-        {% endif %}
+                {% if words.has_previous %}
+                    <a href="?page={{ words.previous_page_number }}">previous</a>
+                {% endif %}
 
-        <span class="current">
-            Page {{ words.number }} of {{ words.paginator.num_pages }}.
-        </span>
+                <span class="current">
+                    Page {{ words.number }} of {{ words.paginator.num_pages }}.
+                </span>
 
-        {% if words.has_next %}
-            <a href="?page={{ words.next_page_number }}">next</a>
-        {% endif %}
-    </span>
+                {% if words.has_next %}
+                    <a href="?page={{ words.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+
+    </div>
 </div>
 
 <audio type="audio/mpeg" autoplay="true"></audio>
