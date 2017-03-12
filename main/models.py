@@ -125,7 +125,7 @@ class Word(models.Model):
 
     def get_translation(self):
         # only works for word went through WordManager.get_next()
-        if self._current_progress and self._current_progress.user_translation != '':
+        if hasattr(self, '_current_progress') and self._current_progress.user_translation != '':
             return self._current_progress.user_translation
         else:
             return self.translation
@@ -133,7 +133,7 @@ class Word(models.Model):
 
     def get_added(self):
         # only works for word went through WordManager.get_next()
-        if self._current_progress:
+        if hasattr(self, '_current_progress'):
             return self._current_progress.added
         else:
             return False
