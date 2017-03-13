@@ -49,37 +49,39 @@ class WordManager(models.Manager):
 
             # shown words are present in Progress model
             # first we try to find words that are not showed
-            exclude = Progress.objects.filter(user=user, added=True).values('word_id')
-            #words = Word.objects.filter(disabled=False).exclude(id__in=exclude)
-            words = Word.objects.filter(disabled=False).filter(id__gt=100, id__lt=110)
+            exclude = Progress.objects.filter(user=user).values('word_id')
+            words = Word.objects.filter(disabled=False).exclude(id__in=exclude)
+            #words = Word.objects.filter(disabled=False).filter(id__gt=100, id__lt=110)
             count = words.count()
 
             if count > 0:
                 # have not showed words
                 word = self.get_random_entry(words)
+
+                # add new word to log
+                progress = Progress.objects.create(
+                    user=user,
+                    word=word,
+                    showed=1,
+                )
             else:
                 # all words shoed. Now must give priority to words with less `showed`
                 # TODO add suitable indexes, potentially show queries
-                qs = Progress.objects.filter(user=user, word__isnull=False, word__disabled=False)
+                qs = Progress.objects.filter(user=user, added=True, word__disabled=False)
                 mini = qs.aggregate(Min('showed'))
                 mini = mini['showed__min']
 
                 qs = qs.filter(showed=mini)
                 progress = self.get_random_entry(qs)
-                word = progress.word
 
-            progess, created = Progress.objects.get_or_create(
-                user=user,
-                word=word,
-                defaults={'showed':1}
-            )
-
-            if not created:
+                # increase showed count
                 progess.showed = progess.showed + 1
                 progess.save()
 
+                word = progress.word
+
             # cache prgress, used in get_added() and get_translation()
-            word._current_progress = progess
+            word._current_progress = progress
 
         else:          
             qs = self.filter(disabled=False)
@@ -234,10 +236,10 @@ class ProgressManager(models.Manager):
 
 
 class Progress(models.Model):
-    word = models.ForeignKey(Word, null=True)
+    word = models.ForeignKey(Word)
     user = models.ForeignKey(User)
     showed = models.PositiveIntegerField(default=0)
-    added = models.BooleanField(default=False)   
+    added = models.BooleanField(default=True)   
 
     user_translation = models.CharField(max_length=255)
 

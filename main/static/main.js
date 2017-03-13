@@ -49,17 +49,12 @@ $(function(){
 	$('body').on('click', '.words-row span.hover', function(e){
 		var col = $(this).closest('.translation');
 		var i = col.find('input[type=text]');
-		setEditStatus(col, 'edit');
 		i[0].selectionStart = i[0].selectionStart = i.val().length;
 		i.focus();
 	});
 
 
-	function setEditStatus(col, status) {
-		col.removeClass('idle');
-		col.removeClass('edit');
-		col.addClass(status);
-	}
+
 
 
 	$('body').on('submit', '.edit-translation form', function(e){
@@ -67,7 +62,6 @@ $(function(){
 		var col = $(this).closest('.translation');
 		var input = col.find('input[name=translation]');
 		var data = $(this).serializeArray();
-		setEditStatus(col, 'idle');
 		$.post(appUrls.update, data, function(ans){
 			col.find('span.hover').text(input.val());
 			col.addClass('custom');
@@ -80,7 +74,6 @@ $(function(){
 	$('body').on('click', 'button[data-action=translation-cancel]', function(e){
 		e.preventDefault();
 		var col = $(this).closest('.translation');
-		setEditStatus(col, 'idle');
 	});
 
 
@@ -88,7 +81,6 @@ $(function(){
 		e.preventDefault();
 		var col = $(this).closest('.translation');
 		var id = col.find('input[name=word_id]').val();
-		setEditStatus(col, 'idle');
 
 		$.post(appUrls.reset, {word_id: id}, function(ans){
 			col.find('span.hover').text(ans.translation);
