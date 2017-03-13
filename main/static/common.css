@@ -1,0 +1,55 @@
+div.body {
+	transition: padding-left ease-in-out 100ms;
+}
+
+div.body > .left {
+	width: 0;
+	height: 100%;
+	background-color: #eee;
+	transition: width ease-in-out 100ms;
+	overflow: hidden;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+div.body > .right {
+}
+
+div.body.desktop-menu > .left {
+	width: 300px;
+
+}
+
+div.body.desktop-menu {
+	padding-left: 300px;
+}
+
+
+button.open-menu {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 40px;
+	height: 40px;
+}
+
+ul.menu li {
+	border-bottom: #e7e7e7;
+}
+
+ul.menu li a {
+	display: block;
+	padding: 15px 12px;
+}
+
+ul.menu li a:hover {
+	background-color: #e7e7e7;
+}
+
+ul.menu li button {
+	display: block;
+	padding: 15px 12px;
+	background-color: transparent;
+	border: none;
+}

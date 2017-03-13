@@ -4,13 +4,36 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>{% block title %}Мои слова{% endblock title %}</title>
+        <link href='{% static 'common.css' %}' rel='stylesheet' type='text/css'>
         <link href='{% static 'main.css' %}' rel='stylesheet' type='text/css'>
 		<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
         <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="{% static "common.js" %}"></script>
         <script type="text/javascript" src="{% static "main.js" %}"></script>
 		{% block head %}{% endblock head %}
     </head>
-    <body>
-		{% block body %}{% endblock body %}
+    <body>  
+
+        <button class='open-menu'></button>
+
+		{% block body %}
+            <div class='body a-clear'>
+                <div class="left">
+                    <ul class='menu'>
+                        <li><button class='close-menu'>закрыть</button></li>
+                        <li><a href="">Пункт 1</a></li>
+                        <li><a href="">Пункт 2</a></li>
+                        <li><a href="">Пункт 3</a></li>
+                    </ul>
+
+
+                </div>
+
+                <div class="right">
+                    {% block main %}
+                    {% endblock main %}
+                </div>
+            </div>
+        {% endblock body %}
     </body>
 </html>
