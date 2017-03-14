@@ -1,18 +1,25 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
 {% block head %}
-    <script type="text/javascript">
-        window.appUrls = {
-            remove: "{% url 'remove_word' %}",
-            add: "{% url 'add_word' %}",
-        };
-        window.csrf = "{{ csrf_token }}";
-        window.listType = "{{ type }}";
-    </script>
-
+        <link href='{% static 'main.css' %}' rel='stylesheet' type='text/css'>
+        <script type="text/javascript" src="{% static "main.js" %}"></script>
+        <script type="text/javascript">
+            window.appUrls = {
+                remove: "{% url 'remove_word' %}",
+                add: "{% url 'add_word' %}",
+            };
+            window.csrf = "{{ csrf_token }}";
+            window.listType = "{{ type }}";
+        </script>
 {% endblock head %}
+
+
+{% block menu %}
+    <li><a href="{% url 'freq_cards' %}">Словарь карточками</a></li>
+{% endblock menu %}
+
+
 
 {% block main %}
 

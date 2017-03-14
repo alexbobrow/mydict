@@ -162,14 +162,14 @@ span.word:hover {
     position: absolute;
     width: 100%;
     bottom: 0;
-    left: 0;
+    right: 0;
+    transition: width linear 100ms;
 }
 
-
-
-.footer-placeholder {
-    height: 67px;
+div.body.desktop-menu .sticked {
+    width: calc(100% - 300px);
 }
+
 
 
 .buttons {
@@ -242,45 +242,3 @@ button.processing {
     opacity: .5;
 }
 
-
-.footer {
-    border-top: 1px solid #eee;
-    text-align: center;
-}
-
-.footer ul {
-    margin: 15px;
-}
-
-.footer li {
-    list-style: none;
-    display: inline-block;
-    margin-right: 15px;
-}
-
-.footer li:last-of-type {
-    margin-right: 0px;
-}
-
-.footer a {
-    color: #a5a5a5;
-    font-size: 12px;
-    text-decoration: none;
-    border-bottom: 1px solid #ddd;
-}
-
-.footer button.link {
-    padding: 0; 
-    border: none;
-    background-color: transparent;
-    font-family: sans-serif;
-    font-size: 12px;
-    color: #a5a5a5;
-    border-bottom: 1px dotted #bbb;
-    cursor: pointer;
-}
-
-.footer a:hover,
-.footer button.link:hover {
-    color: #000;
-}

@@ -1,13 +1,9 @@
-
+{% extends 'base.html' %}
 {% load static %}
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Мои слова</title>
+
+{% block head %}
         <link rel="stylesheet" href="{% static "app.css" %}" >
         <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-        <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
         <script type="text/javascript" src="{% static "app.js" %}"></script>
         <script type="text/javascript">
             window.cardsType = "{{ type }}";
@@ -25,9 +21,21 @@
                 window.appUrls['adminUpdate'] = "{% url 'admin_update' %}";
             {% endif %}
         </script>
-    </head>
+{% endblock head %}
 
-    <body>
+
+{% block menu %}
+    <li><a href="{% url 'freq_list' %}">Словарь списком</a></li>
+
+    <li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>
+    {% if request.user.is_staff %}<li><button class='link red' data-action='delete'>Удалить</button></li>{% endif %}
+    {% if request.user.is_staff %}<li><button class='link red' data-action='update'>Изменить</button></li>{% endif %}
+    <li><a data-action='yandex' target="_blank" href="#">Яндекс.Переводчик</a></li>
+{% endblock menu %}
+
+
+{% block main %}
+
         <div class='w-limit words'>
             <div class='word'>
                 <span class='word'>&nbsp;</span>
@@ -48,6 +56,7 @@
                 <button class='next'>следующее</button>
             </div>
 
+            <!--
 
             <div class="footer">
                 <ul>
@@ -59,7 +68,8 @@
                 </ul>
             </div>
 
+            -->
+
         </div>
 
-    </body>
-</html>
+{% endblock main %}
