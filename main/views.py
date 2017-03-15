@@ -72,19 +72,24 @@ def freq_next(request):
 def freq_list(request):
     context = {}
 
-    pqs = Progress.objects.filter(user=request.user, added=True)
-    qs = Word.objects.filter(disabled=False)
+    
+    type_filter = [False if x=='0' else True for x in request.GET.get('tf', '110')]
+
+    qs = Word.objects.qs_by_type_filter(request, type_filter)
 
     if 'q' in request.GET:
         qs = qs.filter(word__icontains=request.GET['q'])
         context['q'] = request.GET['q']
 
+
+
+    pqs = Progress.objects.filter(user=request.user, added=True)
     qs = qs.prefetch_related(Prefetch('progress_set', queryset=pqs))
 
 
     paginator = Paginator(qs, 100)
 
-    page = request.GET.get('page', 1)
+    page = request.GET.get('p', 1)
     try:
         words = paginator.page(page)
     except PageNotAnInteger:
@@ -95,6 +100,7 @@ def freq_list(request):
 
     context['words'] = words
     context['type'] = 'freq'
+    context['type_filter'] = type_filter
 
     return render(request, 'freq_list.html', context)
 

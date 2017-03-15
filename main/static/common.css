@@ -153,7 +153,23 @@ button.open-menu {
 	left: 0;
 	width: 40px;
 	height: 40px;
+	background-image: url('menu.svg');
+	background-repeat: no-repeat;
+	background-size: 36px 36px;
+	background-color: transparent;
+	background-position: center;
+	border: none;
+	outline: none;
 }
+
+button.open-menu:hover {
+	background-color: #e7e7e7;
+}
+
+button.open-menu:active {
+	background-color: #d7d7d7;
+}
+
 
 ul.menu li {
 	/*border-bottom: 1px solid #e7e7e7;*/
