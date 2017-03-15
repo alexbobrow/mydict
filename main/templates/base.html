@@ -21,11 +21,21 @@
             <div class='body a-clear'>
                 <div class="left">
                     <ul class='menu'>
-                        <li><button class='close-menu'>Закрыть</button></li>
-                        <li><button class='close-menu'>Авторизация</button></li>
-                        <li><button class='close-menu'>О программе</button></li>
+                        <li><button data-action='close-menu'>Закрыть</button></li>
+                        <li>
+                            <button data-action='auth'>Авторизация</button>
+                            <ul>
+                                <li><a class='vk' href="">ВКонтакте</a></li>
+                                <li><a class='ok' href="">Одноклассники</a></li>
+                                <li><a class='gg' href="">Google</a></li>
+                                <li><a class='fb' href="">Facebook</a></li>
+                            </ul>
+                        </li>
+                        <li><a href='/'>О программе</a></li>
                         {% block menu %}{% endblock menu %}
                     </ul>
+
+                    {% block aftermenu %}{% endblock aftermenu %}
 
 
                 </div>

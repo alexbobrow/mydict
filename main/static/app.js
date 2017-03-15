@@ -1,8 +1,14 @@
-$(function(){
+(function(words){
 
-    // vars
 
-    var csrf = getCookie('csrftoken');
+    $(function(){
+        listeners();
+        init();
+    });
+
+    /************
+    *  PRIVATE
+    ************/
 
     var aud = $('audio')[0];
 
@@ -17,142 +23,11 @@ $(function(){
     var selCollapsed = true;
 
 
-    // initialization
-
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrf);
-            }
-        },
-        error: function(xhr, status, error){
-            alert('При выполнении запроса произошла ошибка.\n'+ status + '\n' + error);
-        },
-    });
-
-
-
-    // binds
-
-    $(window).on('keyup', function(e){
-
-        var code = (e.charCode)? e.charCode : e.keyCode;
-
-        if (code==13) {
-            if (e.ctrlKey) {
-                // report
-                report();
-            } else {
-                console.log('next by enter');
-                next();
-            }
-        }
-
-        // backspace
-        if (code==8) {
-            prev();
-        }
-
-        // space
-        if (code==32) {
-            replay();
-        }
-
-        // delete
-        if (code==46) {
-            if (e.ctrlKey) {
-                // admin disable word if ctrl
-                disable();
-            } else {
-                // remove from dict on plain delete
-                if (word.added) {
-                    removeFromDict();
-                }
-            }
-            
-        }
-
-        // insert
-        if (code==45) {
-            if (e.ctrlKey) {
-                adminUpdate();
-            } else {
-                userUpdate();
-            }
-            
-        }
-
-        // plus
-        if (code==107) {
-            if (!word.added) {
-                addToDict();
-            }            
-        }
-        
-        console.log(code);
-    });
-
-
-   
-
-
-    $('button[data-action=disable]').on('click', function(e){
-        if (!confirm('Отключить это слово?')) {
-            return false;
-        }
-        var data = {
-            progress_id: currentProgressId,
-            csrfmiddlewaretoken: csrf,
-        }
-        $.post(appUrls.disable, data, function(ans){
-            console.log('next by disabled cb');
-            next();
-        }, 'json');            
-    });
-
-   
-    $('button[data-action=report]').on('click', report);
-
-
-    $('button[data-action=update]').on('click', function(e){
-        if (e.ctrlKey) {
-            adminUpdate();
-        } else {
-            userUpdate();
-        }
-
-    });
-
-    $('button[data-action=delete]').on('click', disable);
-
-    $(window).on('resize', resize);
-
-    $('span.word').on('click', function(e){
-        replay();
-        e.stopPropagation();
-    });
-
-
-    $('button.next').on('click', function(e){
+    function init(){
+        console.log('next initial');
         next();
-    });
+    }
 
-
-    $('button[data-action=add-to-dict]').on('click', addToDict);
-
-    $('button[data-action=remove-from-dict]').on('click', removeFromDict);
-
-
-    $('button[data-action=add-to-dict], button[data-action=remove-from-dict], button.next').on('keypress keydown keyup', function(e){
-        // prevent double next action if buttons is focused
-        // because pressing Enter is binded on Window
-        e.stopImmediatePropagation();
-        e.preventDefault();
-    });
-
-
-
-    // private functions
 
 
 
@@ -190,7 +65,15 @@ $(function(){
             return
         }
 
-        $.get(appUrls.next, {}, function(ans){
+        var typeFilter = words.typeFilterValue();
+
+        if (typeFilter=='100') {
+            var data = {};
+        } else {
+            var data = {tf:typeFilter};
+        }
+
+        $.get(appUrls.next, data, function(ans){
             if (ans.error) {
                 alert(ans.error);
                 return false;
@@ -438,33 +321,139 @@ $(function(){
 
 
 
+    /************
+    *  PUBLIC
+    ************/
+
+    /*************
+    *  LISTENERS
+    **************/
+
+    function listeners() {
 
 
-    console.log('next initial');
-    next();
+        $(window).on('keyup', function(e){
 
+            var code = (e.charCode)? e.charCode : e.keyCode;
 
-}); // dom ready
-
-
-
-function csrfSafeMethod(method) {
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-
-
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = $.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+            if (code==13) {
+                if (e.ctrlKey) {
+                    // report
+                    report();
+                } else {
+                    console.log('next by enter');
+                    next();
+                }
             }
-        }
-    }
-    return cookieValue;
-}
+
+            // backspace
+            if (code==8) {
+                prev();
+            }
+
+            // space
+            if (code==32) {
+                replay();
+            }
+
+            // delete
+            if (code==46) {
+                if (e.ctrlKey) {
+                    // admin disable word if ctrl
+                    disable();
+                } else {
+                    // remove from dict on plain delete
+                    if (word.added) {
+                        removeFromDict();
+                    }
+                }
+                
+            }
+
+            // insert
+            if (code==45) {
+                if (e.ctrlKey) {
+                    adminUpdate();
+                } else {
+                    userUpdate();
+                }
+                
+            }
+
+            // plus
+            if (code==107) {
+                if (!word.added) {
+                    addToDict();
+                }            
+            }
+            
+            console.log(code);
+        });
+
+
+       
+
+
+        $('button[data-action=disable]').on('click', function(e){
+            if (!confirm('Отключить это слово?')) {
+                return false;
+            }
+            var data = {
+                progress_id: currentProgressId,
+                csrfmiddlewaretoken: csrf,
+            }
+            $.post(appUrls.disable, data, function(ans){
+                console.log('next by disabled cb');
+                next();
+            }, 'json');            
+        });
+
+       
+        $('button[data-action=report]').on('click', report);
+
+
+        $('button[data-action=update]').on('click', function(e){
+            if (e.ctrlKey) {
+                adminUpdate();
+            } else {
+                userUpdate();
+            }
+
+        });
+
+        $('button[data-action=delete]').on('click', disable);
+
+        $(window).on('resize', resize);
+
+        $('span.word').on('click', function(e){
+            replay();
+            e.stopPropagation();
+        });
+
+
+        $('button.next').on('click', function(e){
+            next();
+        });
+
+
+        $('button[data-action=add-to-dict]').on('click', addToDict);
+
+        $('button[data-action=remove-from-dict]').on('click', removeFromDict);
+
+
+        $('button[data-action=add-to-dict], button[data-action=remove-from-dict], button.next').on('keypress keydown keyup', function(e){
+            // prevent double next action if buttons is focused
+            // because pressing Enter is binded on Window
+            e.stopImmediatePropagation();
+            e.preventDefault();
+        });
+
+
+    }; // listeners
+
+
+})(window.words=window.words||{});
+
+
+
+

@@ -11,12 +11,8 @@ urlpatterns = [
 
     url(r'^freq/cards/$', views.freq_cards, name='freq_cards'),
     url(r'^freq/list/$', views.freq_list, name='freq_list'),
-    url(r'^own/cards/$', views.own_cards, name='own_cards'),
-    url(r'^own/list/$', views.own_list, name='own_list'),
-
 
     url(r'^api/freq/next$', views.freq_next, name='freq_next'),
-    url(r'^api/own/next$', views.own_next, name='own_next'),
 
     #url(r'^api/suggest$', views.suggest, name='suggest'),
     #url(r'^api/answer$', views.answer, name='answer'),

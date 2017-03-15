@@ -45,7 +45,7 @@ def login_required_code(fn):
 
 def root(request):
     context = {}
-    return render(request, 'home.html', context)
+    return render(request, 'about.html', context)
 
 
 
@@ -64,25 +64,6 @@ def freq_next(request):
 
     return JsonResponse(context)
 
-
-@login_required_code
-def own_next(request):
-
-    context = {}
-
-    try:
-        progress = Progress.objects.get_next(request)
-    except Progress.DoesNotExist:
-        return JsonResponse({'error': 'Your dictionary is empty'})
-
-    context['added'] = progress.added    
-    context['wordId'] = progress.word.id
-    context['word'] = progress.word.word
-    context['translation'] = progress.get_translation()
-    context['pronounce'] = progress.word.pronounce.url
-    context['added'] = progress.added
-    
-    return JsonResponse(context)
 
 
 
@@ -120,53 +101,13 @@ def freq_list(request):
 
 
 
-@login_required
-def own_list(request):
-    context = {}
-
-    qs = Progress.objects.filter(user=request.user, added=True, word__disabled=False)
-
-    if 'q' in request.GET:
-        qs = qs.filter(word__word__icontains=request.GET['q'])
-        context['q'] = request.GET['q']
-
-    qs = qs.select_related('word')
-
-
-    paginator = Paginator(qs, 1000)
-
-    page = request.GET.get('page', 1)
-    try:
-        words = paginator.page(page)
-    except PageNotAnInteger:
-        return redirect(reverse('freq_list'))
-    except EmptyPage:
-        url = "%s?page=%s" % (reverse('freq_list'), paginator.num_pages)
-        return redirect(url)
-
-    context['words'] = words
-    context['type'] = 'own'
-
-    return render(request, 'own_list.html', context)
-
-
 
 def freq_cards(request):
     context = {}
     context['type'] = 'freq'
     return render(request, 'cards.html', context)
 
-
-@login_required
-def own_cards(request):
-    context = {}
-    context['type'] = 'own'
-    return render(request, 'cards.html', context)
-
-
-
-
-
+    
 
 
 

@@ -35,10 +35,67 @@ class WordManager(models.Manager):
 
 
 
+
+
+    def qs_by_type_filter(self, request, type_filter):
+
+            user = request.user
+            base_qs = self.filter(disabled=False)
+
+            new = type_filter[0]
+            added = type_filter[1]
+            removed = type_filter[2]
+
+            progress_all = Progress.objects.filter(user=user).values('word_id')
+            progress_added = Progress.objects.filter(user=user, added=True).values('word_id')
+            progress_removed = Progress.objects.filter(user=user, added=False).values('word_id')
+
+
+            # none
+            if not new and not added and not removed:
+                # unexpected
+                raise Exception('Not expected request params')
+
+            # new
+            if new and not added and not removed:
+                return base_qs.exclude(id__in=progress_all)
+
+            # added
+            if not new and added and not removed:
+                # TODO Maybe add filtering by lowest `showed`
+                # to focus on less showed words
+                return base_qs.filter(id__in=progress_added)
+
+            # removed
+            if not new and not added and removed:
+                return base_qs.filter(id__in=progress_removed)
+
+            # new added
+            if new and added and not removed:
+                return base_qs.exclude(id__in=progress_removed)
+
+            # new removed
+            if new and not added and removed:
+                return base_qs.exclude(id__in=progress_added)
+
+            # added removed
+            if not new and added and removed:
+                return base_qs.filter(id__in=progress_all)
+
+            # new added removed
+            if new and added and removed:
+                return base_qs
+
+
+
+
+
     def get_random_entry(self, qs):
         count = qs.count()
         rand = random.randint(0,count-1)
         return qs[rand]
+
+
 
 
     def get_next(self, request):
@@ -47,45 +104,27 @@ class WordManager(models.Manager):
 
         if user.is_authenticated:
 
-            # shown words are present in Progress model
-            # first we try to find words that are not showed
-            exclude = Progress.objects.filter(user=user).values('word_id')
-            words = Word.objects.filter(disabled=False).exclude(id__in=exclude)
-            #words = Word.objects.filter(disabled=False).filter(id__gt=100, id__lt=110)
-            count = words.count()
+            # convert '101' to [True, False, True]
+            type_filter = [False if x=='0' else True for x in request.GET.get('tf', '100')]
 
-            if count > 0:
-                # have not showed words
-                word = self.get_random_entry(words)
+            words = self.qs_by_type_filter(request, type_filter)
+            word = self.get_random_entry(words)
 
-                # add new word to log
-                progress = Progress.objects.create(
-                    user=user,
-                    word=word,
-                    showed=1,
-                )
-            else:
-                # all words shoed. Now must give priority to words with less `showed`
-                # TODO add suitable indexes, potentially show queries
-                qs = Progress.objects.filter(user=user, added=True, word__disabled=False)
-                mini = qs.aggregate(Min('showed'))
-                mini = mini['showed__min']
+            progress, created = Progress.objects.get_or_create(
+                user=user,
+                word=word,
+                defaults={'showed':1}
+            )
 
-                qs = qs.filter(showed=mini)
-                progress = self.get_random_entry(qs)
-
-                # increase showed count
-                progess.showed = progess.showed + 1
-                progess.save()
-
-                word = progress.word
+            if not created:
+                progress.showed = progress.showed + 1
+                progress.save()
 
             # cache prgress, used in get_added() and get_translation()
             word._current_progress = progress
 
-        else:          
-            qs = self.filter(disabled=False)
-            word = self.get_random_entry(qs)
+        else:
+            word = self.get_random_entry(self.filter(disabled=False))
 
 
         return word
