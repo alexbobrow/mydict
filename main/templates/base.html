@@ -14,7 +14,6 @@
         <script type="text/javascript">
             window.isAuthenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
         </script>
-
 		{% block head %}{% endblock head %}
     </head>
     <body>  

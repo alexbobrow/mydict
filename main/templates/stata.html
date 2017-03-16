@@ -1,11 +1,8 @@
+{% extends 'base.html' %}
 {% load static %}
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Мои слова - стата</title>
-        <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-        <!--<script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>-->
+{% load main %}
+
+{% block head %}
         
         <style>
             body {
@@ -34,30 +31,30 @@
             }
         </style>        
 
-    </head>
-    <body>
-        <div class='w-limit'>
+{% endblock head %}
+
+{% block main %}
+    <div class="w-limit">
+        <div class="a-m">
             <h1>Статистика пользователей</h1>
             <table>
                 <tr>
                     <td>id</td>
-                    <td>Username</td>
+                    <td>User</td>
                     <td>last login</td>
                     <td>last activity</td>
-                    <td>avg ratio</td>
                     <td>dict size</td>
                 </tr>
             {% for user in users %}
                 <tr>
                     <td>{{ user.pk }}</td>
-                    <td>{{ user.username }}</td>
+                    <td>{{ user|sensible }}</td>
                     <td>{{ user.last_login|date:"[H:i] d.m.Y" }}</td>
                     <td>{{ user.last_activity|date:"[H:i] d.m.Y" }}</td>
-                    <td>{{ user.avg_ratio }}</td>
                     <td>{{ user.dict_size }}</td>
                 </tr>
             {% endfor %}
             </table>
-        </div> <!-- w-limit -->
-    </body>
-</html>
+        </div>
+    </div>
+{% endblock main %}

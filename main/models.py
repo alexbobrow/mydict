@@ -308,6 +308,7 @@ class Progress(models.Model):
     added = models.BooleanField(default=True)   
 
     user_translation = models.CharField(max_length=255)
+    time_updated = models.DateTimeField(auto_now=True)
 
     objects = ProgressManager()
 

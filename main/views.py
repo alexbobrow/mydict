@@ -286,3 +286,16 @@ def remove_word(request):
     return JsonResponse({
         'success': True
     })
+
+
+
+@staff_member_required
+def stata(request):
+    #from django.contrib.auth.models import User
+    #from django.db.models import Max, Avg
+    users = User.objects.all().annotate(
+        last_activity=Max('progress__time_updated'),
+        dict_size=Count('progress')
+    )
+
+    return render(request, 'stata.html', {'users': users})
