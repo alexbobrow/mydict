@@ -10,7 +10,7 @@
     *  PRIVATE
     ************/
 
-    var aud = $('audio')[0];
+    var aud;
 
     var wordId = null;
 
@@ -24,6 +24,7 @@
 
 
     function init(){
+        aud = $('audio')[0];
         console.log('next initial');
         next();
     }
