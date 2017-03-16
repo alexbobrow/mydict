@@ -67,7 +67,7 @@ def freq_next(request):
 
 
 
-@login_required
+@login_required_code
 def freq_list(request):
     context = {}
 

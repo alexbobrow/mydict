@@ -24,7 +24,7 @@
 
 
 {% block menu %}
-    <li><a href="{% url 'freq_list' %}">Словарь списком</a></li>
+    <li><a class='login-required' href="{% url 'freq_list' %}">Словарь списком</a></li>
 
     <li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>
     {% if request.user.is_staff %}<li><button class='link red' data-action='delete'>Удалить</button></li>{% endif %}
@@ -33,14 +33,14 @@
 {% endblock menu %}    
 
 
+
 {% block aftermenu %}
     <h2 class='a-m'>Фильтр слов</h2>
-    <ul class='menu'>
+    <ul class='menu{% if not request.user.is_authenticated %} disabled{% endif %}'>
         <li><button data-type='new' class='type-filter sel'>Новые</button></li>
         <li><button data-type='added' class='type-filter'>Добавленные</button></li>
         <li><button data-type='removed' class='type-filter'>Удаленные</button></li>
     </ul>
-
 {% endblock aftermenu %}
 
 

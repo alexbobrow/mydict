@@ -272,11 +272,17 @@
 
 
     function addToDict() {
+        if (!checkAuthenticated("Добавить в словарь")) {
+            return false;
+        }
         addRemoveDict(true);
     }
 
 
     function removeFromDict() {
+        if (!checkAuthenticated("Удалить из словаря")) {
+            return false;
+        }
         addRemoveDict(false);
     }
 

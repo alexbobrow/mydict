@@ -102,6 +102,10 @@
 
 
         $('body').on('click', 'button.type-filter', function(e){
+            var menu = $(this).closest('.menu');
+            if (menu.hasClass('disabled')) {
+                return false;
+            }
             var base = $('button.type-filter');
             if ($(this).hasClass('sel')) {
 
@@ -118,6 +122,14 @@
                     $(this).addClass('sel');
                 }
             };
+        });
+
+
+        $('body').on('click', 'a.login-required', function(e){
+            if (!isAuthenticated) {
+                alert('Для этой страницы необходимо авторизоваться.');
+                e.preventDefault();
+            }
         });
 
 
