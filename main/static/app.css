@@ -132,16 +132,6 @@ div.body.desktop-menu .sticked {
     display: inline-block;
 }
 
-.buttons span.default, 
-.buttons span.done {
-    display: none;
-}
-
-button.default span.default,
-button.processing span.default,
-button.done span.done {
-    display: inline-block;
-}
 
 button.processing {
     opacity: .5;

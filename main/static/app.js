@@ -55,7 +55,6 @@
 
     function next() {
 
-
         if (logPosition<0) {
             //console.log('log pos < 0');
             var id = log.length + logPosition;
@@ -92,8 +91,8 @@
 
     function setWord(ans) {
 
-        //console.log(log);
-        //console.log(logPosition);
+        var btn = $('button.next');
+        updateButton(btn, 'default');
 
         clearTimeout(tidConfirm);
         
@@ -290,7 +289,6 @@
     function updateButton(btn, status) {
         btn.removeClass('processing');
         btn.removeClass('default');
-        btn.removeClass('done');
         btn.addClass(status);
     }
 
@@ -344,6 +342,8 @@
                     report();
                 } else {
                     console.log('next by enter');
+                    var btn = $('button.next');
+                    updateButton(btn, 'processing');                   
                     next();
                 }
             }
@@ -434,6 +434,8 @@
 
 
         $('button.next').on('click', function(e){
+            var btn = $('button.next');
+            updateButton(btn, 'processing');
             next();
         });
 
@@ -446,7 +448,7 @@
         $('button[data-action=add-to-dict], button[data-action=remove-from-dict], button.next').on('keypress keydown keyup', function(e){
             // prevent double next action if buttons is focused
             // because pressing Enter is binded on Window
-            e.stopImmediatePropagation();
+            // e.stopImmediatePropagation();
             e.preventDefault();
         });
 
