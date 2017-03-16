@@ -51,7 +51,13 @@ def root(request):
 
 def freq_next(request):
 
-    word = Word.objects.get_next(request)
+    try:
+        word = Word.objects.get_next(request)
+    except Word.DoesNotExist:
+        return JsonResponse({
+            'error': 'В данном режиме больше слов нет'
+        })
+
 
     context = {}
     context['wordId'] = word.id

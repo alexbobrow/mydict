@@ -24,7 +24,7 @@
 
 
 {% block menu %}
-    <li><a class='login-required' href="{% url 'freq_list' %}">Словарь списком</a></li>
+    <li><a class='login-required' href="{% url 'freq_list' %}">Список слов</a></li>
 
     <li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>
     {% if request.user.is_staff %}<li><button class='link red' data-action='delete'>Удалить</button></li>{% endif %}

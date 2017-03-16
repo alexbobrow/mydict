@@ -44,7 +44,10 @@
                         </li>
                         {% endif %}
                         <li><a href='/'>О программе</a></li>
-                        {% block menu %}{% endblock menu %}
+                        {% block menu %}
+                            <li><a href="{% url 'freq_cards' %}">Карточки</a></li>
+                            <li><a class='login-required' href="{% url 'freq_list' %}">Список слов</a></li>
+                        {% endblock menu %}
                     </ul>
 
                     {% block aftermenu %}{% endblock aftermenu %}

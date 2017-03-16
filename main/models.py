@@ -92,8 +92,12 @@ class WordManager(models.Manager):
 
     def get_random_entry(self, qs):
         count = qs.count()
-        rand = random.randint(0,count-1)
-        return qs[rand]
+        if count>0:
+            rand = random.randint(0,count-1)
+            return qs[rand]
+        else:
+            raise self.model.DoesNotExist
+        
 
 
 
