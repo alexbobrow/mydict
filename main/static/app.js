@@ -26,6 +26,7 @@
     function init(){
         aud = $('audio')[0];
         console.log('next initial');
+        loadTypeFilters();
         next();
     }
 
@@ -321,9 +322,43 @@
 
 
 
+    function saveTypeFilters(){
+        var new_ = $('button.type-filter:eq(0)').hasClass('sel') ? '1' : '0';
+        var added = $('button.type-filter:eq(1)').hasClass('sel') ? '1' : '0';
+        var removed = $('button.type-filter:eq(2)').hasClass('sel') ? '1' : '0';
+        window.localStorage.setItem('new', new_);
+        window.localStorage.setItem('added', added);
+        window.localStorage.setItem('removed', removed);
+    }
+
+
+
+    function loadTypeFilters(){
+        if (window.localStorage.getItem('new') === null) {
+            return false;
+        }
+        $('button.type-filter').removeClass('sel');
+        if (window.localStorage.getItem('new') == '1') {
+            $('button.type-filter:eq(0)').addClass('sel');
+        }
+        if (window.localStorage.getItem('added') == '1') {
+            $('button.type-filter:eq(1)').addClass('sel');
+        }
+        if (window.localStorage.getItem('removed') == '1') {
+            $('button.type-filter:eq(2)').addClass('sel');
+        }
+    }
+
+
+
     /************
     *  PUBLIC
     ************/
+
+    // calback when filter changed
+    words.typeFilterList = function(e){
+        saveTypeFilters();
+    }
 
     /*************
     *  LISTENERS

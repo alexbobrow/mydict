@@ -22,6 +22,13 @@
     *  PUBLIC
     ************/
 
+    // calback when filter changed
+    words.typeFilterList = function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        $('form.search').submit();
+    }
+
 
 
     /*************
@@ -124,11 +131,12 @@
             }
         });
 
+        /*
         $('body').on('click', 'form.search ul button', function(e){
             e.preventDefault();
             e.stopPropagation();
             $('form.search').submit();
-        });
+        });*/
 
 
 

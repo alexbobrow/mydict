@@ -122,6 +122,17 @@
                     $(this).addClass('sel');
                 }
             };
+
+            // callbacks
+            if (words.typeFilterList) {
+                words.typeFilterList(e);
+            }
+            if (words.typeFilterCards) {
+                words.typeFilterCards(e);
+            }
+            
+
+
         });
 
 
