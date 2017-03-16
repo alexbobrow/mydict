@@ -315,12 +315,7 @@
             }
             updateButton(btn, 'done');
             word.added = isAdd;
-            //updateLog('added', isAdd);
-            tidConfirm = setTimeout(function(){
-                updateButton(btn, 'default');
-                $('.buttons').attr('class', 'buttons ' + newClass);
-            }, 2000);
-
+            next();
 
         }, 'json');
     }
