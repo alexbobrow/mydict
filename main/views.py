@@ -18,7 +18,6 @@ from .models import Word, Progress, Report
 
 
 
-
 # similar to staff_member_required
 # but returns 403 instead of redirect
 def staff_required_code(fn):

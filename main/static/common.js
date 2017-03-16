@@ -1,16 +1,17 @@
 (function(words){
 
-
+    instantInit();
     $(function(){
         listeners();
-        init();
+        loadedInit();
     });
 
     /************
     *  PRIVATE
     ************/
 
-    function init() {
+    function instantInit(){
+        // default ajax setup
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
                 var csrf = getCookie('csrftoken');
@@ -22,7 +23,20 @@
                 alert('При выполнении запроса произошла ошибка.\n'+ status + '\n' + error);
             },
         });
+
+        // get rid of social auth appendings
+        if (window.location.href.split('#').length>1) {
+            history.replaceState 
+                ? history.replaceState(null, null, window.location.href.split('#')[0])
+                : window.location.hash = '';
+        }        
     }
+
+
+
+    function loadedInit() {
+    }
+
 
 
     function csrfSafeMethod(method) {
@@ -81,7 +95,7 @@
         });
 
 
-        $('body').on('click', 'button[data-action=auth]', function(){
+        $('body').on('click', 'button[data-action=auth], button[data-action=user]', function(){
             $(this).parent().find('ul').slideToggle();
 
         });
