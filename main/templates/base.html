@@ -25,10 +25,10 @@
                         <li>
                             <button data-action='auth'>Авторизация</button>
                             <ul>
-                                <li><a class='vk' href="">ВКонтакте</a></li>
-                                <li><a class='ok' href="">Одноклассники</a></li>
-                                <li><a class='gg' href="">Google</a></li>
-                                <li><a class='fb' href="">Facebook</a></li>
+                                <li><a class='vk' href="{% url "social:begin" "vk-oauth2" %}">ВКонтакте</a></li>
+                                <li><a class='ok' href="{% url "social:begin" "odnoklassniki-oauth2" %}">Одноклассники</a></li>
+                                <li><a class='gg' href="{% url "social:begin" "google-oauth2" %}">Google</a></li>
+                                <li><a class='fb' href="{% url "social:begin" "facebook" %}">Facebook</a></li>
                             </ul>
                         </li>
                         <li><a href='/'>О программе</a></li>

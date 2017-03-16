@@ -22,6 +22,7 @@ import main
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('main.urls')),
+    url('', include('social_django.urls', namespace='social'))
 ]
 
 

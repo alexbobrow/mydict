@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     #'django.contrib.sites',
     #'django.contrib.flatpages',
     'main',
+    'social_django',
     #'sslserver',
     #'debug_toolbar',
 ]
@@ -107,6 +108,18 @@ USE_TZ = True
 
 
 LOGIN_URL = '/login'
+
+
+
+# python-social-auth
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.vk.VKOAuth2',
+    'social_core.backends.odnoklassniki.OdnoklassnikiOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 
 
 from .settings_local import *
