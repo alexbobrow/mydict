@@ -2,24 +2,24 @@
 {% load static %}
 
 {% block head %}
-        <link rel="stylesheet" href="{% static "cards.css" %}" >
-        <script type="text/javascript" src="{% static "cards.js" %}"></script>
-        <script type="text/javascript">
-            window.cardsType = "{{ type }}";
-            window.isAuthenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
-            window.appUrls = {
-                next: "{% if type == 'freq' %}{% url 'freq_next' %}{% elif type == 'own' %}{% url 'own_next' %}{% endif %}",
-                report: "{% url 'report' %}",
-                add: "{% url 'add_word' %}",
-                remove: "{% url 'remove_word' %}",
-                userUpdate: "{% url 'user_update' %}",
-            };
-            {% if request.user.is_staff %}
-                window.isStaff = true;
-                window.appUrls['delete'] = "{% url 'delete' %}";
-                window.appUrls['adminUpdate'] = "{% url 'admin_update' %}";
-            {% endif %}
-        </script>
+    <link rel="stylesheet" href="{% static "cards.css" %}" >
+    <script type="text/javascript" src="{% static "cards.js" %}"></script>
+    <script type="text/javascript">
+        window.cardsType = "{{ type }}";
+        window.isAuthenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
+        window.appUrls = {
+            next: "{% if type == 'freq' %}{% url 'freq_next' %}{% elif type == 'own' %}{% url 'own_next' %}{% endif %}",
+            report: "{% url 'report' %}",
+            add: "{% url 'add_word' %}",
+            remove: "{% url 'remove_word' %}",
+            userUpdate: "{% url 'user_update' %}",
+        };
+        {% if request.user.is_staff %}
+            window.isStaff = true;
+            window.appUrls['delete'] = "{% url 'delete' %}";
+            window.appUrls['adminUpdate'] = "{% url 'admin_update' %}";
+        {% endif %}
+    </script>
 {% endblock head %}
 
 

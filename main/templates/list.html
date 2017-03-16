@@ -3,18 +3,18 @@
 {% load main %}
 
 {% block head %}
-        <link href='{% static 'list.css' %}' rel='stylesheet' type='text/css'>
-        <script type="text/javascript" src="{% static "list.js" %}"></script>
-        <script type="text/javascript">
-            window.appUrls = {
-                remove: "{% url 'remove_word' %}",
-                add: "{% url 'add_word' %}",
-                update: "{% url 'user_update' %}",
-                reset: "{% url 'user_reset' %}",
-            };
-            window.csrf = "{{ csrf_token }}";
-            window.listType = "{{ type }}";
-        </script>
+    <link href='{% static 'list.css' %}' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="{% static "list.js" %}"></script>
+    <script type="text/javascript">
+        window.appUrls = {
+            remove: "{% url 'remove_word' %}",
+            add: "{% url 'add_word' %}",
+            update: "{% url 'user_update' %}",
+            reset: "{% url 'user_reset' %}",
+        };
+        window.csrf = "{{ csrf_token }}";
+        window.listType = "{{ type }}";
+    </script>
 {% endblock head %}
 
 

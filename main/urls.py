@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^api/add-word$', views.add_word, name='add_word'),
     url(r'^api/remove-word$', views.remove_word, name='remove_word'),
 
-    #url(r'^admin/stata/$', views.stata),    
+    #url(r'^admin/stata/$', views.stata),
 
 
     #url(r'^tmp/list$', tmp.list),
