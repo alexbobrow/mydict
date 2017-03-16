@@ -9,6 +9,8 @@
             window.appUrls = {
                 remove: "{% url 'remove_word' %}",
                 add: "{% url 'add_word' %}",
+                update: "{% url 'user_update' %}",
+                reset: "{% url 'user_reset' %}",
             };
             window.csrf = "{{ csrf_token }}";
             window.listType = "{{ type }}";
@@ -50,7 +52,7 @@
 
         <div class='words-table a-mb'>
             {% for word in words %}
-                <div data-word-id='{{ word.pk }}' class='words-row freq-row{% if word.progress_set.all.0 %} added{% endif %}'>
+                <div data-word-id='{{ word.pk }}' class='words-row freq-row{% if word.progress_set.all.0 and word.progress_set.all.0.added %} added{% endif %}'>
                     <div class='col-1'>
                         <span class='add-remove'>
                             <button class='remove' data-action='remove-from-dict'>удалить</button>
@@ -59,7 +61,23 @@
                         <button class='pronounce' data-action='pronounce' data-url='{{ word.pronounce.url }}'></button>
                         <span class='en'>{{ word.word }}</span>
                     </div>
-                    <div class='col-2'>{{ word.translation }}</div>
+                    <div class='col-2 translation idle{% if word.get_translation_custom_list %} custom{% endif %}'>
+                        <div class="idle field">
+                            <span class='hover'>{{ word.get_translation_list }}</span>
+                            <span class='custom' title='Это Ваш вариант перевода'></span>
+                        </div>
+                        <div class="edit edit-translation">
+                            <form class=''>
+                                <div>
+                                    <input autocomplete='off' type="text" name="translation" value='{{ word.get_translation_list }}'>
+                                </div>
+                                <input type="hidden" name="word_id" value='{{ word.id }}'>
+                                <input type="submit" value='ok'>
+                                <button data-action='translation-cancel'>отмена</button>
+                                <button class='reset' data-action='translation-reset'>первоначальный</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>

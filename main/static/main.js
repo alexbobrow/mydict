@@ -65,6 +65,8 @@
 
         $('body').on('click', '.words-row span.hover', function(e){
             var col = $(this).closest('.translation');
+            col.removeClass('idle');
+            col.addClass('edit');
             var i = col.find('input[type=text]');
             i[0].selectionStart = i[0].selectionStart = i.val().length;
             i.focus();
@@ -79,6 +81,8 @@
             $.post(appUrls.update, data, function(ans){
                 col.find('span.hover').text(input.val());
                 col.addClass('custom');
+                col.addClass('idle');
+                col.removeClass('edit');
             }, 'json');
 
         });
@@ -88,6 +92,8 @@
         $('body').on('click', 'button[data-action=translation-cancel]', function(e){
             e.preventDefault();
             var col = $(this).closest('.translation');
+            col.removeClass('edit');
+            col.addClass('idle');            
         });
 
 
@@ -101,6 +107,8 @@
                 col.find('span.hover').text(ans.translation);
                 col.find('input[name=translation]').val(ans.translation);
                 col.removeClass('custom');
+                col.addClass('idle');
+                col.removeClass('edit');               
             }, 'json');
 
         });

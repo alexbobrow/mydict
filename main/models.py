@@ -184,6 +184,29 @@ class Word(models.Model):
             return False
 
 
+    def get_translation_list(self):
+        if self.progress_set.all():
+            progress = self.progress_set.all()[0]
+            if progress.user_translation:
+                return progress.user_translation
+            else:
+                return self.translation
+        else:
+            return self.translation
+
+
+    def get_translation_custom_list(self):
+        if self.progress_set.all():
+            progress = self.progress_set.all()[0]
+            if progress.user_translation:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+
+
 
 @python_2_unicode_compatible
 class WordOs(models.Model):
@@ -287,24 +310,6 @@ class Progress(models.Model):
     user_translation = models.CharField(max_length=255)
 
     objects = ProgressManager()
-
-
-
-
-    def get_translation(self):
-        
-        if self.user_translation != '':
-            return self.user_translation
-        else:
-            return self.word.translation
-
-
-    def is_changed(self):
-        if self.user_translation != '':
-            return True
-        else:
-            return False
-
 
     
     def __str__(self):

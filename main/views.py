@@ -82,13 +82,13 @@ def freq_list(request):
 
     qs = Word.objects.qs_by_type_filter(request, type_filter)
 
-    if 'q' in request.GET:
+    if 'q' in request.GET and request.GET['q']:
         qs = qs.filter(word__icontains=request.GET['q'])
         context['q'] = request.GET['q']
 
 
 
-    pqs = Progress.objects.filter(user=request.user, added=True)
+    pqs = Progress.objects.filter(user=request.user)
     qs = qs.prefetch_related(Prefetch('progress_set', queryset=pqs))
 
 
