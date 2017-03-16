@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block head %}
-        <link rel="stylesheet" href="{% static "app.css" %}" >
-        <script type="text/javascript" src="{% static "app.js" %}"></script>
+        <link rel="stylesheet" href="{% static "cards.css" %}" >
+        <script type="text/javascript" src="{% static "cards.js" %}"></script>
         <script type="text/javascript">
             window.cardsType = "{{ type }}";
             window.isAuthenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %};

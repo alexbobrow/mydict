@@ -107,7 +107,7 @@ def freq_list(request):
     context['type'] = 'freq'
     context['type_filter'] = type_filter
 
-    return render(request, 'freq_list.html', context)
+    return render(request, 'list.html', context)
 
 
 
