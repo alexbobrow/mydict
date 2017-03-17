@@ -119,6 +119,7 @@ span.word:hover {
     .buttons button {
         width: 100%;
         margin-bottom: 15px;
+        height: 3em;
     }
 
 }
