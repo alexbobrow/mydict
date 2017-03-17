@@ -119,116 +119,147 @@ p {
 
 
 div.body {
-	transition: padding-left linear 100ms;
+    transition: padding-left linear 100ms;
 }
 
-div.body > .left {
-	width: 0;
-	height: 100%;
-	background-color: #f3f3f3;
-	transition: width linear 100ms;
-	overflow: hidden;
-	position: fixed;
-	top: 0;
-	left: 0;
-	overflow-y: auto;
+
+@media screen and ( max-width: 960px )  {
+    div.mobile-margin {
+        margin-top: 30px;
+    }
 }
+
+
+div.body > .left {
+    width: 0;
+    height: 100%;
+    background-color: #f3f3f3;
+    transition: width linear 100ms;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+@media screen and ( min-width: 751px )  {
+    div.body > .left {
+        position: fixed;
+    }
+}
+
+
+@media screen and ( max-width: 750px )  {
+    div.body > .left {
+        position: absolute;
+    }
+}
+
+.left .left-inner {
+    width: 280px;
+}
+
 
 div.body > .right {
 }
 
 div.body.desktop-menu > .left {
-	width: 300px;
+    width: 280px;
 
 }
 
-div.body.desktop-menu {
-	padding-left: 300px;
+@media screen and ( min-width: 751px )  {
+    div.body.desktop-menu {
+        padding-left: 280px;
+    }
 }
 
 
 button.open-menu {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 40px;
-	height: 40px;
-	background-image: url('menu.svg');
-	background-repeat: no-repeat;
-	background-size: 36px 36px;
-	background-color: transparent;
-	background-position: center;
-	border: none;
-	outline: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 51px;
+    height: 45px;
+    background-image: url('menu.svg');
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    background-color: transparent;
+    background-position: center;
+    border: none;
+    outline: none;
 }
 
 button.open-menu:hover {
-	background-color: #e7e7e7;
+    background-color: #e7e7e7;
 }
 
 button.open-menu:active {
-	background-color: #d7d7d7;
+    background-color: #d7d7d7;
 }
 
+ul.menu {
+    padding-top: 10px;
+}
 
 ul.menu li {
-	/*border-bottom: 1px solid #e7e7e7;*/
-	display: block;
+    /*border-bottom: 1px solid #e7e7e7;*/
+    display: block;
 }
 
 ul.menu li a {
-	display: block;
-	color: #777;
-	text-decoration: none;
-	padding: 12px 15px;
+    display: block;
+    color: #777;
+    text-decoration: none;
+    padding: 12px 15px;
 }
 
 ul.menu li a:hover {
-	background-color: #e7e7e7;
+    background-color: #e7e7e7;
 }
 
 ul.menu li a:active {
-	background-color: #d7d7d7;
+    background-color: #d7d7d7;
 }
 
 
 ul.menu li button {
-	color: #777;
-	display: block;
-	padding: 12px 15px;
-	background-color: transparent;
-	border: none;
-	text-align: left;
-	cursor: pointer;
-	font-size: 100%;
-	width: 100%;
-	outline: none;
+    color: #777;
+    display: block;
+    padding: 12px 15px;
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 100%;
+    width: 100%;
+    outline: none;
 }
 
 ul.menu li button:hover {
-	background-color: #e7e7e7;
+    background-color: #e7e7e7;
 }
 
 ul.menu li button:active {
-	background-color: #d7d7d7;
+    background-color: #d7d7d7;
 }
 
 
 ul.menu ul {
-	display: none;
-	background-color: #eaeaea;
+    display: none;
+    background-color: #eaeaea;
 }
 
 ul.menu ul a {
-	padding: 12px 15px 12px 63px;
+    padding: 12px 15px 12px 63px;
 }
 
 ul.menu ul li a:hover {
-	background-color: #e2e2e2;
+    background-color: #e2e2e2;
 }
 
 ul.menu ul li a:active {
-	background-color: #d2d2d2;
+    background-color: #d2d2d2;
 }
 
 
@@ -236,33 +267,33 @@ a.vk,
 a.ok,
 a.fb,
 a.gg {
-	background-image: url(vk.svg);
-	background-size: 20px 20px;
-	background-repeat: no-repeat;
-	background-position: 35px center;
+    background-image: url(vk.svg);
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: 35px center;
 }
 
 
 a.vk {
 
-	background-image: url(vk.svg);
+    background-image: url(vk.svg);
 }
 
 a.ok {
-	background-image: url(ok.svg);
+    background-image: url(ok.svg);
 }
 
 a.fb {
-	background-image: url(fb.svg);
+    background-image: url(fb.svg);
 }
 
 a.gg {
-	background-image: url(gg.svg);
+    background-image: url(gg.svg);
 }
 
 
 ul.menu label {
-	color: #777;
+    color: #777;
     display: block;
     padding: 12px 15px;
     background-color: transparent;
@@ -274,22 +305,22 @@ ul.menu label {
 }
 
 ul.menu label:hover {
-	background-color: #e7e7e7;
+    background-color: #e7e7e7;
 }
 
 ul.menu label:active {
-	background-color: #d7d7d7;
+    background-color: #d7d7d7;
 }
 
 
 ul.menu li button.type-filter {
-	background-image: url(checkbox-0.svg);
-	background-size: 20px 20px;
-	background-repeat: no-repeat;
-	background-position: 15px center;
-	padding: 12px 15px 12px 45px;
+    background-image: url(checkbox-0.svg);
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: 15px center;
+    padding: 12px 15px 12px 45px;
 }
 
 ul.menu li button.type-filter.sel {
-	background-image: url(checkbox-1.svg);
+    background-image: url(checkbox-1.svg);
 }

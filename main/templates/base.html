@@ -21,38 +21,39 @@
 		{% block body %}
             <button class='open-menu'></button>
 
-            <div class='body a-clear'>
+            <div class='body a-clear{% block bodyclass %} mobile-margin{% endblock bodyclass %}'>
                 <div class="left">
-                    <ul class='menu'>
-                        <li><button data-action='close-menu'>Закрыть</button></li>
-                        {% if request.user.is_authenticated %}
-                        <li>
-                            <button data-action='user'>{{ request.user|sensible }}</button>
-                            <ul>
-                                <li><a href="{% url 'logout' %}">Выйти</a></li>
-                            </ul>                                                       
-                        </li>
-                        {% else %}
-                        <li>
-                            <button data-action='auth'>Авторизация</button>
-                            <ul>
-                                <li><a class='vk' href="{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}">ВКонтакте</a></li>
-                                <li><a class='ok' href="{% url "social:begin" "odnoklassniki-oauth2" %}?next={{ request.path }}">Одноклассники</a></li>
-                                <li><a class='gg' href="{% url "social:begin" "google-oauth2" %}?next={{ request.path }}">Google</a></li>
-                                <li><a class='fb' href="{% url "social:begin" "facebook" %}?next={{ request.path }}">Facebook</a></li>
-                            </ul>
-                        </li>
-                        {% endif %}
-                        <li><a href='/'>О программе</a></li>
-                        {% block menu %}
-                            <li><a href="{% url 'freq_cards' %}">Карточки</a></li>
-                            <li><a class='login-required' href="{% url 'freq_list' %}">Список слов</a></li>
-                        {% endblock menu %}
-                    </ul>
+                    <div class="left-inner">
+                        <ul class='menu'>
+                            <li><button data-action='close-menu'>Закрыть</button></li>
+                            {% if request.user.is_authenticated %}
+                            <li>
+                                <button data-action='user'>{{ request.user|sensible }}</button>
+                                <ul>
+                                    <li><a href="{% url 'logout' %}">Выйти</a></li>
+                                </ul>                                                       
+                            </li>
+                            {% else %}
+                            <li>
+                                <button data-action='auth'>Авторизация</button>
+                                <ul>
+                                    <li><a class='vk' href="{% url "social:begin" "vk-oauth2" %}?next={{ request.path }}">ВКонтакте</a></li>
+                                    <li><a class='ok' href="{% url "social:begin" "odnoklassniki-oauth2" %}?next={{ request.path }}">Одноклассники</a></li>
+                                    <li><a class='gg' href="{% url "social:begin" "google-oauth2" %}?next={{ request.path }}">Google</a></li>
+                                    <li><a class='fb' href="{% url "social:begin" "facebook" %}?next={{ request.path }}">Facebook</a></li>
+                                </ul>
+                            </li>
+                            {% endif %}
+                            <li><a href='/'>О программе</a></li>
+                            {% block menu %}
+                                <li><a href="{% url 'freq_cards' %}">Карточки</a></li>
+                                <li><a class='login-required' href="{% url 'freq_list' %}">Список слов</a></li>
+                            {% endblock menu %}
+                        </ul>
 
-                    {% block aftermenu %}{% endblock aftermenu %}
+                        {% block aftermenu %}{% endblock aftermenu %}
 
-
+                    </div>
                 </div>
 
                 <div class="right">
