@@ -10,7 +10,7 @@ from django.contrib import messages
 
 from django.urls import reverse
 
-from django.db.models import Max, Avg, Count, Prefetch
+from django.db.models import Max, Avg, Count, Prefetch, Q
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -82,7 +82,7 @@ def freq_list(request):
     qs = Word.objects.qs_by_type_filter(request, type_filter)
 
     if 'q' in request.GET and request.GET['q']:
-        qs = qs.filter(word__icontains=request.GET['q'])
+        qs = qs.filter(Q(word__icontains=request.GET['q']) | Q(translation__icontains=request.GET['q'])) 
         context['q'] = request.GET['q']
 
 
