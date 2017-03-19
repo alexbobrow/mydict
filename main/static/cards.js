@@ -110,6 +110,9 @@
         var ya = 'https://translate.yandex.kz/?lang=en-ru&text=' + ans.word;
         $('a[data-action=yandex]').attr('href', ya);
 
+        var rv = 'http://context.reverso.net/перевод/английский-русский/' + ans.word;
+        $('a[data-action=reverso]').attr('href', rv);
+
         var btn1 = $('button[data-action=add-to-dict]');
         var btn2 = $('button[data-action=remove-from-dict]');
         updateButton(btn1, 'default');
