@@ -70,6 +70,10 @@
         <div class='words-table a-mb'>
             {% for word in words %}
                 <div data-word-id='{{ word.pk }}' class='words-row freq-row{% if word.progress_set.all.0 and word.progress_set.all.0.added %} added{% endif %}'>
+                    <div class='col-0'>
+                        <span title='rank'>{{ word.rank }}</span>
+                    </div>
+
                     <div class='col-1'>
                         <span class='add-remove'>
                             <button class='remove' data-action='remove-from-dict'>удалить</button>
