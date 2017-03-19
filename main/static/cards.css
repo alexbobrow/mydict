@@ -165,3 +165,7 @@ button.processing {
     opacity: .5;
 }
 
+button.type-filter span {
+    opacity: .5;
+}
+

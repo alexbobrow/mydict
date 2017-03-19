@@ -85,6 +85,7 @@
             };
             //console.log(log);
             setWord(ans);
+            setStata(ans);
         }, 'json');
 
     }
@@ -128,6 +129,18 @@
 
         resize();
 
+    }
+
+
+
+    function setStata(ans){
+        if (ans.countNew) {
+            $('button[data-type=new] span').text(' ('+ans.countNew+')');
+            $('button[data-type=added] span').text(' ('+ans.countAdded+')');
+            $('button[data-type=removed] span').text(' ('+ans.countRemoved+')');
+        } else {
+            $('button.type-filter span').text('');
+        }
     }
 
 

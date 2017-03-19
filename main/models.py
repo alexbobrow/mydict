@@ -126,12 +126,19 @@ class WordManager(models.Manager):
 
             # cache prgress, used in get_added() and get_translation()
             word._current_progress = progress
+    
+            context = {
+                'countNew': self.qs_by_type_filter(request, [True, False, False]).count(),
+                'countAdded': self.qs_by_type_filter(request, [False, True, False]).count(),
+                'countRemoved': self.qs_by_type_filter(request, [False, False, True]).count(),
+            }
 
         else:
             word = self.get_random_entry(self.filter(disabled=False))
+            context = {}
 
 
-        return word
+        return word, context
 
 
 
@@ -268,36 +275,7 @@ class Pronounce(models.Model):
 
 
 class ProgressManager(models.Manager):
-
-
-    def get_random_entry(self, qs):
-        count = qs.count()
-        rand = random.randint(0,count-1)
-        return qs[rand]
-
-
-
-    def get_next(self, request):
-
-        qs = Progress.objects.filter(user=request.user, added=True)
-        count = qs.count()
-        if count>0:
-
-            mini = qs.aggregate(Min('showed'))
-            mini = mini['showed__min']
-            qs = qs.filter(showed=mini)
-
-            progress = self.get_random_entry(qs)
-            word = progress.word
-
-            progress.showed = progress.showed + 1
-            progress.save()
-
-            return progress
-        
-        else:
-            raise Progress.DoesNotExist()
-
+    pass
 
 
 

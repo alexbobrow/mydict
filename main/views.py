@@ -52,14 +52,13 @@ def root(request):
 def freq_next(request):
 
     try:
-        word = Word.objects.get_next(request)
+        word, context = Word.objects.get_next(request)
     except Word.DoesNotExist:
         return JsonResponse({
             'error': 'В данном режиме больше слов нет'
         })
 
 
-    context = {}
     context['wordId'] = word.id
     context['word'] = word.word
     context['translation'] = word.get_translation()
