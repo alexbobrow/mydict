@@ -52,18 +52,28 @@ def root(request):
 def freq_next(request):
 
     try:
-        word, context = Word.objects.get_next(request)
+        res, debug = Word.objects.get_next(request)
     except Word.DoesNotExist:
         return JsonResponse({
             'error': 'В данном режиме больше слов нет'
         })
 
+    context = {}
+
+
+    if not request.user.is_authenticated:
+        progress = res
+        word = progress.word
+    else:
+        progress = None
+        word = res
+
 
     context['wordId'] = word.id
-    context['word'] = word.word
-    context['translation'] = word.get_translation()
+    context['en'] = word.word
+    context['ru'] = word.get_translation()
     context['pronounce'] = word.pronounce.url
-    context['added'] = word.get_added()
+
     
 
     return JsonResponse(context)
