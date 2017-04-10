@@ -109,8 +109,13 @@
         var rv = 'http://context.reverso.net/перевод/английский-русский/' + ans.en;
         $('a[data-action=reverso]').attr('href', rv);
 
-        var btn1 = $('button[data-action=add-to-dict]');
-        var btn2 = $('button[data-action=remove-from-dict]');
+        // stata
+        $('span.stata-dict').text(ans.userProgressCount);
+        $('span.stata-all').text(ans.total);
+        $('span.stata-avg').text(ans.knowAvg);
+        $('span.stata-word').text(ans.wordKnowAvg);
+
+
 
         resize();
 

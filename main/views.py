@@ -69,6 +69,7 @@ def freq_next(request):
         progress = res
         word = progress.word
         context['progressId'] = progress.id
+        context['wordKnowAvg'] = '%.2f' % progress.know_avg
     else:
         context = {}
         progress = None

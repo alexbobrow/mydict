@@ -404,7 +404,13 @@ class ProgressManager(models.Manager):
         self.debug('word.id', progress_word.word.id)
         self.debug('progress.id', progress_word.id)
 
-        return progress_word, {'total': total, 'userProgressCount': self.userProgressCount, 'knowAvg': avg_ratio}, self.debug_storage
+        data = {
+            'total': total,
+            'userProgressCount': self.userProgressCount,
+            'knowAvg': '%.2f' % avg_ratio
+        }
+
+        return progress_word, data, self.debug_storage
 
 
 

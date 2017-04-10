@@ -1,8 +1,12 @@
-ul.menu.disabled {
-    opacity: .5;
-    pointer-events: none;
+ul.stata {
+    list-style: none;
 }
 
+
+ul.stata li {
+    line-height: 2em;
+    color: #777;
+}
 
 
 .words {

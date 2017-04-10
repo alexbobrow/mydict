@@ -31,8 +31,20 @@
     {% if request.user.is_staff %}<li><button class='link red' data-action='update'>Изменить</button></li>{% endif %}
     <li><a data-action='yandex' target="_blank" href="#">Яндекс.Переводчик</a></li>
     <li><a data-action='reverso' target="_blank" href="#">Примеры использования</a></li>
-{% endblock menu %}    
+{% endblock menu %}
 
+
+{% block aftermenu %}
+    <div class="a-mh">
+    <h2>Статистика</h2>
+
+    <ul class='stata'>
+        <li>Слов в изучении <span class='stata-dict'>0</span>/<span class='stata-all'>0</span></li>
+        <li>Рейтинг слова<span class='stata-word'>1</span></li>
+        <li>Средний рейтинг <span class='stata-avg'>1</span></li>
+    </ul>
+    </div>
+{% endblock aftermenu %}
 
 
 {% block main %}
