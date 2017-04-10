@@ -14,7 +14,7 @@
 
     var wordId = null;
 
-    var word = null;
+    var currentData = null;
 
     var log = [];
 
@@ -26,7 +26,6 @@
     function init(){
         aud = $('audio')[0];
         console.log('next initial');
-        loadTypeFilters();
         next();
     }
 
@@ -54,7 +53,8 @@
     }
 
 
-    function next() {
+
+    function next(data) {
 
         if (logPosition<0) {
             //console.log('log pos < 0');
@@ -66,15 +66,12 @@
             return
         }
 
-        var typeFilter = words.typeFilterValue();
-
-        if (typeFilter=='100') {
-            var data = {};
-        } else {
-            var data = {tf:typeFilter};
+        if (typeof(data)=='undefined') {
+            data = {};
         }
+        
 
-        $.get(appUrls.next, data, function(ans){
+        $.post(appUrls.next, data, function(ans){
             if (ans.error) {
                 alert(ans.error);
                 return false;
@@ -85,7 +82,6 @@
             };
             //console.log(log);
             setWord(ans);
-            setStata(ans);
         }, 'json');
 
     }
@@ -94,53 +90,30 @@
     function setWord(ans) {
 
         var btn = $('button.next');
-        updateButton(btn, 'default');
 
         clearTimeout(tidConfirm);
         
-        word = ans;
+        currentData = ans;
 
         wordId = ans.wordId;
         progressId = ans.progessId;
-        $('span.word').text(ans.word);
-        setFontSize(ans.translation);
-        $('.answer').text(ans.translation);
+        $('span.word').text(ans.en);
+        setFontSize(ans.ru);
+        $('.answer').text(ans.ru);
         $('input.test').focus();
         aud.src = ans.pronounce;
 
-        var ya = 'https://translate.yandex.kz/?lang=en-ru&text=' + ans.word;
+        var ya = 'https://translate.yandex.kz/?lang=en-ru&text=' + ans.en;
         $('a[data-action=yandex]').attr('href', ya);
 
-        var rv = 'http://context.reverso.net/перевод/английский-русский/' + ans.word;
+        var rv = 'http://context.reverso.net/перевод/английский-русский/' + ans.en;
         $('a[data-action=reverso]').attr('href', rv);
 
         var btn1 = $('button[data-action=add-to-dict]');
         var btn2 = $('button[data-action=remove-from-dict]');
-        updateButton(btn1, 'default');
-        updateButton(btn2, 'default');
-
-        if (ans.added) {
-            $('.buttons').addClass('remove');
-            $('.buttons').removeClass('add');
-        } else {
-            $('.buttons').addClass('add');
-            $('.buttons').removeClass('remove');
-        }
 
         resize();
 
-    }
-
-
-
-    function setStata(ans){
-        if (ans.countNew) {
-            $('button[data-type=new] span').text(' ('+ans.countNew+')');
-            $('button[data-type=added] span').text(' ('+ans.countAdded+')');
-            $('button[data-type=removed] span').text(' ('+ans.countRemoved+')');
-        } else {
-            $('button.type-filter span').text('');
-        }
     }
 
 
@@ -287,27 +260,6 @@
 
 
 
-    function addToDict() {
-        if (!checkAuthenticated("Добавить в словарь")) {
-            return false;
-        }
-        addRemoveDict(true);
-    }
-
-
-    function removeFromDict() {
-        if (!checkAuthenticated("Удалить из словаря")) {
-            return false;
-        }
-        addRemoveDict(false);
-    }
-
-
-    function updateButton(btn, status) {
-        btn.removeClass('processing');
-        btn.removeClass('default');
-        btn.addClass(status);
-    }
 
 
 
@@ -321,14 +273,11 @@
             var url = appUrls.remove;
             var newClass = 'add';
         }        
-        updateButton(btn, 'processing');
         $.post(url, {word_id: wordId}, function(ans){
             if (ans.error) {
                 alert(ans.error);
-                updateButton(btn, 'default');
                 return false;
             }
-            updateButton(btn, 'done');
             word.added = isAdd;
             next();
 
@@ -337,33 +286,19 @@
 
 
 
+    function answer(value){
 
-    function saveTypeFilters(){
-        var new_ = $('button.type-filter:eq(0)').hasClass('sel') ? '1' : '0';
-        var added = $('button.type-filter:eq(1)').hasClass('sel') ? '1' : '0';
-        var removed = $('button.type-filter:eq(2)').hasClass('sel') ? '1' : '0';
-        window.localStorage.setItem('new', new_);
-        window.localStorage.setItem('added', added);
-        window.localStorage.setItem('removed', removed);
+        var data = {
+            answer_value: value,
+            progress_id: currentData.progressId
+        }
+
+        next(data);
+
     }
 
 
 
-    function loadTypeFilters(){
-        if (window.localStorage.getItem('new') === null) {
-            return false;
-        }
-        $('button.type-filter').removeClass('sel');
-        if (window.localStorage.getItem('new') == '1') {
-            $('button.type-filter:eq(0)').addClass('sel');
-        }
-        if (window.localStorage.getItem('added') == '1') {
-            $('button.type-filter:eq(1)').addClass('sel');
-        }
-        if (window.localStorage.getItem('removed') == '1') {
-            $('button.type-filter:eq(2)').addClass('sel');
-        }
-    }
 
 
 
@@ -371,10 +306,7 @@
     *  PUBLIC
     ************/
 
-    // calback when filter changed
-    words.typeFilterList = function(e){
-        saveTypeFilters();
-    }
+
 
     /*************
     *  LISTENERS
@@ -394,7 +326,6 @@
                 } else {
                     console.log('next by enter');
                     var btn = $('button.next');
-                    updateButton(btn, 'processing');                   
                     next();
                 }
             }
@@ -414,13 +345,7 @@
                 if (e.ctrlKey) {
                     // admin disable word if ctrl
                     disable();
-                } else {
-                    // remove from dict on plain delete
-                    if (word.added) {
-                        removeFromDict();
-                    }
-                }
-                
+                }                
             }
 
             // insert
@@ -433,12 +358,6 @@
                 
             }
 
-            // plus
-            if (code==107) {
-                if (!word.added) {
-                    addToDict();
-                }            
-            }
             
             console.log(code);
         });
@@ -486,14 +405,9 @@
 
         $('button.next').on('click', function(e){
             var btn = $('button.next');
-            updateButton(btn, 'processing');
             next();
         });
 
-
-        $('button[data-action=add-to-dict]').on('click', addToDict);
-
-        $('button[data-action=remove-from-dict]').on('click', removeFromDict);
 
 
         $('button[data-action=add-to-dict], button[data-action=remove-from-dict], button.next').on('keypress keydown keyup', function(e){
@@ -501,6 +415,15 @@
             // because pressing Enter is binded on Window
             // e.stopImmediatePropagation();
             e.preventDefault();
+        });
+
+
+        $('button[data-know]').on('click', function(e){
+            // prevent double next action if buttons is focused
+            // because pressing Enter is binded on Window
+            // e.stopImmediatePropagation();
+            var value = $(this).attr('data-know');
+            answer(value);
         });
 
 

@@ -9,7 +9,7 @@ import random
 
 
 from django.db import models
-from django.db.models import Min
+from django.db.models import Min, Avg
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -31,260 +31,10 @@ def pronounce_full_path(instance, filename):
 
 
 
+
 class WordManager(models.Manager):
 
-
-
-    def debug(self, key, value=''):
-
-        if not hasattr(self, 'debug_storage'):
-            self.debug_storage = []
-
-        if value=='':
-            self.debug_storage.append(key)
-        else:
-            self.debug_storage.append({
-                'key': key,
-                'value': value
-            })
-
-
-
-        
-
-        
-    def get_random_entry(self, qs):
-        count = qs.count()
-        if count>0:
-            rand = random.randint(0,count-1)
-            return qs[rand]
-        else:
-            raise self.model.DoesNotExist
-        
-
-
-
-    def get_avg_ratio(self, user):
-
-        progress = self.filter(user=user)
-        #count = progress.count()
-
-        return progress.aggregate(know_avg=Avg('know_avg'))['know_avg']
-
-        '''
-        if count>=200:
-            # если больше 200 то не учитываем посл 100
-            # id_minus_100 входит в диапазон посл 100
-            id_minus_100 = progress.order_by('-id')[100]
-            return progress.filter(id__lt=id_minus_100.id).aggregate(ratio=Avg('ratio'))['ratio']
-        else:
-            # учитываем все
-            return progress.aggregate(ratio=Avg('ratio'))['ratio']
-        '''
-
-
-
-
-
-    def get_next(self, user):
-
-
-        if not user.is_authenticated:
-            return get_random_entry(Word.filter(disabled=False)), []
-
-
-        """
-        Функция выдачи следующего слова для показа / теста
-
-        Сначала проверяем наличие 100 слов
-        Если меньше, добиваем до сотни
-        
-        Далее
-        Выбираем добавляем мы новое слово в словарь или нет
-        Если среднее значения знания слов больше 4 то новое, если нет то повтор
-        
-        Алгоритм выбора слова для повторения
-        в зависимости от кол-ва слов у юзера
-
-        100-200
-            полный рандом
-        200-650
-            90% последние 100-0 (order by id desc limit 0 100)
-            10% последние x-100 (все остальные)
-        650-1000
-            85% последние 100-0 (order by id desc limit 0 100)
-            15% последние x-100 (все остальные)
-        1000-
-            80% последние 100-0 (order by id desc limit 0 100)
-            20% последние x-100 (все остальные)
-        """
-
-        #self.debug_storage = []
-        
-
-        self.ensure100(user)
-
-        self.debug('user dict count', self.userProgressCount)
-
-
-        NEW = 0
-        REPEAT = 14
-        
-
-        avg_ratio = self.get_avg_ratio(user)
-        
-        self.debug('avg_ratio', avg_ratio)
-
-        
-        if avg_ratio >= 4:
-            action = NEW
-        else:
-            action = REPEAT      
-
-        str_action = 'NEW' if action == NEW else 'REPEAT'
-        self.debug('action', str_action)
-
-        if action==NEW:
-            # add word
-            #print "NEW"
-            
-            progress_word = self.add_new_word(user)
-            #progress_word.debug = self.debug_storage
-            
-
-        if action==REPEAT:
-
-            range_start, range_end = self.get_range(self.userProgressCount)
-
-            self.debug('range_start', range_start)
-
-            qs = self.filter(user=user)
-
-            if range_start is not None:
-                #print('Processing range end')
-                # это слово ВХОДИТ диапазон
-                word_end = self.filter(user=user).order_by('-id')[range_start:range_start+1][0]
-                self.debug('range_start_word_id', word_end.id)
-                qs = qs.filter(id__lte=word_end.id)
-
-
-            self.debug('range_end', range_end)
-
-
-            # слова на границах выбранного диапазона
-            if range_end is not None:
-                # import ipdb; ipdb.set_trace()
-                # это слово НЕ входит диапазон
-                word_start = self.filter(user=user).order_by('-id')[range_end:range_end+1][0]
-                self.debug('range_end_word_id', word_start.id)
-                qs = qs.filter(id__gt=word_start.id)
-
-
-            # отсеиваем последние 10 из лога
-            '''
-            log_arr = ProgressLog.objects.get_array(user)
-            qs = qs.exclude(id__in=log_arr)
-            self.debug('log', log_arr)
-            '''
-
-
-            # из диапазона выбираем топ 10% слов с наименьшим ratio
-            range_count = qs.count()
-
-            self.debug('range_count', range_count)
-
-            #print "Range count %s" % range_count
-            ten_perc = range_count // 10
-
-            #print "ten percents %s" % ten_perc
-
-            # непосредственно спислк слов
-            words_list = qs.order_by('ratio')[0:ten_perc]
-            
-            self.debug('sql', str(words_list.query))
-
-
-            #print words_list
-
-            # и наконец наше слово
-            progress_word = random.choice(words_list)
-            #progress_word.debug = self.debug_storage
-            
-
-
-        #ProgressLog.objects.add(progress_word)
-       
-        self.debug('word.id', progress_word.word.id)
-        self.debug('progress.id', progress_word.id)
-
-        return progress_word, self.debug_storage
-
-
-
-
-
-
-    def ensure100(self, user):
-        """
-        Ensures user has minimum 100 initial words
-        """
-        self.userProgressCount = Progress.objects.filter(user=user).count()
-
-        # Если у юзера слов меньше 100, то добивем до 100
-        if self.userProgressCount<100:
-            self.addNewWordBulk(user, 100-self.userProgressCount)
-            count = Progress.objects.filter(user=user).count()
-            if count<100:
-                raise Exception("Can't add first 100 words")
-
-
-
-
-
-    def get_range(self, count):
-
-        range_rand = random.randint(1, 100)
-
-        self.debug("rand factor", range_rand)
-        
-        # начало диапазона (при обратной сортировке по id)
-        range_start = None
-
-        # конец диапазона (при обратной сортировке по id)
-        # зачастую None, это значит от range_start и до конца таблицы
-        range_end = None
-        
-
-        # вычисляем границы диапазонов
-
-        # меньше 200 слов -> используем все слова
-        if count<200:
-            self.debug("range mode 1 / less than 200 / using all words")
-            # range_end = None
-            # range_start = None
-
-
-        # от 200 и более
-        if count>=200:
-            self.debug("range mode 2 / 200-649 words (50/50)")
-            # 50% вероятности 0-100
-            if range_rand<=50:
-                self.debug("range mode 2.1 / 50% / range 0-100")
-                range_start = 0
-                range_end = 100
-            # 50% вероятности 100-x
-            else:
-                self.debug("range mode 2.2 / 50% / range 100-∞")
-                range_start = 100
-                range_end = None
-
-        return (range_start, range_end)
-
-
-
-
-
-
+    pass
 
     '''
     def get_next(self, request):
@@ -438,8 +188,293 @@ class Pronounce(models.Model):
 
 
 
+
+
+
+
 class ProgressManager(models.Manager):
-    pass
+
+
+    def debug(self, key, value=''):
+
+        if not hasattr(self, 'debug_storage'):
+            self.debug_storage = []
+
+        if value=='':
+            self.debug_storage.append(key)
+        else:
+            self.debug_storage.append({
+                'key': key,
+                'value': value
+            })
+
+
+
+        
+
+        
+    def get_random_entry(self, qs):
+        count = qs.count()
+        if count>0:
+            rand = random.randint(0,count-1)
+            return qs[rand]
+        else:
+            raise self.model.DoesNotExist
+        
+
+    def add_new_word(self, user):
+        """
+        Adding new word in user's dictionary
+        Returns Progress entry
+        """
+
+        self.debug("Adding new word to user's dict")
+
+        exclude = self.filter(user=user).values('word_id')
+
+        word_qs = Word.objects.filter(disabled=False).exclude(id__in=exclude)
+        word = word_qs[0]
+
+        return self.create(
+            user=user,
+            word=word              
+        )
+
+
+
+    def add_new_word_bulk(self, user, count):
+        # TODO improve, not to request word lest each iteration
+        for x in range(0, count):
+            self.add_new_word(user)
+
+
+
+
+    def get_avg_ratio(self, user):
+
+        progress = self.filter(user=user)
+        #count = progress.count()
+
+        return progress.aggregate(know_avg=Avg('know_avg'))['know_avg']
+
+        '''
+        if count>=200:
+            # если больше 200 то не учитываем посл 100
+            # id_minus_100 входит в диапазон посл 100
+            id_minus_100 = progress.order_by('-id')[100]
+            return progress.filter(id__lt=id_minus_100.id).aggregate(ratio=Avg('ratio'))['ratio']
+        else:
+            # учитываем все
+            return progress.aggregate(ratio=Avg('ratio'))['ratio']
+        '''
+
+
+
+
+
+    def get_next(self, user):
+
+
+        if not user.is_authenticated:
+            return self.get_random_entry(Word.objects.filter(disabled=False)), {}, []
+
+
+        """
+        Функция выдачи следующего слова для показа / теста
+
+        Сначала проверяем наличие 100 слов
+        Если меньше, добиваем до сотни
+        
+        Далее
+        Выбираем добавляем мы новое слово в словарь или нет
+        Если среднее значения знания слов больше 4 то новое, если нет то повтор
+        
+        Алгоритм выбора слова для повторения
+        в зависимости от кол-ва слов у юзера
+
+        100-200
+            полный рандом
+        200-650
+            90% последние 100-0 (order by id desc limit 0 100)
+            10% последние x-100 (все остальные)
+        650-1000
+            85% последние 100-0 (order by id desc limit 0 100)
+            15% последние x-100 (все остальные)
+        1000-
+            80% последние 100-0 (order by id desc limit 0 100)
+            20% последние x-100 (все остальные)
+        """
+
+        #self.debug_storage = []
+        
+        total = Word.objects.filter(disabled=False).count()
+
+        self.ensure100(user)
+
+        self.debug('user dict count', self.userProgressCount)
+
+
+        NEW = 0
+        REPEAT = 14
+        
+
+        avg_ratio = self.get_avg_ratio(user)
+        
+        self.debug('avg_ratio', avg_ratio)
+
+        
+        if avg_ratio >= 4:
+            action = NEW
+        else:
+            action = REPEAT      
+
+        str_action = 'NEW' if action == NEW else 'REPEAT'
+        self.debug('action', str_action)
+
+        if action==NEW:
+            # add word
+            #print "NEW"
+            
+            progress_word = self.add_new_word(user)
+            #progress_word.debug = self.debug_storage
+            
+
+        if action==REPEAT:
+
+            range_start, range_end = self.get_range(self.userProgressCount)
+
+            self.debug('range_start', range_start)
+
+            qs = self.filter(user=user)
+
+            if range_start is not None:
+                #print('Processing range end')
+                # это слово ВХОДИТ диапазон
+                word_end = self.filter(user=user).order_by('-id')[range_start:range_start+1][0]
+                self.debug('range_start_word_id', word_end.id)
+                qs = qs.filter(id__lte=word_end.id)
+
+
+            self.debug('range_end', range_end)
+
+
+            # слова на границах выбранного диапазона
+            if range_end is not None:
+                # import ipdb; ipdb.set_trace()
+                # это слово НЕ входит диапазон
+                word_start = self.filter(user=user).order_by('-id')[range_end:range_end+1][0]
+                self.debug('range_end_word_id', word_start.id)
+                qs = qs.filter(id__gt=word_start.id)
+
+
+            # отсеиваем последние 10 из лога
+            log_arr = ProgressLog.objects.get_array(user)
+            qs = qs.exclude(id__in=log_arr)
+            self.debug('log', log_arr)
+
+
+
+            # из диапазона выбираем топ 10% слов с наименьшим ratio
+            range_count = qs.count()
+
+            self.debug('range_count', range_count)
+
+            #print "Range count %s" % range_count
+            ten_perc = range_count // 10
+
+            #print "ten percents %s" % ten_perc
+
+            # непосредственно спислк слов
+            words_list = qs.order_by('know_max')[0:ten_perc]
+            
+            self.debug('sql', str(words_list.query))
+
+
+            #print words_list
+
+            # и наконец наше слово
+            progress_word = random.choice(words_list)
+            #progress_word.debug = self.debug_storage
+            
+
+        # paralel requests unsafe, but not critical,
+        # lets limit paralel in frontend
+        ProgressLog.objects.add(progress_word)
+       
+        self.debug('word.id', progress_word.word.id)
+        self.debug('progress.id', progress_word.id)
+
+        return progress_word, {'total': total, 'userProgressCount': self.userProgressCount, 'knowAvg': avg_ratio}, self.debug_storage
+
+
+
+
+
+
+    def ensure100(self, user):
+        """
+        Ensures user has minimum 100 initial words
+        """
+        self.userProgressCount = Progress.objects.filter(user=user).count()
+
+        # Если у юзера слов меньше 100, то добивем до 100
+        if self.userProgressCount<100:
+            self.add_new_word_bulk(user, 100-self.userProgressCount)
+            count = Progress.objects.filter(user=user).count()
+            if count<100:
+                raise Exception("Can't add first 100 words")
+
+
+
+
+
+    def get_range(self, count):
+
+        range_rand = random.randint(1, 100)
+
+        self.debug("rand factor", range_rand)
+        
+        # начало диапазона (при обратной сортировке по id)
+        range_start = None
+
+        # конец диапазона (при обратной сортировке по id)
+        # зачастую None, это значит от range_start и до конца таблицы
+        range_end = None
+        
+
+        # вычисляем границы диапазонов
+
+        # меньше 200 слов -> используем все слова
+        if count<200:
+            self.debug("range mode 1 / less than 200 / using all words")
+            # range_end = None
+            # range_start = None
+
+
+        # от 200 и более
+        if count>=200:
+            self.debug("range mode 2 / 200-649 words (50/50)")
+            # 50% вероятности 0-100
+            if range_rand<=50:
+                self.debug("range mode 2.1 / 50% / range 0-100")
+                range_start = 0
+                range_end = 100
+            # 50% вероятности 100-x
+            else:
+                self.debug("range mode 2.2 / 50% / range 100-∞")
+                range_start = 100
+                range_end = None
+
+        return (range_start, range_end)
+
+
+
+
+
+
+
+
+
 
 
 
@@ -467,6 +502,82 @@ class Progress(models.Model):
     def __str__(self):
         return "id:%s / word_id:%s" % (self.id, self.word_id)
 
+
+    def add_answer(self, value):
+        if not value in '12345':
+            raise Exception('Wrong answer value')
+        field = 'know_%s' % value
+        old_value = int(getattr(self, field))
+        setattr(self, field, (old_value+1))
+        self.save()
+
+    
+
+    def save(self, *args, **kwargs):
+
+        print('progress save routine')
+        
+        know_max_key = 0
+        know_max_value = 0
+
+        know_list = []
+        for x in range(1,6):
+            field = 'know_%s' % x
+            print(field)
+            know_x = getattr(self, field)
+            if know_x > know_max_value:
+                know_max_key = x
+                know_max_value = know_x
+
+            know_list = know_list + [x] * know_x
+
+        list_len = len(know_list)
+        if list_len > 0:
+            avg = sum(know_list) / float(list_len)
+        else:
+            avg = 0
+
+        self.know_avg = avg
+        self.know_max = know_max_key
+
+        print('avg %s' % avg)
+        print('max %s' % know_max_key)
+
+        res = super(Progress, self).save(*args, **kwargs)
+
+        return res
+
+
+
+
+
+class ProgressLogManager(models.Manager):
+
+    def get_array(self, user):
+        qs = self.filter(progress__user=user)[0:10]
+        return [x.progress.pk for x in qs]
+
+
+    
+    def add(self, progress):
+        self.create(progress=progress)
+        qs = list(self.filter(progress__user=progress.user).order_by('-id'))
+        qs = qs[10:]
+        for log in qs:
+            log.delete()
+
+
+
+
+class ProgressLog(models.Model):
+    # id supposed
+    progress = models.OneToOneField(Progress)
+    time_created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['id']
+
+    objects = ProgressLogManager()
 
 
 

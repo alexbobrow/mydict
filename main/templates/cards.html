@@ -35,16 +35,6 @@
 
 
 
-{% block aftermenu %}
-    <h2 class='a-m'>Фильтр слов</h2>
-    <ul class='menu{% if not request.user.is_authenticated %} disabled{% endif %}'>
-        <li><button data-type='new' class='type-filter sel'>Новые<span></span></button></li>
-        <li><button data-type='added' class='type-filter'>Добавленные<span></span></button></li>
-        <li><button data-type='removed' class='type-filter'>Удаленные<span></span></button></li>
-    </ul>
-{% endblock aftermenu %}
-
-
 {% block main %}
 
         <div class='w-limit words'>
@@ -61,25 +51,10 @@
 
         <div class='sticked'>
 
-            <div class='buttons add'>
-                <button class='remove' data-action='remove-from-dict'>удалить</button>
-                <button class='add' data-action='add-to-dict'>добавить</button>
-                <button class='next'>следующее</button>
+            <div class='buttons'>
+                <button data-know='1'><span>1</span></button><button data-know='2'><span>2</span></button><button data-know='3'><span>3</span></button><button data-know='4'><span>4</span></button><button data-know='5'><span>5</span></button>
             </div>
 
-            <!--
-
-            <div class="footer">
-                <ul>
-                    <li><a href="/">Меню</a></li>
-                    {% if type == 'freq' %}<li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>{% endif %}
-                    {% if type == 'freq' and request.user.is_staff %}<li><button class='link red' data-action='delete'>Удалить</button></li>{% endif %}
-                    {% if type == 'own' or request.user.is_staff %}<li><button class='link red' data-action='update'>Изменить</button></li>{% endif %}   
-                    <li><a data-action='yandex' target="_blank" href="#">Яндекс.Переводчик</a></li>
-                </ul>
-            </div>
-
-            -->
 
         </div>
 
