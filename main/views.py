@@ -10,7 +10,7 @@ from django.contrib import messages
 
 from django.urls import reverse
 
-from django.db.models import Max, Avg, Count, Prefetch, Q
+from django.db.models import Max, Avg, Sum, Count, Prefetch, Q
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -309,6 +309,7 @@ def stata(request):
         last_activity=Max('progress__time_updated'),
         dict_size=Count('progress'),
         know_avg=Avg('progress__know_avg'),
+        know_sum=Sum('progress__know_sum'),
     )
 
     return render(request, 'stata.html', {'users': users})

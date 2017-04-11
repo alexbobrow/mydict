@@ -12,7 +12,7 @@ def pagelink(request, value):
 
 @register.filter
 def float2(value):
-	return "%.2f" % value
+	return "%.1f" % value
 
 
 @register.filter

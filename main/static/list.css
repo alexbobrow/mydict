@@ -69,7 +69,8 @@ ul.home a:hover {
 .words-row .col-0,
 .words-row .col-1,
 .words-row .col-2,
-.words-row .col-3 {
+.words-row .col-3,
+.words-row .col-4 {
     display: table-cell;
     padding: 10px;
     border: 1px solid #eee;

@@ -100,6 +100,14 @@
                             <span class='na' title='Еще не в словаре'>n/a</span>
                         {% endif %}
                     </div>
+                    <div class='col-3'>
+                        {% if word.progress_set.all.0 %}
+                            <span title='Кол-во показов'>{{ word.progress_set.all.0.know_sum }}</span>
+                        {% else %}
+                            <span class='na' title='Еще не в словаре'>n/a</span>
+                        {% endif %}
+                    </div>
+
                 </div>
             {% endfor %}
         </div>
