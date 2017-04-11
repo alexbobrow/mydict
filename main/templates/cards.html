@@ -29,21 +29,23 @@
     <li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>
     {% if request.user.is_staff %}<li><button class='link red' data-action='delete'>Удалить</button></li>{% endif %}
     {% if request.user.is_staff %}<li><button class='link red' data-action='update'>Изменить</button></li>{% endif %}
-    <li><a data-action='yandex' target="_blank" href="#">Яндекс.Переводчик</a></li>
+    <li><a data-action='lingvo' target="_blank" href="#">Открыть в Lingvo</a></li>
     <li><a data-action='reverso' target="_blank" href="#">Примеры использования</a></li>
 {% endblock menu %}
 
 
-{% block aftermenu %}
-    <div class="a-mh">
-    <h2>Статистика</h2>
 
-    <ul class='stata'>
-        <li>Слов в изучении <span class='stata-dict'>0</span>/<span class='stata-all'>0</span></li>
-        <li>Рейтинг слова <span class='stata-word'>1</span></li>
-        <li>Средний рейтинг <span class='stata-avg'>1</span></li>
-    </ul>
-    </div>
+{% block aftermenu %}
+    {% if request.user.is_authenticated %}
+        <div class="a-mh">
+        <h2>Статистика</h2>
+        <ul class='stata'>
+            <li>Слов в изучении <span class='stata-dict'>0</span>/<span class='stata-all'>0</span></li>
+            <li>Рейтинг слова <span class='stata-word'>1</span></li>
+            <li>Средний рейтинг <span class='stata-avg'>1</span></li>
+        </ul>
+        </div>
+    {% endif %}
 {% endblock aftermenu %}
 
 
@@ -64,7 +66,11 @@
         <div class='sticked'>
 
             <div class='buttons'>
+                {% if request.user.is_authenticated %}
                 <button data-know='1'><span>1</span></button><button data-know='2'><span>2</span></button><button data-know='3'><span>3</span></button><button data-know='4'><span>4</span></button><button data-know='5'><span>5</span></button>
+                {% else %}
+                <button data-action='next'><span>следующее</span></button>
+                {% endif  %}
             </div>
 
 

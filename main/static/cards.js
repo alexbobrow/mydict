@@ -22,6 +22,8 @@
 
     var selCollapsed = true;
 
+    var nextProcessing = false;
+
 
     var numRules = [
         ['1', [97, 49]],
@@ -66,6 +68,12 @@
 
     function next(data) {
 
+        if (nextProcessing) {
+            return false;
+        }
+
+        nextProcessing = true;
+
         if (logPosition<0) {
             //console.log('log pos < 0');
             var id = log.length + logPosition;
@@ -92,7 +100,10 @@
             };
             //console.log(log);
             setWord(ans);
-        }, 'json');
+        }, 'json').always(function(){
+            nextProcessing = false;
+            console.log('next request finished');
+        });
 
     }
 
@@ -113,8 +124,8 @@
         $('input.test').focus();
         aud.src = ans.pronounce;
 
-        var ya = 'https://translate.yandex.kz/?lang=en-ru&text=' + ans.en;
-        $('a[data-action=yandex]').attr('href', ya);
+        var lg = 'http://www.lingvo.ua/ru/Translate/en-ru/' + ans.en;
+        $('a[data-action=lingvo]').attr('href', lg);
 
         var rv = 'http://context.reverso.net/перевод/английский-русский/' + ans.en;
         $('a[data-action=reverso]').attr('href', rv);
@@ -387,7 +398,7 @@
             }
 
 
-            $('button[data-know]').removeClass('active');            
+            $('.buttons button').removeClass('active');
             //console.log(code);
         });
 
@@ -448,13 +459,9 @@
 
 
         $('button[data-know]').on('click', function(e){
-            // prevent double next action if buttons is focused
-            // because pressing Enter is binded on Window
-            // e.stopImmediatePropagation();
             var value = $(this).attr('data-know');
             answer(value);
         });
-
 
 
         $(window).on('keydown', function(e){
@@ -511,9 +518,34 @@
                 }
             });
 
+        });
+
+
+        $('.buttons button[data-action]').on('click', function(e){
+            next();
+        });
+
+        $('.buttons button[data-action]').on('keydown', function(e){
+            var code = e.keyCode;
+            if (code==13) {
+                e.preventDefault();
+            }
+            $(this).addClass('active');
+        });
+
+
+        $('.buttons button[data-action]').on('keyup', function(e){
+            var code = e.keyCode;
+            if (code==13) {
+                next();
+                e.preventDefault();
+            }
 
 
         });
+
+
+
 
 
     }; // listeners
