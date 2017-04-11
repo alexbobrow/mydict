@@ -23,6 +23,16 @@
     var selCollapsed = true;
 
 
+    var numRules = [
+        ['1', [97, 49]],
+        ['2', [98, 50]],
+        ['3', [99, 51]],
+        ['4', [100, 52]],
+        ['5', [101, 53]],
+    ];
+
+
+
     function init(){
         aud = $('audio')[0];
         console.log('next initial');
@@ -182,7 +192,7 @@
             return false;
         }
 
-        var newAnswer = prompt('Обновить перевод для ' + word.word  + "\n" + 'Перевод будет изменен индивидуально для Вас', word.translation);
+        var newAnswer = prompt('Обновить перевод для ' + currentData.en  + "\n" + 'Перевод будет изменен индивидуально для Вас', currentData.ru);
 
         if (newAnswer===null) {
             return false;
@@ -194,7 +204,7 @@
                 return false;
             }
             $('.answer').text(newAnswer);
-            word.translation = newAnswer;
+            currentData.ru = newAnswer;
         }, 'json');
 
     }
@@ -208,7 +218,7 @@
             return false;
         }
         
-        var newAnswer = prompt('Для всех!!!' + "\n" +  'Обновить перевод для ' + word.word, word.translation);
+        var newAnswer = prompt('Для всех!!!' + "\n" +  'Обновить перевод для ' + currentData.en, currentData.ru);
 
         if (newAnswer===null) {
             return false;
@@ -220,7 +230,7 @@
                 return false;
             }
             $('.answer').text(newAnswer);
-            word.translation = newAnswer;
+            currentData.ru = newAnswer;
         }, 'json');
     }
 
@@ -302,6 +312,12 @@
 
     }
 
+    function setActive(value) {
+        $('button[data-know]').removeClass('active');
+        $('button[data-know='+value+']').addClass('active');
+        $('button[data-know='+value+']').focus();
+    }
+
 
 
 
@@ -322,7 +338,7 @@
 
         $(window).on('keyup', function(e){
 
-            var code = (e.charCode)? e.charCode : e.keyCode;
+            /*
 
             if (code==13) {
                 if (e.ctrlKey) {
@@ -353,6 +369,14 @@
                 }                
             }
 
+            */
+            
+            var code = (e.charCode)? e.charCode : e.keyCode;
+            
+            if (code==38) {
+                replay();
+            }
+
             // insert
             if (code==45) {
                 if (e.ctrlKey) {
@@ -360,11 +384,11 @@
                 } else {
                     userUpdate();
                 }
-                
             }
 
-            
-            console.log(code);
+
+            $('button[data-know]').removeClass('active');            
+            //console.log(code);
         });
 
 
@@ -429,6 +453,66 @@
             // e.stopImmediatePropagation();
             var value = $(this).attr('data-know');
             answer(value);
+        });
+
+
+
+        $(window).on('keydown', function(e){
+            var code = e.keyCode;         
+            $.each(numRules, function(k,v){
+                if (v[1].indexOf(code)>=0) {
+                    setActive(v[0]);
+                }
+            });
+        });
+
+
+        $('button[data-know]').on('keydown', function(e){
+            var code = e.keyCode;
+            if (code==13) {
+                var value = $(this).attr('data-know');
+                setActive(value);
+                e.preventDefault();
+            }
+        });
+
+
+        $('button[data-know]').on('keyup', function(e){
+            var code = e.keyCode;
+            var value = parseInt($(this).attr('data-know'),10);
+            
+            if (code==39) {
+                // right
+                value++;
+                if (value==6) {
+                    value=1;
+                }
+                $('button[data-know='+value+']').focus();
+            }
+
+            if (code==37) {
+                // left
+                value--;
+                if (value==0) {
+                    value=5;
+                }
+                $('button[data-know='+value+']').focus();
+            }
+
+
+            if (code==13) {
+                answer(value);
+            }
+
+
+            $.each(numRules, function(k,v){
+                if (v[1].indexOf(code)>=0) {
+                    answer(value);
+                }
+            });
+
+
+
         });
 
 
