@@ -44,6 +44,7 @@
                     <td>last login</td>
                     <td>last activity</td>
                     <td>dict size</td>
+                    <td>know avg</td>
                 </tr>
             {% for user in users %}
                 <tr>
@@ -52,6 +53,7 @@
                     <td>{{ user.last_login|date:"[H:i] d.m.Y" }}</td>
                     <td>{{ user.last_activity|date:"[H:i] d.m.Y" }}</td>
                     <td>{{ user.dict_size }}</td>
+                    <td>{{ user.know_avg }}</td>
                 </tr>
             {% endfor %}
             </table>

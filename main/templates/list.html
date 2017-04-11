@@ -7,8 +7,6 @@
     <script type="text/javascript" src="{% static "list.js" %}"></script>
     <script type="text/javascript">
         window.appUrls = {
-            remove: "{% url 'remove_word' %}",
-            add: "{% url 'add_word' %}",
             update: "{% url 'user_update' %}",
             reset: "{% url 'user_reset' %}",
         };
@@ -41,11 +39,7 @@
                 {% endif %}
             </div>
 
-            <ul class='type-filter'>
-                <li><button data-type='new' class='type-filter{% if type_filter.0 %} sel{% endif %}'>Новые</button></li>
-                <li><button data-type='added' class='type-filter{% if type_filter.1 %} sel{% endif %}'>Добавленные</button></li>
-                <li><button data-type='removed' class='type-filter{% if type_filter.2 %} sel{% endif %}'>Удаленные</button></li>
-            </ul>
+
         </form>
 
 
@@ -69,7 +63,7 @@
 
         <div class='words-table a-mb'>
             {% for word in words %}
-                <div data-word-id='{{ word.pk }}' class='words-row freq-row{% if word.progress_set.all.0 and word.progress_set.all.0.added %} added{% endif %}'>
+                <div data-word-id='{{ word.pk }}' class='words-row freq-row'>
                     <div class='col-0'>
                         <span title='rank'>{{ word.rank }}</span>
                     </div>
@@ -98,6 +92,13 @@
                                 <button class='reset' data-action='translation-reset'>первоначальный</button>
                             </form>
                         </div>
+                    </div>
+                    <div class='col-3'>
+                        {% if word.progress_set.all.0 %}
+                            <span title='Уровень знания слова'>{{ word.progress_set.all.0.know_avg|float2 }}</span>
+                        {% else %}
+                            <span class='na' title='Еще не в словаре'>n/a</span>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}

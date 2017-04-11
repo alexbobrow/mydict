@@ -68,12 +68,16 @@ ul.home a:hover {
 
 .words-row .col-0,
 .words-row .col-1,
-.words-row .col-2 {
+.words-row .col-2,
+.words-row .col-3 {
     display: table-cell;
     padding: 10px;
     border: 1px solid #eee;
 }
 
+span.na {
+    opacity: .5;
+}
 
 .words-row .col-1 {
     white-space: nowrap;
@@ -223,14 +227,6 @@ form.search input[type=search] {
 
 }
 
-form.search ul.type-filter {
-    list-style: none;
-}
-
-form.search ul.type-filter li {
-    display: inline-block;
-    margin-right: 20px;
-}
 
 button.reset {
     display: none;
@@ -240,23 +236,6 @@ button.reset {
     display: inline-block;
 }
 
-
-
-form.search button.type-filter {
-    background-color: transparent;
-    background-image: url(checkbox-0.svg);
-    background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: 0 center;
-    border: none;
-    padding: 1px 0 1px 22px;
-    outline: none;
-    font-size: 14px;
-}
-
-form.search button.type-filter.sel {
-    background-image: url(checkbox-1.svg);
-}
 
 
 form.search input[type=submit] {

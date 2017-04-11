@@ -495,6 +495,7 @@ class Progress(models.Model):
     know_3 = models.PositiveIntegerField(default=0)
     know_4 = models.PositiveIntegerField(default=0)
     know_5 = models.PositiveIntegerField(default=0)
+    know_sum = models.PositiveIntegerField(default=0)
     know_avg = models.DecimalField(default=0, max_digits=10, decimal_places=9)
     know_max = models.PositiveIntegerField(default=0)
     
@@ -527,10 +528,12 @@ class Progress(models.Model):
         know_max_value = 0
 
         know_list = []
+        know_sum = 0
         for x in range(1,6):
             field = 'know_%s' % x
             print(field)
             know_x = getattr(self, field)
+            know_sum = know_sum + know_x
             if know_x > know_max_value:
                 know_max_key = x
                 know_max_value = know_x
@@ -545,6 +548,7 @@ class Progress(models.Model):
 
         self.know_avg = avg
         self.know_max = know_max_key
+        self.know_sum = know_sum
 
         print('avg %s' % avg)
         print('max %s' % know_max_key)

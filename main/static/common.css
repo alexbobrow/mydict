@@ -200,6 +200,7 @@ button.open-menu:active {
 
 ul.menu {
     padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 ul.menu li {

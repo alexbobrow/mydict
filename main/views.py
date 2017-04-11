@@ -96,20 +96,15 @@ def freq_next(request):
 def freq_list(request):
     context = {}
 
-    
-    type_filter = [False if x=='0' else True for x in request.GET.get('tf', '110')]
-
-    qs = Word.objects.qs_by_type_filter(request, type_filter)
+    qs = Word.objects.filter(disabled=False)
 
     if 'q' in request.GET and request.GET['q']:
         qs = qs.filter(Q(word__icontains=request.GET['q']) | Q(translation__icontains=request.GET['q'])) 
         context['q'] = request.GET['q']
 
 
-
     pqs = Progress.objects.filter(user=request.user)
     qs = qs.prefetch_related(Prefetch('progress_set', queryset=pqs))
-
 
     paginator = Paginator(qs, 100)
 
@@ -123,8 +118,6 @@ def freq_list(request):
         return redirect(url)
 
     context['words'] = words
-    context['type'] = 'freq'
-    context['type_filter'] = type_filter
 
     return render(request, 'list.html', context)
 
@@ -314,7 +307,8 @@ def stata(request):
     #from django.db.models import Max, Avg
     users = User.objects.all().annotate(
         last_activity=Max('progress__time_updated'),
-        dict_size=Count('progress')
+        dict_size=Count('progress'),
+        know_avg=Avg('progress__know_avg'),
     )
 
     return render(request, 'stata.html', {'users': users})

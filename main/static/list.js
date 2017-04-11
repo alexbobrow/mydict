@@ -22,12 +22,6 @@
     *  PUBLIC
     ************/
 
-    // calback when filter changed
-    words.typeFilterList = function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        $('form.search').submit();
-    }
 
 
 
@@ -121,22 +115,6 @@
         });
 
 
-
-        $('body').on('submit', 'form.search', function(e){
-            var typeFilter = words.typeFilterValue();
-            if (typeFilter=='110') {
-                $(this).find('input[name=tf]').remove();
-            } else {
-                $(this).append("<input type='hidden' name='tf' value='"+typeFilter+"'>");
-            }
-        });
-
-        /*
-        $('body').on('click', 'form.search ul button', function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            $('form.search').submit();
-        });*/
 
 
 
