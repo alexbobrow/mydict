@@ -260,35 +260,22 @@ class ProgressManager(models.Manager):
 
         self.debug_storage = []
 
-
         """
-        Функция выдачи следующего слова для показа / теста
+        Смотрим кол-во слов с плохим уровнем знания
+        Отдельно с уровнем знания <=4, отдельно <=3
+        Высчитываем вероятность повторения слова на основе кол-ва слов с плохим уровнем знания
+        Для урвоеня меньше <=3
+        100 слов - 100% повторения
+        0 слов - 0% повторения
 
-        Сначала проверяем наличие 100 слов
-        Если меньше, добиваем до сотни
-        
-        Далее
-        Выбираем добавляем мы новое слово в словарь или нет
-        Если среднее значения знания слов больше 4 то новое, если нет то повтор
-        
-        Алгоритм выбора слова для повторения
-        в зависимости от кол-ва слов у юзера
-
-        100-200
-            полный рандом
-        200-650
-            90% последние 100-0 (order by id desc limit 0 100)
-            10% последние x-100 (все остальные)
-        650-1000
-            85% последние 100-0 (order by id desc limit 0 100)
-            15% последние x-100 (все остальные)
-        1000-
-            80% последние 100-0 (order by id desc limit 0 100)
-            20% последние x-100 (все остальные)
+        Для урвоеня меньше <=4
+        100 слов - 30% повторения
+        0 слов - 0% повторения
+    
+        Берем больший из двух.
         """
 
-        #self.debug_storage = []
-        
+
         words_count = Word.objects.filter(disabled=False).count()
         self.debug('words_count', words_count)
 
@@ -395,73 +382,6 @@ class ProgressManager(models.Manager):
         }
 
         return progress_word, data, self.debug_storage
-
-
-
-
-
-
-    def ensure100(self, user):
-        """
-        Ensures user has minimum 100 initial words
-        """
-        self.userprogress_count = Progress.objects.filter(user=user).count()
-
-        # Если у юзера слов меньше 100, то добивем до 100
-        if self.userprogress_count<100:
-            self.add_new_word_bulk(user, 100-self.userprogress_count)
-            count = Progress.objects.filter(user=user).count()
-            if count<100:
-                raise Exception("Can't add first 100 words")
-
-
-
-
-
-    def get_range(self, count):
-
-        range_rand = random.randint(1, 100)
-
-        self.debug("rand factor", range_rand)
-        
-        # начало диапазона (при обратной сортировке по id)
-        range_start = None
-
-        # конец диапазона (при обратной сортировке по id)
-        # зачастую None, это значит от range_start и до конца таблицы
-        range_end = None
-        
-
-        # вычисляем границы диапазонов
-
-        # меньше 200 слов -> используем все слова
-        if count<200:
-            self.debug("range mode 1 / less than 200 / using all words")
-            # range_end = None
-            # range_start = None
-
-
-        # от 200 и более
-        if count>=200:
-            self.debug("range mode 2 / 200-649 words (50/50)")
-            # 50% вероятности 0-100
-            if range_rand<=50:
-                self.debug("range mode 2.1 / 50% / range 0-100")
-                range_start = 0
-                range_end = 100
-            # 50% вероятности 100-x
-            else:
-                self.debug("range mode 2.2 / 50% / range 100-∞")
-                range_start = 100
-                range_end = None
-
-        return (range_start, range_end)
-
-
-
-
-
-
 
 
 
