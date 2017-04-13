@@ -305,12 +305,14 @@ class ProgressManager(models.Manager):
         if progress4 > 100:
             progress4 = 100
 
+        self.debug('progress3 count', progress3)
+        self.debug('progress4 count', progress4)
+
         progress4 = progress4 // 3
 
-        self.debug('progress3', progress3)
-        self.debug('progress4', progress4)
-
         progress_prb = progress3 if progress3 > progress4 else progress4
+
+        self.debug('progress_prb', progress_prb)
 
         range_rand = random.randint(1, 100)
 
