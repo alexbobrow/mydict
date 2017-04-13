@@ -347,13 +347,13 @@ class ProgressManager(models.Manager):
             self.debug('log', log_arr)
 
 
-            # из диапазона выбираем топ 30% слов с наименьшим ratio
+            # из диапазона выбираем топ 1/3 слов с наименьшим ratio
             range_count = qs.count()
 
             self.debug('range_count', range_count)
 
             #print "Range count %s" % range_count
-            perc_count = range_count // 30
+            perc_count = range_count // 3
 
             #print "ten percents %s" % perc_count
 
