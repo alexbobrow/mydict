@@ -78,6 +78,8 @@
 
         </div>
 
-        <table class="debug"></div>
+        {% if request.user.is_staff %}
+            <table class="debug"></div>
+        {% endif %}
 
 {% endblock main %}
