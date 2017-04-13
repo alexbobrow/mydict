@@ -31,6 +31,9 @@
     {% if request.user.is_staff %}<li><button class='link red' data-action='update'>Изменить</button></li>{% endif %}
     <li><a data-action='lingvo' target="_blank" href="#">Открыть в Lingvo</a></li>
     <li><a data-action='reverso' target="_blank" href="#">Примеры использования</a></li>
+    {% if request.user.is_staff %}
+        <li><button class='link' data-action='debug'>Debug</button></li>
+    {% endif %}
 {% endblock menu %}
 
 
@@ -73,7 +76,8 @@
                 {% endif  %}
             </div>
 
-
         </div>
+
+        <table class="debug"></div>
 
 {% endblock main %}

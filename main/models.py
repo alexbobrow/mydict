@@ -250,26 +250,6 @@ class ProgressManager(models.Manager):
 
 
 
-    def get_avg_ratio(self, user):
-
-        progress = self.filter(user=user)
-        #count = progress.count()
-
-        return progress.aggregate(know_avg=Avg('know_avg'))['know_avg']
-
-        '''
-        if count>=200:
-            # если больше 200 то не учитываем посл 100
-            # id_minus_100 входит в диапазон посл 100
-            id_minus_100 = progress.order_by('-id')[100]
-            return progress.filter(id__lt=id_minus_100.id).aggregate(ratio=Avg('ratio'))['ratio']
-        else:
-            # учитываем все
-            return progress.aggregate(ratio=Avg('ratio'))['ratio']
-        '''
-
-
-
 
 
     def get_next(self, user):
@@ -277,6 +257,8 @@ class ProgressManager(models.Manager):
 
         if not user.is_authenticated:
             return self.get_random_entry(Word.objects.filter(disabled=False)), {}, []
+
+        self.debug_storage = []
 
 
         """
@@ -307,30 +289,55 @@ class ProgressManager(models.Manager):
 
         #self.debug_storage = []
         
-        total = Word.objects.filter(disabled=False).count()
+        words_count = Word.objects.filter(disabled=False).count()
+        self.debug('words_count', words_count)
 
-        self.ensure100(user)
+        progress_qs = self.filter(user=user)
 
-        self.debug('user dict count', self.userProgressCount)
+        progress_count = progress_qs.count()
+        self.debug('progress_count', progress_count)
 
+        progress_avg = progress_qs.aggregate(know_avg=Avg('know_avg'))['know_avg']
+        self.debug('progress_avg', progress_avg)
+
+        progress4 = progress_qs.filter(know_max__lte=4).count()
+
+        progress3 = progress_qs.filter(know_max__lte=3).count()
+
+        # progress 3
+        # 100 items -> 100% repeat
+        # 0 items -> 0% repeat
+
+        # progress 4
+        # 100 items -> 33% repeat
+        # 0 items -> 0% repeat
+
+        if progress3 > 100:
+            progress3 = 100
+
+        if progress4 > 100:
+            progress4 = 100
+
+        progress4 = progress4 // 3
+
+        self.debug('progress3', progress3)
+        self.debug('progress4', progress4)
+
+        progress_prb = progress3 if progress3 > progress4 else progress4
+
+        range_rand = random.randint(1, 100)
+
+        self.debug('range_rand', range_rand)
 
         NEW = 0
         REPEAT = 14
-        
 
-        avg_ratio = self.get_avg_ratio(user)
-        
-        self.debug('avg_ratio', avg_ratio)
-
-        
-        if avg_ratio >= 4:
-            action = NEW
-        else:
-            action = REPEAT      
+        action = REPEAT if range_rand < progress_prb else NEW
 
         str_action = 'NEW' if action == NEW else 'REPEAT'
         self.debug('action', str_action)
-
+        
+  
         if action==NEW:
             # add word
             #print "NEW"
@@ -341,51 +348,28 @@ class ProgressManager(models.Manager):
 
         if action==REPEAT:
 
-            range_start, range_end = self.get_range(self.userProgressCount)
-
-            self.debug('range_start', range_start)
-
-            qs = self.filter(user=user)
-
-            if range_start is not None:
-                #print('Processing range end')
-                # это слово ВХОДИТ диапазон
-                word_end = self.filter(user=user).order_by('-id')[range_start:range_start+1][0]
-                self.debug('range_start_word_id', word_end.id)
-                qs = qs.filter(id__lte=word_end.id)
-
-
-            self.debug('range_end', range_end)
-
-
-            # слова на границах выбранного диапазона
-            if range_end is not None:
-                # import ipdb; ipdb.set_trace()
-                # это слово НЕ входит диапазон
-                word_start = self.filter(user=user).order_by('-id')[range_end:range_end+1][0]
-                self.debug('range_end_word_id', word_start.id)
-                qs = qs.filter(id__gt=word_start.id)
+            qs = progress_qs.filter(know_max__lte=4)
 
 
             # отсеиваем последние 10 из лога
             log_arr = ProgressLog.objects.get_array(user)
             qs = qs.exclude(id__in=log_arr)
+            
             self.debug('log', log_arr)
 
 
-
-            # из диапазона выбираем топ 10% слов с наименьшим ratio
+            # из диапазона выбираем топ 30% слов с наименьшим ratio
             range_count = qs.count()
 
             self.debug('range_count', range_count)
 
             #print "Range count %s" % range_count
-            ten_perc = range_count // 10
+            perc_count = range_count // 30
 
-            #print "ten percents %s" % ten_perc
+            #print "ten percents %s" % perc_count
 
             # непосредственно спислк слов
-            words_list = qs.order_by('know_max')[0:ten_perc]
+            words_list = qs.order_by('know_max')[0:perc_count]
             
             self.debug('sql', str(words_list.query))
 
@@ -405,9 +389,9 @@ class ProgressManager(models.Manager):
         self.debug('progress.id', progress_word.id)
 
         data = {
-            'total': total,
-            'userProgressCount': self.userProgressCount,
-            'knowAvg': '%.2f' % avg_ratio
+            'total': words_count,
+            'userprogress_count': progress_count,
+            'knowAvg': '%.2f' % progress_avg
         }
 
         return progress_word, data, self.debug_storage
@@ -421,11 +405,11 @@ class ProgressManager(models.Manager):
         """
         Ensures user has minimum 100 initial words
         """
-        self.userProgressCount = Progress.objects.filter(user=user).count()
+        self.userprogress_count = Progress.objects.filter(user=user).count()
 
         # Если у юзера слов меньше 100, то добивем до 100
-        if self.userProgressCount<100:
-            self.add_new_word_bulk(user, 100-self.userProgressCount)
+        if self.userprogress_count<100:
+            self.add_new_word_bulk(user, 100-self.userprogress_count)
             count = Progress.objects.filter(user=user).count()
             if count<100:
                 raise Exception("Can't add first 100 words")

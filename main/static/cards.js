@@ -24,6 +24,8 @@
 
     var nextProcessing = false;
 
+    var debug = window.localStorage.getItem('debug');
+
 
     var numRules = [
         ['1', [97, 49]],
@@ -37,6 +39,12 @@
 
     function init(){
         aud = $('audio')[0];
+
+        // show debug if needed
+        if (debug==='true') {
+            $('table.debug').show();
+        }
+        
         console.log('next initial');
         next();
     }
@@ -136,6 +144,17 @@
         $('span.stata-avg').text(ans.knowAvg);
         $('span.stata-word').text(ans.wordKnowAvg);
 
+        // debug
+        if ($('table.debug').length>0) {
+            $('table.debug').empty();
+            $.each(ans.debug, function(k, v){
+                if (typeof(v)=='object') {
+                    $('table.debug').append("<tr><td>"+v.key+"</td><td>"+v.value+"</td></tr>");
+                } else {
+                    $('table.debug').append("<tr><td colspan='2'>"+v+"</td></tr>");
+                }                   
+            });
+        }        
 
 
         resize();
@@ -540,10 +559,20 @@
                 next();
                 e.preventDefault();
             }
-
-
         });
 
+
+
+        $('button[data-action=debug]').on('click', function(e){
+            e.preventDefault();
+            if ($('table.debug').is(':visible')) {
+                $('table.debug').hide();
+                window.localStorage.setItem('debug', 'false');
+            } else {
+                $('table.debug').show();
+                window.localStorage.setItem('debug', 'true');
+            }
+        });
 
 
 

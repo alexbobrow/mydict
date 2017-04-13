@@ -1,3 +1,12 @@
+table.debug {
+    position: absolute;
+    top: 41px;
+    left: 50px;
+    opacity: .4;
+    display: none;
+}
+
+
 ul.stata {
     list-style: none;
 }
@@ -12,6 +21,8 @@ ul.stata li {
 .words {
     font-size: 400%;
     font-family: 'Roboto';
+    position: relative;
+    z-index: 10;
 }
 
 
@@ -69,6 +80,7 @@ span.word:hover {
 
 .sticked {
     position: absolute;
+    z-index: 10;
     width: 100%;
     bottom: 0;
     right: 0;
