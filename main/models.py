@@ -233,7 +233,7 @@ class ProgressManager(models.Manager):
         exclude = self.filter(user=user).values('word_id')
 
         word_qs = Word.objects.filter(disabled=False).exclude(id__in=exclude)
-        word = word_qs[0]
+        word = self.get_random_entry(word_qs)
 
         return self.create(
             user=user,
