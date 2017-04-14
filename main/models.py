@@ -383,7 +383,6 @@ class ProgressManager(models.Manager):
         data = {
             'total': words_count,
             'userprogress_count': progress_count,
-            'knowAvg': '%.2f' % progress_avg if progress_avg>0 else '0'
         }
 
         if progress_avg:
