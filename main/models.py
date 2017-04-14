@@ -354,6 +354,9 @@ class ProgressManager(models.Manager):
 
             #print "Range count %s" % range_count
             perc_count = range_count // 3
+            if perc_count<5:
+                perc_count = 5
+
 
             #print "ten percents %s" % perc_count
 
@@ -380,8 +383,12 @@ class ProgressManager(models.Manager):
         data = {
             'total': words_count,
             'userprogress_count': progress_count,
-            'knowAvg': '%.2f' % progress_avg
+            'knowAvg': '%.2f' % progress_avg if progress_avg>0 else '0'
         }
+
+        if progress_avg:
+            data['knowAvg'] = '%.2f' % progress_avg
+
 
         return progress_word, data, self.debug_storage
 
