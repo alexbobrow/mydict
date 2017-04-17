@@ -34,6 +34,11 @@
     {% if request.user.is_staff %}
         <li><button class='link' data-action='debug'>Debug</button></li>
     {% endif %}
+    <li>
+        <button class='link checkbox' data-action='answer-delay'>
+            <span>Задержка ответа</span>
+        </button>  
+    </li>
 {% endblock menu %}
 
 

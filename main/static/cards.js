@@ -22,9 +22,9 @@
 
     var selCollapsed = true;
 
-    var nextProcessing = false;
+    var debug = (window.localStorage.getItem('debug')==='true');
 
-    var debug = window.localStorage.getItem('debug');
+    var answerDelay = (window.localStorage.getItem('answerDelay')==='true');
 
 
     var numRules = [
@@ -41,9 +41,14 @@
         aud = $('audio')[0];
 
         // show debug if needed
-        if (debug==='true') {
+        if (debug) {
             $('table.debug').show();
         }
+
+        if (answerDelay) {
+            $('button[data-action=answer-delay]').addClass('checked');
+        }
+
         
         console.log('next initial');
         next();
@@ -76,11 +81,13 @@
 
     function next(data) {
 
-        if (nextProcessing) {
+
+
+        if ($('body').hasClass('next-processing')) {
             return false;
         }
 
-        nextProcessing = true;
+        $('body').addClass('next-processing');
 
         if (logPosition<0) {
             //console.log('log pos < 0');
@@ -109,7 +116,7 @@
             //console.log(log);
             setWord(ans);
         }, 'json').always(function(){
-            nextProcessing = false;
+            $('body').removeClass('next-processing');
             console.log('next request finished');
         });
 
@@ -143,6 +150,10 @@
         $('span.stata-all').text(ans.total);
         $('span.stata-avg').text(ans.knowAvg);
         $('span.stata-word').text(ans.wordKnowAvg);
+
+        if (answerDelay) {
+            $('body').addClass('answer-delay');
+        }
 
         // debug
         if ($('table.debug').length>0) {
@@ -573,6 +584,27 @@
                 window.localStorage.setItem('debug', 'true');
             }
         });
+
+
+        $('button[data-action=answer-delay]').on('click', function(e){
+            if ($(this).hasClass('checked')) {
+                $(this).removeClass('checked');
+                answerDelay = false;
+                localStorage.setItem('answerDelay', 'false');
+            } else {
+                $(this).addClass('checked');
+                answerDelay = true;
+                localStorage.setItem('answerDelay', 'true');
+            }
+        });
+
+
+        $('html').on('click', function(e){
+            if (answerDelay) {
+                $('body').removeClass('answer-delay');
+            }
+        });
+
 
 
 

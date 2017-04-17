@@ -17,6 +17,17 @@ ul.stata li {
     color: #777;
 }
 
+ul button.checkbox span {
+    background-image: url(checkbox-0.svg);
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    padding-left: 22px
+}
+
+ul button.checkbox.checked span {
+    background-image: url(checkbox-1.svg);
+}
+
 
 .words {
     font-size: 400%;
@@ -62,6 +73,13 @@ span.word:hover {
     text-align: center;
     color: green;
     cursor: default;
+    transition: opacity ease 350ms;
+}
+
+body.answer-delay .answer {
+    opacity: 0;
+    transition: none;
+    pointer-events: none;
 }
 
 .answer.s2 {
@@ -99,7 +117,19 @@ span.word:hover {
     text-align: center; 
     font-size: 170%;
     padding-bottom: 2em;
+    transition: opacity ease 350ms;
 }
+
+body.answer-delay .buttons {
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.next-processing .buttons {
+    opacity: 0;
+    pointer-events: none;
+}
+
 
 @media screen and ( max-width: 700px )  {
     .buttons {
@@ -158,6 +188,9 @@ span.word:hover {
     color: green;
 }
 
+.buttons button[data-know]:hover span {
+    border: 1px solid #777;
+}
 
 .buttons button[data-know]:active span,
 .buttons button[data-know].active span {
@@ -188,6 +221,10 @@ span.word:hover {
 .buttons button[data-action]:focus {
     border: 1px solid green;
     color: green;
+}
+
+.buttons button[data-action]:hover {
+    border: 1px solid #777;
 }
 
 
