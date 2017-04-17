@@ -45,6 +45,7 @@
         // show debug if needed
         if (debug) {
             $('table.debug').show();
+            $('button[data-action=debug]').addClass('checked');
         }
 
         if (answerDelay) {
@@ -620,17 +621,6 @@
 
 
 
-        $('button[data-action=debug]').on('click', function(e){
-            e.preventDefault();
-            if ($('table.debug').is(':visible')) {
-                $('table.debug').hide();
-                window.localStorage.setItem('debug', 'false');
-            } else {
-                $('table.debug').show();
-                window.localStorage.setItem('debug', 'true');
-            }
-        });
-
 
 
         $('button.checkbox').on('click', function(e){
@@ -648,6 +638,19 @@
                 localStorage.setItem('answerDelay', 'false');
             }
         });
+
+
+        $('button[data-action=debug]').on('click', function(e){
+            e.preventDefault();
+            if ($(this).hasClass('checked')) {
+                $('table.debug').show();
+                window.localStorage.setItem('debug', 'true');
+            } else {
+                $('table.debug').hide();
+                window.localStorage.setItem('debug', 'false');
+            }
+        });
+
 
 
         $('button[data-filter]').on('click', function(e){

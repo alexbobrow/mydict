@@ -31,23 +31,15 @@
     {% if request.user.is_staff %}<li><button class='link red' data-action='update'>Изменить</button></li>{% endif %}
     <li><a data-action='lingvo' target="_blank" href="#">Открыть в Lingvo</a></li>
     <li><a data-action='reverso' target="_blank" href="#">Примеры использования</a></li>
-    {% if request.user.is_staff %}
-        <li><button class='link' data-action='debug'>Debug</button></li>
-    {% endif %}
-    <li>
-        <button class='link checkbox' data-action='answer-delay'>
-            <span class='img'></span>
-            <span>Задержка ответа</span>
-        </button>  
-    </li>
 {% endblock menu %}
 
 
 
 {% block aftermenu %}
     {% if request.user.is_authenticated %}
+
         <div class="a-mh">
-            <h2>Статистика</h2>
+            <h2>Фильтр</h2>
         </div>
 
         <ul class='menu a-mb'>
@@ -86,14 +78,33 @@
                 <span>Один</span>
                 <span class='stata-1'>0</span>
             </button></li>
-
-            <!--
-            <li>Слов в изучении </li>
-            <li>Пять <span class='stata-5'>0</span></li>
-            <li>Четыре <span class='stata-4'>0</span></li>
-            <li>Три и менее <span class='stata-3'>0</span></li>
-            <li>Средний <span class='stata-avg'>0</span></li>-->
         </ul>
+
+        <div class="a-mh">
+            <h2>Настройки</h2>
+        </div>
+
+        <ul class='menu a-mb'>
+            <li>
+                <button class='link checkbox' data-action='answer-delay'>
+                    <span class='img'></span>
+                    <span>Задержка ответа</span>
+                </button>  
+            </li>
+
+            {% if request.user.is_staff %}
+                <li>
+                    <button class='link checkbox' data-action='debug'>
+                        <span class='img'></span>
+                        <span>Debug</span>
+                    </button>
+                </li>
+            {% endif %}
+
+
+        </ul>
+
+
 
     {% endif %}
 {% endblock aftermenu %}
