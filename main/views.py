@@ -51,6 +51,15 @@ def root(request):
 
 def freq_next(request):
 
+
+    if request.user.is_authenticated:
+        if 'progress_id' in request.POST:
+            # fixating answer
+            progress = Progress.objects.get(pk=request.POST['progress_id'])
+            progress.add_answer(request.POST['answer_value'])
+
+
+
     try:
         res, stata, debug = Progress.objects.get_next(request.user)
     except Word.DoesNotExist:
@@ -58,13 +67,9 @@ def freq_next(request):
             'error': 'В данном режиме больше слов нет'
         })
 
-    
+   
 
     if request.user.is_authenticated:
-        if 'progress_id' in request.POST:
-            # fixating answer
-            progress = Progress.objects.get(pk=request.POST['progress_id'])
-            progress.add_answer(request.POST['answer_value'])
         context = stata
         progress = res
         word = progress.word

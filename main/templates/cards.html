@@ -47,10 +47,12 @@
     {% if request.user.is_authenticated %}
         <div class="a-mh">
         <h2>Статистика</h2>
-        <ul class='stata'>
+        <ul class='stata a-mb'>
             <li>Слов в изучении <span class='stata-dict'>0</span>/<span class='stata-all'>0</span></li>
-            <li>Рейтинг слова <span class='stata-word'>1</span></li>
-            <li>Средний рейтинг <span class='stata-avg'>1</span></li>
+            <li>Пять <span class='stata-5'>0</span></li>
+            <li>Четыре <span class='stata-4'>0</span></li>
+            <li>Три и менее <span class='stata-3'>0</span></li>
+            <li>Средний <span class='stata-avg'>0</span></li>
         </ul>
         </div>
     {% endif %}

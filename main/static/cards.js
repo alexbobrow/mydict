@@ -146,10 +146,13 @@
         $('a[data-action=reverso]').attr('href', rv);
 
         // stata
-        $('span.stata-dict').text(ans.userProgressCount);
+        $('span.stata-dict').text(ans.progressTotal);
         $('span.stata-all').text(ans.total);
-        $('span.stata-avg').text(ans.knowAvg);
-        $('span.stata-word').text(ans.wordKnowAvg);
+        $('span.stata-avg').text(ans.progressAvg);
+        $('span.stata-5').text(ans.progress5);
+        $('span.stata-4').text(ans.progress4);
+        $('span.stata-3').text(ans.progress3);
+        
 
         if (answerDelay) {
             $('body').addClass('answer-delay');

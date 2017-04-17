@@ -308,9 +308,9 @@ class ProgressManager(models.Manager):
         self.debug('progress3 count', progress3)
         self.debug('progress4 count', progress4)
 
-        progress4 = progress4 // 3
+        progress4_reduced = progress4 // 3
 
-        progress_prb = progress3 if progress3 > progress4 else progress4
+        progress_prb = progress3 if progress3 > progress4_reduced else progress4_reduced
 
         self.debug('progress_prb', progress_prb)
 
@@ -382,11 +382,14 @@ class ProgressManager(models.Manager):
 
         data = {
             'total': words_count,
-            'userprogress_count': progress_count,
+            'progressTotal': progress_count,
+            'progress3': progress3, # 3 and less
+            'progress4': (progress4-progress3),
+            'progress5': (progress_count-progress4),
         }
 
         if progress_avg:
-            data['knowAvg'] = '%.2f' % progress_avg
+            data['progressAvg'] = '%.2f' % progress_avg
 
 
         return progress_word, data, self.debug_storage
