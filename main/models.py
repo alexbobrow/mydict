@@ -325,57 +325,65 @@ class ProgressManager(models.Manager):
 
         str_action = 'NEW' if action == NEW else 'REPEAT'
         self.debug('action', str_action)
-        
-  
-        if action==NEW:
-            # add word
-            #print "NEW"
-            
-            progress_word = self.add_new_word(user)
-            #progress_word.debug = self.debug_storage
-            
-
-        if action==REPEAT:
-
-            qs = progress_qs.filter(know_max__lte=4)
 
 
-            # отсеиваем последние 10 из лога
-            log_arr = ProgressLog.objects.get_array(user)
-            qs = qs.exclude(id__in=log_arr)
-            
-            self.debug('log', log_arr)
+        skipped_qs = progress_qs.filter(know_sum=0)
+
+        if skipped_qs.count()>0:
+
+            progress_word = random.choice(skipped_qs)
+
+        else:
+      
+            if action==NEW:
+                # add word
+                #print "NEW"
+                
+                progress_word = self.add_new_word(user)
+                #progress_word.debug = self.debug_storage
+                
+
+            if action==REPEAT:
+
+                qs = progress_qs.filter(know_max__lte=4)
 
 
-            # из диапазона выбираем топ 1/3 слов с наименьшим ratio
-            range_count = qs.count()
-
-            self.debug('range_count', range_count)
-
-            #print "Range count %s" % range_count
-            perc_count = range_count // 3
-            if perc_count<5:
-                perc_count = 5
+                # отсеиваем последние 10 из лога
+                log_arr = ProgressLog.objects.get_array(user)
+                qs = qs.exclude(id__in=log_arr)
+                
+                self.debug('log', log_arr)
 
 
-            #print "ten percents %s" % perc_count
+                # из диапазона выбираем топ 1/3 слов с наименьшим ratio
+                range_count = qs.count()
 
-            # непосредственно спислк слов
-            words_list = qs.order_by('know_max')[0:perc_count]
-            
-            self.debug('sql', str(words_list.query))
+                self.debug('range_count', range_count)
+
+                #print "Range count %s" % range_count
+                perc_count = range_count // 3
+                if perc_count<5:
+                    perc_count = 5
 
 
-            #print words_list
+                #print "ten percents %s" % perc_count
 
-            # и наконец наше слово
-            progress_word = random.choice(words_list)
-            #progress_word.debug = self.debug_storage
-            
+                # непосредственно спислк слов
+                words_list = qs.order_by('know_max')[0:perc_count]
+                
+                self.debug('sql', str(words_list.query))
 
-        # paralel requests unsafe, but not critical,
-        # lets limit paralel in frontend
-        ProgressLog.objects.add(progress_word)
+
+                #print words_list
+
+                # и наконец наше слово
+                progress_word = random.choice(words_list)
+                #progress_word.debug = self.debug_storage
+                
+            # paralel requests unsafe, but not critical,
+            # lets limit paralel in frontend
+            ProgressLog.objects.add(progress_word)
+
        
         self.debug('word.id', progress_word.word.id)
         self.debug('progress.id', progress_word.id)
