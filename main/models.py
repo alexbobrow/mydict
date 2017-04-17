@@ -249,11 +249,11 @@ class ProgressManager(models.Manager):
         self.debug('words_count', words_count)
 
 
-        progress5 = progress_qs.filter(know_max=5).count()
-        progress4 = progress_qs.filter(know_max=4).count()
-        progress3 = progress_qs.filter(know_max=3).count()
-        progress2 = progress_qs.filter(know_max=2).count()
-        progress1 = progress_qs.filter(know_max=1).count()
+        progress5 = progress_qs.filter(know_last=5).count()
+        progress4 = progress_qs.filter(know_last=4).count()
+        progress3 = progress_qs.filter(know_last=3).count()
+        progress2 = progress_qs.filter(know_last=2).count()
+        progress1 = progress_qs.filter(know_last=1).count()
 
         progress_count = progress1 + progress2 + progress3 + progress4 + progress5
         self.debug('progress_count', progress_count)
@@ -281,15 +281,15 @@ class ProgressManager(models.Manager):
             opts = None
 
             if filters != '54321':
-                # words with selected know_max
+                # words with selected know_last
                 for x in range(1,6):
                     y = str(x)
                     if not y in filters:
                         self.debug('Q filter', y)
                         if opts is None:
-                            opts = Q(know_max=x)
+                            opts = Q(know_last=x)
                         else:
-                            opts = opts | Q(know_max=x)
+                            opts = opts | Q(know_last=x)
                 if not opts is None:
                     ex = ex.filter(opts)
 
@@ -312,15 +312,15 @@ class ProgressManager(models.Manager):
             opts = None
 
             if filters != '54321':
-                # words with selected know_max
+                # words with selected know_last
                 for x in range(1,6):
                     y = str(x)
                     if y in filters:
                         self.debug('Q filter', y)
                         if opts is None:
-                            opts = Q(know_max=x)
+                            opts = Q(know_last=x)
                         else:
-                            opts = opts | Q(know_max=x)
+                            opts = opts | Q(know_last=x)
                 if not opts is None:
                     qs = qs.filter(opts)
 
@@ -373,16 +373,10 @@ class Progress(models.Model):
     word = models.ForeignKey(Word)
     user = models.ForeignKey(User)
     
-    showed = models.PositiveIntegerField(default=0)
-    
-    know_1 = models.PositiveIntegerField(default=0)
-    know_2 = models.PositiveIntegerField(default=0)
-    know_3 = models.PositiveIntegerField(default=0)
-    know_4 = models.PositiveIntegerField(default=0)
-    know_5 = models.PositiveIntegerField(default=0)
-    know_sum = models.PositiveIntegerField(default=0)
+    know_count = models.PositiveIntegerField(default=0)
+    know_first = models.PositiveIntegerField(default=0)
     know_avg = models.DecimalField(default=0, max_digits=10, decimal_places=9)
-    know_max = models.PositiveIntegerField(default=0)
+    know_last = models.PositiveIntegerField(default=0)
     
 
     user_translation = models.CharField(max_length=255)
@@ -398,49 +392,20 @@ class Progress(models.Model):
     def add_answer(self, value):
         if not value in '12345':
             raise Exception('Wrong answer value')
-        field = 'know_%s' % value
-        old_value = int(getattr(self, field))
-        setattr(self, field, (old_value+1))
+
+        new_count = self.know_count + 1
+        new_avg = ((self.know_avg * self.know_count) + int(value)) / new_count
+
+        if self.know_count == 0:
+            self.know_first = value    
+
+        self.know_count = new_count
+        self.know_last = value
+        self.know_avg = new_avg
+       
         self.save()
 
     
-
-    def save(self, *args, **kwargs):
-
-        print('progress save routine')
-        
-        know_max_key = 0
-        know_max_value = 0
-
-        know_list = []
-        know_sum = 0
-        for x in range(1,6):
-            field = 'know_%s' % x
-            print(field)
-            know_x = getattr(self, field)
-            know_sum = know_sum + know_x
-            if know_x > know_max_value:
-                know_max_key = x
-                know_max_value = know_x
-
-            know_list = know_list + [x] * know_x
-
-        list_len = len(know_list)
-        if list_len > 0:
-            avg = sum(know_list) / float(list_len)
-        else:
-            avg = 0
-
-        self.know_avg = avg
-        self.know_max = know_max_key
-        self.know_sum = know_sum
-
-        print('avg %s' % avg)
-        print('max %s' % know_max_key)
-
-        res = super(Progress, self).save(*args, **kwargs)
-
-        return res
 
 
 
