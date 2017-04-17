@@ -192,6 +192,7 @@ body.next-processing .buttons {
 .buttons button[data-know]:active span,
 .buttons button[data-know].active span {
     background-color: rgba(0,255,0,.1);
+    border: 1px solid green;
 }
 
 

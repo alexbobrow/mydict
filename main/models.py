@@ -352,7 +352,7 @@ class ProgressManager(models.Manager):
 
         data = {
             'total': words_count,
-            'progressTotal': progress_count,
+            'newTotal': (words_count - progress_count),
             'progress1': progress1,
             'progress2': progress2,
             'progress3': progress3,

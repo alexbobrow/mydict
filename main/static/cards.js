@@ -165,6 +165,11 @@
             $('body').addClass('answer-delay');
         }
 
+        if (ans.knowLast && ans.knowLast>0) {
+            console.log('setting to ' + ans.knowLast);
+            $('button[data-know='+ans.knowLast+']').focus();
+        }
+
         // debug
         if ($('table.debug').length>0) {
             $('table.debug').empty();
