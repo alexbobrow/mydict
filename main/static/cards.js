@@ -26,6 +26,8 @@
 
     var answerDelay = (window.localStorage.getItem('answerDelay')==='true');
 
+    var filters = '';
+
 
     var numRules = [
         ['1', [97, 49]],
@@ -103,6 +105,10 @@
             data = {};
         }
         
+        if (filters!='') {
+            data['filters'] = filters;
+        }
+
 
         $.post(appUrls.next, data, function(ans){
             if (ans.error) {
@@ -146,12 +152,13 @@
         $('a[data-action=reverso]').attr('href', rv);
 
         // stata
-        $('span.stata-dict').text(ans.progressTotal);
+        $('span.stata-new').text(ans.newTotal);
         $('span.stata-all').text(ans.total);
-        $('span.stata-avg').text(ans.progressAvg);
         $('span.stata-5').text(ans.progress5);
         $('span.stata-4').text(ans.progress4);
         $('span.stata-3').text(ans.progress3);
+        $('span.stata-2').text(ans.progress2);
+        $('span.stata-1').text(ans.progress1);
         
 
         if (answerDelay) {
@@ -363,6 +370,25 @@
     }
 
 
+    function saveFilters() {
+
+        filters = '';
+        var all = '';
+
+        $('button[data-filter]').each(function(){
+            if ($(this).hasClass('checked')) {
+                filters += $(this).attr('data-filter');
+            }
+            all += $(this).attr('data-filter');
+        });
+
+        if (all==filters) {
+            filters = '';
+        }
+
+        console.log(filters);
+
+    }
 
 
 
@@ -601,17 +627,29 @@
         });
 
 
+
+        $('button.checkbox').on('click', function(e){
+            $(this).toggleClass('checked');
+        });
+
+
+
         $('button[data-action=answer-delay]').on('click', function(e){
             if ($(this).hasClass('checked')) {
-                $(this).removeClass('checked');
-                answerDelay = false;
-                localStorage.setItem('answerDelay', 'false');
-            } else {
-                $(this).addClass('checked');
                 answerDelay = true;
                 localStorage.setItem('answerDelay', 'true');
+            } else {
+                answerDelay = false;
+                localStorage.setItem('answerDelay', 'false');
             }
         });
+
+
+        $('button[data-filter]').on('click', function(e){
+            saveFilters();
+        });
+
+
 
 
         $('html').on('click', function(e){

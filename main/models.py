@@ -9,7 +9,7 @@ import random
 
 
 from django.db import models
-from django.db.models import Min, Avg
+from django.db.models import Min, Avg, Q
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -195,6 +195,7 @@ class Pronounce(models.Model):
 class ProgressManager(models.Manager):
 
 
+
     def debug(self, key, value=''):
 
         if not hasattr(self, 'debug_storage'):
@@ -208,51 +209,29 @@ class ProgressManager(models.Manager):
                 'value': value
             })
 
-
-
-        
+      
 
         
     def get_random_entry(self, qs):
+
         count = qs.count()
+
+        self.debug('get random entry: %s' % count)
+
         if count>0:
             rand = random.randint(0,count-1)
             return qs[rand]
         else:
+            raise Exception(qs.query)
             raise self.model.DoesNotExist
         
 
-    def add_new_word(self, user):
-        """
-        Adding new word in user's dictionary
-        Returns Progress entry
-        """
-
-        self.debug("Adding new word to user's dict")
-
-        exclude = self.filter(user=user).values('word_id')
-
-        word_qs = Word.objects.filter(disabled=False).exclude(id__in=exclude)
-        word = self.get_random_entry(word_qs)
-
-        return self.create(
-            user=user,
-            word=word              
-        )
-
-
-
-    def add_new_word_bulk(self, user, count):
-        # TODO improve, not to request word lest each iteration
-        for x in range(0, count):
-            self.add_new_word(user)
 
 
 
 
 
-
-    def get_next(self, user):
+    def get_next(self, user, filters='05'):
 
 
         if not user.is_authenticated:
@@ -260,147 +239,130 @@ class ProgressManager(models.Manager):
 
         self.debug_storage = []
 
-        """
-        Смотрим кол-во слов с плохим уровнем знания
-        Отдельно с уровнем знания <=4, отдельно <=3
-        Высчитываем вероятность повторения слова на основе кол-ва слов с плохим уровнем знания
-        Для урвоеня меньше <=3
-        100 слов - 100% повторения
-        0 слов - 0% повторения
 
-        Для урвоеня меньше <=4
-        100 слов - 30% повторения
-        0 слов - 0% повторения
-    
-        Берем больший из двух.
-        """
-
-
-        words_count = Word.objects.filter(disabled=False).count()
-        self.debug('words_count', words_count)
-
+        word_qs = Word.objects.filter(disabled=False)
         progress_qs = self.filter(user=user)
 
-        progress_count = progress_qs.count()
+
+
+        words_count = word_qs.count()
+        self.debug('words_count', words_count)
+
+
+        progress5 = progress_qs.filter(know_max=5).count()
+        progress4 = progress_qs.filter(know_max=4).count()
+        progress3 = progress_qs.filter(know_max=3).count()
+        progress2 = progress_qs.filter(know_max=2).count()
+        progress1 = progress_qs.filter(know_max=1).count()
+
+        progress_count = progress1 + progress2 + progress3 + progress4 + progress5
         self.debug('progress_count', progress_count)
 
-        progress_avg = progress_qs.aggregate(know_avg=Avg('know_avg'))['know_avg']
-        self.debug('progress_avg', progress_avg)
 
-        progress4 = progress_qs.filter(know_max__lte=4).count()
+        self.debug('raw filetrs', filters)
 
-        progress3 = progress_qs.filter(know_max__lte=3).count()
+        qs_type_word = True
 
-        # progress 3
-        # 100 items -> 100% repeat
-        # 0 items -> 0% repeat
+        if filters == '':
+            self.debug('filters: all words')
+            qs = word_qs
 
-        # progress 4
-        # 100 items -> 33% repeat
-        # 0 items -> 0% repeat
+        elif filters == '0':
+            self.debug('filters: only new')
+            progress_qs_ex = progress_qs.values('word_id')
+            qs = word_qs.exclude(id__in=progress_qs_ex)
 
-        if progress3 > 100:
-            progress3 = 100
+        elif '0' in filters and len(filters)>1:
+           
+            self.debug('filters: combo mode')
 
-        if progress4 > 100:
-            progress4 = 100
+            ex = progress_qs
 
-        self.debug('progress3 count', progress3)
-        self.debug('progress4 count', progress4)
+            opts = None
 
-        progress4_reduced = progress4 // 3
-
-        progress_prb = progress3 if progress3 > progress4_reduced else progress4_reduced
-
-        self.debug('progress_prb', progress_prb)
-
-        range_rand = random.randint(1, 100)
-
-        self.debug('range_rand', range_rand)
-
-        NEW = 0
-        REPEAT = 14
-
-        action = REPEAT if range_rand < progress_prb else NEW
-
-        str_action = 'NEW' if action == NEW else 'REPEAT'
-        self.debug('action', str_action)
+            if filters != '54321':
+                # words with selected know_max
+                for x in range(1,6):
+                    y = str(x)
+                    if not y in filters:
+                        self.debug('Q filter', y)
+                        if opts is None:
+                            opts = Q(know_max=x)
+                        else:
+                            opts = opts | Q(know_max=x)
+                if not opts is None:
+                    ex = ex.filter(opts)
 
 
-        skipped_qs = progress_qs.filter(know_sum=0)
+            qs = word_qs.exclude(id__in=ex.values('word_id'))
 
-        if skipped_qs.count()>0:
+            
 
-            progress_word = random.choice(skipped_qs)
+            self.debug(str(qs.query))
 
+            self.debug('exclude count', ex.count())
+
+
+
+        elif not '0' in filters:
+            self.debug('filters: repeat only mode')
+
+            qs = progress_qs
+
+            opts = None
+
+            if filters != '54321':
+                # words with selected know_max
+                for x in range(1,6):
+                    y = str(x)
+                    if y in filters:
+                        self.debug('Q filter', y)
+                        if opts is None:
+                            opts = Q(know_max=x)
+                        else:
+                            opts = opts | Q(know_max=x)
+                if not opts is None:
+                    qs = qs.filter(opts)
+
+            self.debug(str(qs.query))
+            
+            qs_type_word = False
+                 
+
+
+        if qs_type_word:
+            # we got words qs
+            # have to select word and add to progress if needed
+            word = self.get_random_entry(qs)
+
+            progress, created = Progress.objects.get_or_create(
+                user=user,
+                word=word,
+                #defaults={'showed':1}
+            )
         else:
-      
-            if action==NEW:
-                # add word
-                #print "NEW"
-                
-                progress_word = self.add_new_word(user)
-                #progress_word.debug = self.debug_storage
-                
 
-            if action==REPEAT:
-
-                qs = progress_qs.filter(know_max__lte=4)
-
-
-                # отсеиваем последние 10 из лога
-                log_arr = ProgressLog.objects.get_array(user)
-                qs = qs.exclude(id__in=log_arr)
-                
-                self.debug('log', log_arr)
-
-
-                # из диапазона выбираем топ 1/3 слов с наименьшим ratio
-                range_count = qs.count()
-
-                self.debug('range_count', range_count)
-
-                #print "Range count %s" % range_count
-                perc_count = range_count // 3
-                if perc_count<5:
-                    perc_count = 5
-
-
-                #print "ten percents %s" % perc_count
-
-                # непосредственно спислк слов
-                words_list = qs.order_by('know_max')[0:perc_count]
-                
-                self.debug('sql', str(words_list.query))
-
-
-                #print words_list
-
-                # и наконец наше слово
-                progress_word = random.choice(words_list)
-                #progress_word.debug = self.debug_storage
-                
-            # paralel requests unsafe, but not critical,
-            # lets limit paralel in frontend
-            ProgressLog.objects.add(progress_word)
+            # we got progress qs
+            progress = self.get_random_entry(qs)
+            word = progress.word
 
        
-        self.debug('word.id', progress_word.word.id)
-        self.debug('progress.id', progress_word.id)
+        self.debug('word.id', progress.word.id)
+        self.debug('progress.id', progress.id)
 
         data = {
             'total': words_count,
             'progressTotal': progress_count,
-            'progress3': progress3, # 3 and less
-            'progress4': (progress4-progress3),
-            'progress5': (progress_count-progress4),
+            'progress1': progress1,
+            'progress2': progress2,
+            'progress3': progress3,
+            'progress4': progress4,
+            'progress5': progress5,
         }
 
-        if progress_avg:
-            data['progressAvg'] = '%.2f' % progress_avg
 
 
-        return progress_word, data, self.debug_storage
+        return progress, data, self.debug_storage
 
 
 

@@ -58,10 +58,10 @@ def freq_next(request):
             progress = Progress.objects.get(pk=request.POST['progress_id'])
             progress.add_answer(request.POST['answer_value'])
 
-
+    filters = request.POST.get('filters', '')
 
     try:
-        res, stata, debug = Progress.objects.get_next(request.user)
+        res, stata, debug = Progress.objects.get_next(request.user, filters)
     except Word.DoesNotExist:
         return JsonResponse({
             'error': 'В данном режиме больше слов нет'

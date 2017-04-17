@@ -7,26 +7,23 @@ table.debug {
 }
 
 
-ul.stata {
-    list-style: none;
-}
 
-
-ul.stata li {
-    line-height: 2em;
-    color: #777;
-}
-
-ul button.checkbox span {
+ul.menu button.checkbox {
     background-image: url(checkbox-0.svg);
     background-repeat: no-repeat;
     background-size: 16px 16px;
-    padding-left: 22px
+    padding-left: 40px;
+    background-position: 15px center;
 }
 
-ul button.checkbox.checked span {
+ul.menu button.checkbox.checked {
     background-image: url(checkbox-1.svg);
 }
+
+.left h2 {
+    margin-bottom: .0;
+}
+
 
 
 .words {
