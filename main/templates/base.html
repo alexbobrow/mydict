@@ -19,13 +19,14 @@
     <body>  
 
 		{% block body %}
-            <button class='open-menu'></button>
 
             <div class='body a-clear{% block bodyclass %} mobile-margin{% endblock bodyclass %}'>
+
+                <button class='toggle-menu'></button>
+
                 <div class="left">
                     <div class="left-inner">
                         <ul class='menu'>
-                            <li><button data-action='close-menu'>Закрыть</button></li>
                             {% if request.user.is_authenticated %}
                                 <li>
                                     <button data-action='user'>{{ request.user|sensible }}</button>

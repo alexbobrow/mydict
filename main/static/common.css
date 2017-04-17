@@ -124,7 +124,7 @@ div.body {
 
 
 @media screen and ( max-width: 960px )  {
-    div.mobile-margin {
+    div.body {
         margin-top: 30px;
     }
 }
@@ -163,19 +163,19 @@ div.body > .left {
 div.body > .right {
 }
 
-div.body.desktop-menu > .left {
+div.body.menu-opened > .left {
     width: 280px;
 
 }
 
 @media screen and ( min-width: 751px )  {
-    div.body.desktop-menu {
+    div.body.menu-opened {
         padding-left: 280px;
     }
 }
 
 
-button.open-menu {
+button.toggle-menu {
     position: absolute;
     top: 0;
     left: 0;
@@ -188,13 +188,18 @@ button.open-menu {
     background-position: center;
     border: none;
     outline: none;
+    transition: left linear 100ms;
 }
 
-button.open-menu:hover {
+.body.menu-opened button.toggle-menu {
+    left: 280px;
+}
+
+button.toggle-menu:hover {
     background-color: #e7e7e7;
 }
 
-button.open-menu:active {
+button.toggle-menu:active {
     background-color: #d7d7d7;
 }
 
