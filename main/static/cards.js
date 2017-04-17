@@ -428,8 +428,20 @@
             }
 
 
+            // r - reverso
+            if (code==82) {
+                var w = window.open($('a[data-action=reverso]').attr('href'));
+            }
+
+            // l - lingvo
+            if (code==76) {
+                var w = window.open($('a[data-action=lingvo]').attr('href'));
+            }
+
+
+
             $('.buttons button').removeClass('active');
-            //console.log(code);
+            console.log(code);
         });
 
 
