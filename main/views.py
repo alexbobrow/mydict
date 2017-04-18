@@ -83,7 +83,7 @@ def next(request):
 
     context['wordId'] = word.id
     context['en'] = word.word
-    context['ru'] = word.get_translation()
+    context['ru'] = word.translation
     context['pronounce'] = word.pronounce.url
     
     if request.user.is_staff:
@@ -225,84 +225,6 @@ def admin_update_word(request):
     })
 
 
-
-@login_required_code
-def user_update_word(request):
-
-    word = Word.objects.get(pk=request.POST['word_id'])
-
-    progress, created = Progress.objects.get_or_create(
-        word=word,
-        user=request.user,
-    )
-
-    progress.user_translation = request.POST['translation']
-    progress.save()
-
-
-    return JsonResponse({
-        'success': True
-    })
-
-
-
-@login_required_code
-def user_reset_word(request):
-
-    word = Word.objects.get(pk=request.POST['word_id'])
-
-    progress, created = Progress.objects.get_or_create(
-        word=word,
-        user=request.user,
-    )
-
-    progress.user_translation = ''
-    progress.save()
-
-    return JsonResponse({
-        'success': True,
-        'translation': word.translation,
-    })
-
-
-
-@login_required_code
-def add_word(request):
-
-    word = Word.objects.get(pk=request.POST['word_id'])
-
-    progress, created = Progress.objects.get_or_create(
-        word=word,
-        user=request.user,
-    )
-
-    progress.added = True
-    progress.save()
-    
-    """    
-    user_word = models.CharField(max_length=255)
-    user_translation = models.CharField(max_length=255)
-    user_comment = models.CharField(max_length=255)
-    """
-
-    return JsonResponse({
-        'success': True
-    })
-
-
-
-@login_required_code
-def remove_word(request):
-
-    word = Word.objects.get(pk=request.POST['word_id'])
-
-    progress = Progress.objects.get(word=word, user=request.user)
-    progress.added = False
-    progress.save()
-
-    return JsonResponse({
-        'success': True
-    })
 
 
 

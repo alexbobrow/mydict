@@ -62,9 +62,6 @@ ul.home a:hover {
     
 }
 
-.words-row.added {
-    background-color: rgba(0, 128, 0, 0.06);
-}
 
 .words-row .col-0,
 .words-row .col-1,
@@ -85,8 +82,6 @@ span.na {
 }
 
 
-.words-row button.add,
-.words-row button.remove,
 .edit-translation input[type=submit],
 .edit-translation button {
     background: transparent;
@@ -101,38 +96,16 @@ span.na {
     font-size: 14px;
 }
 
-.words-row button.add:hover,
-.words-row button.remove:hover,
 .edit-translation input[type=submit]:hover,
 .edit-translation button:hover {
     color: #2276b9;
 }
 
-.words-row button.add:active,
-.words-row button.remove:active,
 .edit-translation input[type=submit]:active,
 .edit-translation button:active {
     transform: scale(0.90);
 }
 
-
-.freq-row button.remove {
-    display: none;
-}
-
-
-.words-row.added button.add {
-    display: none;
-}
-
-.words-row.added button.remove {
-    display: inline-block;
-}
-
-.words-row span.add-remove {
-    display: inline-block;
-    width: 70px;
-}
 
 .words-row button.pronounce {
     margin-right: 20px;
@@ -156,11 +129,6 @@ span.na {
     transform: scale(0.90);
 }
 
-.words-row.added span.en {
-    color: green;
-    font-weight: bold;
-    vertical-align: middle;
-}
 
 
 .words-row span.hover:hover {
@@ -177,24 +145,7 @@ span.na {
     display: block;
 }
 
-.translation span.custom {
-    margin-left: 5px;
-    opacity: .4;
-    width: 16px;
-    height: 16px;
-    background-image: url(edited.svg);
-    background-size: contain;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-position: center;
-    vertical-align: middle;
-    display: none;
-    cursor: help;
-}
 
-.translation.custom span.custom {
-    display: inline-block;
-}
 
 .edit-translation {}
 
@@ -227,16 +178,6 @@ form.search input[type=search] {
     border: 1px solid #ccc;
 
 }
-
-
-button.reset {
-    display: none;
-}
-
-.col-2.custom button.reset {
-    display: inline-block;
-}
-
 
 
 form.search input[type=submit] {

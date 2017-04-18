@@ -7,8 +7,9 @@
     <script type="text/javascript" src="{% static "list.js" %}"></script>
     <script type="text/javascript">
         window.appUrls = window.appUrls || {};
-        window.appUrls['update'] = "{% url 'user_update' %}";
-        window.appUrls['reset'] = "{% url 'user_reset' %}";
+        {% if request.user.is_authenticated %}
+            window.appUrls['update'] = "{% url 'admin_update' %}";
+        {% endif %}
         window.csrf = "{{ csrf_token }}";
         window.listType = "{{ type }}";
     </script>
@@ -68,42 +69,38 @@
                     </div>
 
                     <div class='col-1'>
-                        <span class='add-remove'>
-                            <button class='remove' data-action='remove-from-dict'>удалить</button>
-                            <button class='add' data-action='add-to-dict'>добавить</button>
-                        </span>
                         <button class='pronounce' data-action='pronounce' data-url='{{ word.pronounce.url }}'></button>
                         <span class='en'>{{ word.word }}</span>
                     </div>
-                    <div class='col-2 translation idle{% if word.get_translation_custom_list %} custom{% endif %}'>
+                    <div class='col-2 translation idle'>
                         <div class="idle field">
-                            <span class='hover'>{{ word.get_translation_list }}</span>
-                            <span class='custom' title='Это Ваш вариант перевода'></span>
+                            <span class='hover'>{{ word.translation }}</span>
                         </div>
-                        <div class="edit edit-translation">
-                            <form class=''>
-                                <div>
-                                    <input autocomplete='off' type="text" name="translation" value='{{ word.get_translation_list }}'>
-                                </div>
-                                <input type="hidden" name="word_id" value='{{ word.id }}'>
-                                <input type="submit" value='ok'>
-                                <button data-action='translation-cancel'>отмена</button>
-                                <button class='reset' data-action='translation-reset'>первоначальный</button>
-                            </form>
-                        </div>
+                        {% if request.user.is_staff %}
+                            <div class="edit edit-translation">
+                                <form class=''>
+                                    <div>
+                                        <input autocomplete='off' type="text" name="translation" value='{{ word.translation }}'>
+                                    </div>
+                                    <input type="hidden" name="word_id" value='{{ word.id }}'>
+                                    <input type="submit" value='ok'>
+                                    <button data-action='translation-cancel'>отмена</button>
+                                </form>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class='col-3'>
                         {% if word.progress_set.all.0 %}
                             <span title='Уровень знания слова'>{{ word.progress_set.all.0.know_avg|float2 }}</span>
                         {% else %}
-                            <span class='na' title='Еще не в словаре'>n/a</span>
+                            <span class='na' title='Уровень знания слова: нет данных'>n/a</span>
                         {% endif %}
                     </div>
                     <div class='col-3'>
                         {% if word.progress_set.all.0 %}
-                            <span title='Кол-во показов'>{{ word.progress_set.all.0.know_sum }}</span>
+                            <span title='Кол-во показов'>{{ word.progress_set.all.0.know_count }}</span>
                         {% else %}
-                            <span class='na' title='Еще не в словаре'>n/a</span>
+                            <span class='na' title='Кол-во показов: нет данных'>n/a</span>
                         {% endif %}
                     </div>
 

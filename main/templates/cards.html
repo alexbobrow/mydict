@@ -11,10 +11,6 @@
         window.appUrls = window.appUrls || {};
         window.appUrls['next'] = "{% url 'next' %}";
         window.appUrls['report'] = "{% url 'report' %}";
-        window.appUrls['add'] = "{% url 'add_word' %}";
-        window.appUrls['remove'] = "{% url 'remove_word' %}";
-        window.appUrls['userUpdate'] = "{% url 'user_update' %}";
-
         {% if request.user.is_staff %}
             window.isStaff = true;
             window.appUrls['delete'] = "{% url 'delete' %}";

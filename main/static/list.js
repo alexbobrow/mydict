@@ -32,32 +32,6 @@
     function listeners() {
 
 
-        $('body').on('click', 'button[data-action=add-to-dict]', function(e){
-            var row = $(this).closest('.words-row');
-            var wordId = row.attr('data-word-id');
-            $.post(appUrls.add, {word_id: wordId}, function(ans){
-                row.addClass('added');
-            }, 'json');
-        });
-
-
-        $('body').on('click', 'button[data-action=remove-from-dict]', function(e){
-            var row = $(this).closest('.words-row');
-            var wordId = row.attr('data-word-id');
-            $.post(appUrls.remove, {word_id: wordId}, function(ans){
-                if (listType=='freq') {
-                    row.removeClass('added');
-                }
-                if (listType=='own') {
-                    row.fadeOut(500, function(){
-                        row.remove();
-                    });
-                }
-            }, 'json');
-        });
-
-
-
         $('body').on('click', 'button[data-action=pronounce]', function(e){
             aud.src = $(this).attr('data-url');
         });
@@ -98,21 +72,6 @@
         });
 
 
-
-        $('body').on('click', 'button[data-action=translation-reset]', function(e){
-            e.preventDefault();
-            var col = $(this).closest('.translation');
-            var id = col.find('input[name=word_id]').val();
-
-            $.post(appUrls.reset, {word_id: id}, function(ans){
-                col.find('span.hover').text(ans.translation);
-                col.find('input[name=translation]').val(ans.translation);
-                col.removeClass('custom');
-                col.addClass('idle');
-                col.removeClass('edit');               
-            }, 'json');
-
-        });
 
 
 

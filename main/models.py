@@ -71,42 +71,16 @@ class Word(models.Model):
 
 
 
-    def get_translation(self):
-        # only works for word went through WordManager.get_next()
-        if hasattr(self, '_current_progress') and self._current_progress.user_translation != '':
-            return self._current_progress.user_translation
-        else:
-            return self.translation
 
-
+    '''
     def get_added(self):
         # only works for word went through WordManager.get_next()
         if hasattr(self, '_current_progress'):
             return self._current_progress.added
         else:
             return False
+    '''
 
-
-    def get_translation_list(self):
-        if self.progress_set.all():
-            progress = self.progress_set.all()[0]
-            if progress.user_translation:
-                return progress.user_translation
-            else:
-                return self.translation
-        else:
-            return self.translation
-
-
-    def get_translation_custom_list(self):
-        if self.progress_set.all():
-            progress = self.progress_set.all()[0]
-            if progress.user_translation:
-                return True
-            else:
-                return False
-        else:
-            return False
 
 
 
@@ -363,9 +337,7 @@ class Progress(models.Model):
     know_first = models.PositiveIntegerField(default=0)
     know_avg = models.DecimalField(default=0, max_digits=10, decimal_places=9)
     know_last = models.PositiveIntegerField(default=0)
-    
 
-    user_translation = models.CharField(max_length=255)
     time_updated = models.DateTimeField(auto_now=True)
 
     objects = ProgressManager()
