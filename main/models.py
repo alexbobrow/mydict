@@ -411,38 +411,6 @@ class Progress(models.Model):
 
 
 
-class ProgressLogManager(models.Manager):
-
-    def get_array(self, user):
-        qs = self.filter(progress__user=user)[0:10]
-        return [x.progress.pk for x in qs]
-
-
-    
-    def add(self, progress):
-        self.create(progress=progress)
-        qs = list(self.filter(progress__user=progress.user).order_by('-id'))
-        qs = qs[10:]
-        for log in qs:
-            log.delete()
-
-
-
-
-class ProgressLog(models.Model):
-    # id supposed
-    progress = models.OneToOneField(Progress)
-    time_created = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['id']
-
-    objects = ProgressLogManager()
-
-
-
-
-
 
 @python_2_unicode_compatible
 class Report(models.Model):
@@ -453,3 +421,14 @@ class Report(models.Model):
 
     def __str__(self):
         return str(self.time_created)
+
+
+
+
+@python_2_unicode_compatible
+class Preferences(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    show_sidebar = models.BooleanField(default=False)
+    filters = models.CharField(max_length=10)
+    explicit = models.BooleanField(default=False)
+    
