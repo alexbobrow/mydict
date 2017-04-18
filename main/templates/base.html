@@ -13,6 +13,11 @@
         <script type="text/javascript" src="{% static "common.js" %}"></script>
         <script type="text/javascript">
             window.isAuthenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
+            {% if request.user.is_authenticated %}
+                window.appUrls = {
+                    userPrefs: "{% url 'user_prefs' %}"
+                };
+            {% endif %}
         </script>
 		{% block head %}{% endblock head %}
     </head>
@@ -20,7 +25,7 @@
 
 		{% block body %}
 
-            <div class='body a-clear{% block bodyclass %} mobile-margin{% endblock bodyclass %}'>
+            <div class='body a-clear{% if user.preferences.show_sidebar %} menu-opened{% endif %}'>
 
                 <button class='toggle-menu'></button>
 

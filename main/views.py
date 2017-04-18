@@ -318,3 +318,26 @@ def stata(request):
     )
 
     return render(request, 'stata.html', {'users': users})
+
+
+
+@login_required_code
+def user_prefs(request):
+
+    name = request.POST['name']
+
+    if name in ['show_sidebar', 'explicit', 'answer_delay']:
+        value = bool(request.POST['value'])
+    elif name in ['filters']:
+        value = request.POST['value']
+    else:
+        raise Exception('Wrong params')
+
+    setattr(request.user.preferences, name, value)
+
+    request.user.preferences.save()
+
+    return JsonResponse({
+        'success': True
+    })    
+

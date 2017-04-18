@@ -431,4 +431,5 @@ class Preferences(models.Model):
     show_sidebar = models.BooleanField(default=False)
     filters = models.CharField(max_length=10)
     explicit = models.BooleanField(default=False)
+    answer_delay = models.BooleanField(default=False)
     

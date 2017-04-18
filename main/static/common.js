@@ -78,6 +78,11 @@
     }
 
 
+    words.updateUserPrefs = function(name, value){
+        $.post(appUrls.userPrefs, {name: name, value: value}, function(ans){}, 'json');
+    }
+
+
     /*************
     *  LISTENERS
     **************/
@@ -87,6 +92,8 @@
 
         $('body').on('click', 'button.toggle-menu', function(){
             $('div.body').toggleClass('menu-opened');
+            var new_value = $('div.body').hasClass('menu-opened') ? 'on' : '';
+            words.updateUserPrefs('show_sidebar', new_value);
         });
 
 

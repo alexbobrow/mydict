@@ -24,11 +24,6 @@
 
     var debug = (window.localStorage.getItem('debug')==='true');
 
-    var answerDelay = (window.localStorage.getItem('answerDelay')==='true');
-
-    var filters = '';
-
-
     var numRules = [
         ['1', [97, 49]],
         ['2', [98, 50]],
@@ -48,11 +43,7 @@
             $('button[data-action=debug]').addClass('checked');
         }
 
-        if (answerDelay) {
-            $('button[data-action=answer-delay]').addClass('checked');
-        }
-
-        
+       
         console.log('next initial');
         next();
     }
@@ -106,6 +97,8 @@
             data = {};
         }
         
+
+        var filters = getFilters();
         if (filters!='') {
             data['filters'] = filters;
         }
@@ -162,7 +155,7 @@
         $('span.stata-1').text(ans.progress1);
         
 
-        if (answerDelay) {
+        if (checked('answer-delay')) {
             $('body').addClass('answer-delay');
         }
 
@@ -376,9 +369,10 @@
     }
 
 
-    function saveFilters() {
 
-        filters = '';
+    function getFilters() {
+
+        var filters = '';
         var all = '';
 
         $('button[data-filter]').each(function(){
@@ -391,9 +385,21 @@
         if (all==filters) {
             filters = '';
         }
+        return filters;
+    }
 
-        console.log(filters);
 
+
+
+    function saveFilters() {
+        var filters = getFilters();
+        words.updateUserPrefs('filters', filters);
+    }
+
+
+
+    function checked(action) {
+        return $('button.checkbox[data-action='+action+']').hasClass('checked');
     }
 
 
@@ -630,14 +636,17 @@
 
 
         $('button[data-action=answer-delay]').on('click', function(e){
-            if ($(this).hasClass('checked')) {
-                answerDelay = true;
-                localStorage.setItem('answerDelay', 'true');
-            } else {
-                answerDelay = false;
-                localStorage.setItem('answerDelay', 'false');
-            }
+            var new_value = $(this).hasClass('checked') ? 'on' : '';
+            words.updateUserPrefs('answer_delay', new_value);
         });
+
+
+        $('button[data-action=explicit]').on('click', function(e){
+            var new_value = $(this).hasClass('checked') ? 'on' : '';
+            words.updateUserPrefs('explicit', new_value);
+        });
+
+
 
 
         $('button[data-action=debug]').on('click', function(e){
@@ -661,7 +670,7 @@
 
 
         $('html').on('click', function(e){
-            if (answerDelay) {
+            if (checked('answer-delay')) {
                 $('body').removeClass('answer-delay');
             }
         });

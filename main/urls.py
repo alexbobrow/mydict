@@ -21,6 +21,8 @@ urlpatterns = [
     url(r'^api/admin-update-word$', views.admin_update_word, name='admin_update'),
     url(r'^api/user-update-word$', views.user_update_word, name='user_update'),
     url(r'^api/user-reset-word$', views.user_reset_word, name='user_reset'),
+    url(r'^api/user-prefs/$', views.user_prefs, name='user_prefs'),
+
 
     url(r'^api/add-word$', views.add_word, name='add_word'),
     url(r'^api/remove-word$', views.remove_word, name='remove_word'),
