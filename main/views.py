@@ -313,8 +313,8 @@ def stata(request):
     users = User.objects.all().annotate(
         last_activity=Max('progress__time_updated'),
         dict_size=Count('progress'),
-        know_avg=Avg('progress__know_avg'),
-        know_sum=Sum('progress__know_sum'),
+        know_last=Avg('progress__know_last'),
+        know_count=Sum('progress__know_count'),
     )
 
     return render(request, 'stata.html', {'users': users})
