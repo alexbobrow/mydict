@@ -49,7 +49,7 @@ def root(request):
 
 
 
-def freq_next(request):
+def next(request):
 
 
     if request.user.is_authenticated:
@@ -98,7 +98,7 @@ def freq_next(request):
 
 
 @login_required_code
-def freq_list(request):
+def list(request):
     context = {}
 
     qs = Word.objects.filter(disabled=False)
@@ -117,9 +117,9 @@ def freq_list(request):
     try:
         words = paginator.page(page)
     except PageNotAnInteger:
-        return redirect(reverse('freq_list'))
+        return redirect(reverse('list'))
     except EmptyPage:
-        url = "%s?page=%s" % (reverse('freq_list'), paginator.num_pages)
+        url = "%s?page=%s" % (reverse('list'), paginator.num_pages)
         return redirect(url)
 
     context['words'] = words
@@ -130,7 +130,7 @@ def freq_list(request):
 
 
 
-def freq_cards(request):
+def cards(request):
     context = {}
     context['type'] = 'freq'
     return render(request, 'cards.html', context)

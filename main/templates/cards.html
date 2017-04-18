@@ -9,7 +9,7 @@
         window.cardsType = "{{ type }}";
         window.isAuthenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
         window.appUrls = window.appUrls || {};
-        window.appUrls['next'] = "{% if type == 'freq' %}{% url 'freq_next' %}{% elif type == 'own' %}{% url 'own_next' %}{% endif %}";
+        window.appUrls['next'] = "{% url 'next' %}";
         window.appUrls['report'] = "{% url 'report' %}";
         window.appUrls['add'] = "{% url 'add_word' %}";
         window.appUrls['remove'] = "{% url 'remove_word' %}";
@@ -25,7 +25,7 @@
 
 
 {% block menu %}
-    <li><a class='login-required' href="{% url 'freq_list' %}">Список слов</a></li>
+    <li><a class='login-required' href="{% url 'list' %}">Список слов</a></li>
 
     <li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>
     {% if request.user.is_staff %}<li><button class='link red' data-action='delete'>Удалить</button></li>{% endif %}

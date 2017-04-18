@@ -55,8 +55,8 @@
                                 <li><a href='{% url 'stata' %}'>Общая стата</a></li>
                             {% endif %}
                             {% block menu %}
-                                <li><a href="{% url 'freq_cards' %}">Карточки</a></li>
-                                <li><a class='login-required' href="{% url 'freq_list' %}">Список слов</a></li>
+                                <li><a href="{% url 'cards' %}">Карточки</a></li>
+                                <li><a class='login-required' href="{% url 'list' %}">Список слов</a></li>
                             {% endblock menu %}
                         </ul>
 

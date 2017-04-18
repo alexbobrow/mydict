@@ -6,10 +6,9 @@
     <link href='{% static 'list.css' %}' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="{% static "list.js" %}"></script>
     <script type="text/javascript">
-        window.appUrls = {
-            update: "{% url 'user_update' %}",
-            reset: "{% url 'user_reset' %}",
-        };
+        window.appUrls = window.appUrls || {};
+        window.appUrls['update'] = "{% url 'user_update' %}";
+        window.appUrls['reset'] = "{% url 'user_reset' %}";
         window.csrf = "{{ csrf_token }}";
         window.listType = "{{ type }}";
     </script>
@@ -17,7 +16,7 @@
 
 
 {% block menu %}
-    <li><a href="{% url 'freq_cards' %}">Карточки</a></li>
+    <li><a href="{% url 'cards' %}">Карточки</a></li>
 {% endblock menu %}
 
 
@@ -35,7 +34,7 @@
                 <input type="search" name="q" placeholder="Поиск"{% if q %} value='{{ q }}'{% endif %}>
                 <input type="submit" name="" value='ok'>
                 {% if q %}
-                    <a href="{% url 'freq_list' %}">сброс</a>
+                    <a href="{% url 'list' %}">сброс</a>
                 {% endif %}
             </div>
 

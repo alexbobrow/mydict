@@ -9,10 +9,10 @@ urlpatterns = [
     url(r'^logout$', views.logout_view, name='logout'),
 
 
-    url(r'^freq/cards/$', views.freq_cards, name='freq_cards'),
-    url(r'^freq/list/$', views.freq_list, name='freq_list'),
+    url(r'^cards/$', views.cards, name='cards'),
+    url(r'^list/$', views.list, name='list'),
 
-    url(r'^api/freq/next$', views.freq_next, name='freq_next'),
+    url(r'^api/next$', views.next, name='next'),
 
     #url(r'^api/suggest$', views.suggest, name='suggest'),
     #url(r'^api/answer$', views.answer, name='answer'),
