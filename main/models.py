@@ -36,24 +36,6 @@ class WordManager(models.Manager):
 
     pass
 
-    '''
-    def get_next(self, request):
-
-        user = request.user
-
-        if user.is_authenticated:
-
-
-
-
-
-        else:
-            word = self.get_random_entry(self.filter(disabled=False))
-            context = {}
-
-
-        return word, context
-    '''
 
 
 
@@ -242,6 +224,10 @@ class ProgressManager(models.Manager):
 
         word_qs = Word.objects.filter(disabled=False)
         progress_qs = self.filter(user=user)
+
+
+        # delete words showed but not answered
+        progress_qs.filter(know_last=0).delete()
 
 
 
