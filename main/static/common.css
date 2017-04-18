@@ -161,6 +161,8 @@ div.body > .left {
 
 
 div.body > .right {
+    position: relative;
+
 }
 
 div.body.menu-opened > .left {

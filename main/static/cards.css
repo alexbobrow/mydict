@@ -1,9 +1,16 @@
 table.debug {
     position: absolute;
-    top: 41px;
-    left: 50px;
+    top: 0px;
+    left: 0px;
+    width: 100%;
     opacity: .4;
     display: none;
+}
+
+table.debug td {
+    word-break: break-all;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
 }
 
 
@@ -102,11 +109,6 @@ body.answer-delay .answer {
     transition: width linear 100ms;
 }
 
-@media screen and ( min-width: 751px )  {
-    div.body.menu-opened .sticked {
-        width: calc(100% - 280px);
-    }
-}
 
 
 
