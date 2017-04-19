@@ -14,7 +14,7 @@ from django.db.models import Max, Avg, Sum, Count, Prefetch, Q
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from .models import Word, Progress, Report
+from .models import Word, Progress, Report, NextWordNotFound
 
 
 
@@ -62,9 +62,9 @@ def next(request):
 
     try:
         res, stata, debug = Progress.objects.get_next(request.user, filters)
-    except Word.DoesNotExist:
+    except NextWordNotFound:
         return JsonResponse({
-            'error': 'В данном режиме больше слов нет'
+            'error': 'По данному фильтру слов не найдено'
         })
 
    

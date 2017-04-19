@@ -21,7 +21,10 @@ def filter_checked(request, value):
 
 @register.filter
 def float2(value):
-	return "%.1f" % value
+	if value:
+		return "%.1f" % value
+	else:
+		return value
 
 
 @register.filter

@@ -32,10 +32,14 @@ def pronounce_full_path(instance, filename):
 
 
 
-class WordManager(models.Manager):
-
+class NextWordNotFound(Exception):
     pass
 
+
+
+
+class WordManager(models.Manager):
+    pass
 
 
 
@@ -178,8 +182,7 @@ class ProgressManager(models.Manager):
             rand = random.randint(0,count-1)
             return qs[rand]
         else:
-            raise Exception(qs.query)
-            raise self.model.DoesNotExist
+            raise NextWordNotFound
         
 
 
