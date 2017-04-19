@@ -236,31 +236,6 @@
 
 
 
-    function userUpdate() {
-
-        if (!checkAuthenticated('Изменить перевод')) {
-            return false;
-        }
-
-        var newAnswer = prompt('Обновить перевод для ' + currentData.en  + "\n" + 'Перевод будет изменен индивидуально для Вас', currentData.ru);
-
-        if (newAnswer===null) {
-            return false;
-        }      
-
-        $.post(appUrls.userUpdate, {word_id: wordId, translation: newAnswer}, function(ans){
-            if (ans.error) {
-                alert(ans.error);
-                return false;
-            }
-            $('.answer').text(newAnswer);
-            currentData.ru = newAnswer;
-        }, 'json');
-
-    }
-
-
-
 
     function adminUpdate() {
 
@@ -461,11 +436,7 @@
 
             // insert
             if (code==45) {
-                if (e.ctrlKey) {
-                    adminUpdate();
-                } else {
-                    userUpdate();
-                }
+                adminUpdate();
             }
 
 
@@ -508,12 +479,7 @@
 
 
         $('button[data-action=update]').on('click', function(e){
-            if (e.ctrlKey) {
-                adminUpdate();
-            } else {
-                userUpdate();
-            }
-
+            adminUpdate();
         });
 
         $('button[data-action=delete]').on('click', disable);
