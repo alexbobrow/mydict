@@ -78,8 +78,10 @@
     }
 
 
-    words.updateUserPrefs = function(name, value){
-        $.post(appUrls.userPrefs, {name: name, value: value}, function(ans){}, 'json');
+    words.updateUserPrefs = function(name, value) {
+        if (window.isAuthenticated) {
+            $.post(appUrls.userPrefs, {name: name, value: value}, function(ans){}, 'json');
+        }
     }
 
 
