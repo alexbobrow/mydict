@@ -59,7 +59,7 @@
 
 
     function prev() {
-        //console.log('prev');
+        console.log('prev');
         var newPos = logPosition-1;
         //console.log('newPos', newPos);
         var id = log.length + newPos-1;
@@ -139,11 +139,12 @@
         $('input.test').focus();
         aud.src = ans.pronounce;
 
-        var lg = 'http://www.lingvo.ua/ru/Translate/en-ru/' + ans.en;
-        $('a[data-action=lingvo]').attr('href', lg);
-
-        var rv = 'http://context.reverso.net/перевод/английский-русский/' + ans.en;
-        $('a[data-action=reverso]').attr('href', rv);
+        $('a[data-action=auto-link]').each(function(){
+            let tpl = $(this).attr('data-template');
+            let re = /{word}/;
+            let newHref = tpl.replace(re, ans.en);
+            $(this).attr('href', newHref)
+        })
 
         // stata
         $('span.stata-new').text(ans.newTotal);
@@ -395,6 +396,8 @@
 
         $(window).on('keyup', function(e){
 
+            var code = (e.charCode)? e.charCode : e.keyCode;
+
             /*
 
             if (code==13) {
@@ -406,11 +409,6 @@
                     var btn = $('button.next');
                     next();
                 }
-            }
-
-            // backspace
-            if (code==8) {
-                prev();
             }
 
             // space
@@ -427,9 +425,12 @@
             }
 
             */
-            
-            var code = (e.charCode)? e.charCode : e.keyCode;
-            
+
+            // backspace
+            if (code==8) {
+                prev();
+            }
+
             if (code==38) {
                 replay();
             }
@@ -438,19 +439,6 @@
             if (code==45) {
                 adminUpdate();
             }
-
-
-            // r - reverso
-            if (code==82) {
-                var w = window.open($('a[data-action=reverso]').attr('href'));
-            }
-
-            // l - lingvo
-            if (code==76) {
-                var w = window.open($('a[data-action=lingvo]').attr('href'));
-            }
-
-
 
             $('.buttons button').removeClass('active');
             console.log(code);

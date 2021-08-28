@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'social_django',
+    # 'social_django',
     'main',
     #'sslserver',
     #'debug_toolbar',
@@ -104,19 +104,39 @@ USE_L10N = True
 USE_TZ = True
 
 
-LOGIN_URL = '/login'
+# LOGIN_URL = '/login'
 
 
 
 # python-social-auth
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.facebook.FacebookOAuth2',
-    'social_core.backends.vk.VKOAuth2',
-    'social_core.backends.odnoklassniki.OdnoklassnikiOAuth2',
+    # 'social_core.backends.google.GoogleOAuth2',
+    # 'social_core.backends.facebook.FacebookOAuth2',
+    # 'social_core.backends.vk.VKOAuth2',
+    # 'social_core.backends.odnoklassniki.OdnoklassnikiOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mydict',
+        'USERNAME': 'alex',
+        'PASSWORD': 'cscs',
+        'HOST': '127.0.0.1',
+        'PORT': '5432'
+    }
+}
 
+SECRET_KEY = 'h73&va@r2vm15ivn2e99vv$r@c8uj1scyoi)(p9j+u+^o9c-u7'
 
-from .settings_local import *
+ALLOWED_HOSTS = ['mydict.loc']
+
+DEBUG = True
+
+STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+

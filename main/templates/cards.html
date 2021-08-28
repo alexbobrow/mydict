@@ -26,8 +26,8 @@
     <li><button title='Сообщить об ошибке/неточности в данном слове (Shift+Enter)' class='link' data-action='report'>Сообщить</button></li>
     {% if request.user.is_staff %}<li><button class='link red' data-action='delete'>Удалить</button></li>{% endif %}
     {% if request.user.is_staff %}<li><button class='link red' data-action='update'>Изменить</button></li>{% endif %}
-    <li><a data-action='lingvo' target="_blank" href="#">Открыть в Lingvo</a></li>
-    <li><a data-action='reverso' target="_blank" href="#">Примеры использования</a></li>
+    <li><a data-action='auto-link' data-template="http://context.reverso.net/перевод/английский-русский/{word}" target="_blank" href="#">Примеры использования</a></li>
+    <li><a data-action='auto-link' data-template="https://wooordhunt.ru/word/{word}" target="_blank" href="#">Открыть в Wooordhunt</a></li>
 {% endblock menu %}
 
 
