@@ -116,7 +116,6 @@
             //console.log(log);
             setWord(ans);
         }, 'json').always(function(){
-            $('body').removeClass('next-processing');
             console.log('next request finished');
         });
 
@@ -138,6 +137,8 @@
         $('.answer').text(ans.ru);
         $('input.test').focus();
         aud.src = ans.pronounce;
+
+        $('body').removeClass('next-processing');
 
         $('a[data-action=auto-link]').each(function(){
             let tpl = $(this).attr('data-template');
@@ -416,14 +417,6 @@
                 replay();
             }
 
-            // delete
-            if (code==46) {
-                if (e.ctrlKey) {
-                    // admin disable word if ctrl
-                    disable();
-                }                
-            }
-
             */
 
             // backspace
@@ -431,6 +424,7 @@
                 prev();
             }
 
+            // up
             if (code==38) {
                 replay();
             }
@@ -440,13 +434,14 @@
                 adminUpdate();
             }
 
+            // delete
+            if (code==46) {
+                disable();
+            }
+
             $('.buttons button').removeClass('active');
             console.log(code);
         });
-
-
-       
-
 
         $('button[data-action=disable]').on('click', function(e){
             if (!confirm('Отключить это слово?')) {
