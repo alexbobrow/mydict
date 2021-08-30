@@ -439,6 +439,22 @@
                 disable();
             }
 
+            if (code==39) {
+                // right
+                let dataKnow = $(document.activeElement).attr('data-know');
+                if (typeof(dataKnow)=='undefined') {
+                    $('button[data-know=1]').focus();
+                }
+            }
+
+            if (code==37) {
+                // left
+                let dataKnow = $(document.activeElement).attr('data-know');
+                if (typeof(dataKnow)=='undefined') {
+                    $('button[data-know=5]').focus();
+                }
+            }
+
             $('.buttons button').removeClass('active');
             console.log(code);
         });
