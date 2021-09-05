@@ -20,8 +20,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -70,8 +68,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'settings.wsgi.application'
 
-
-
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORSX = [
@@ -89,7 +85,6 @@ AUTH_PASSWORD_VALIDATORSX = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
@@ -103,10 +98,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # LOGIN_URL = '/login'
-
-
 
 # python-social-auth
 AUTHENTICATION_BACKENDS = (
@@ -117,26 +109,9 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mydict',
-        'USERNAME': 'alex',
-        'PASSWORD': 'cscs',
-        'HOST': '127.0.0.1',
-        'PORT': '5432'
-    }
-}
-
 SECRET_KEY = 'h73&va@r2vm15ivn2e99vv$r@c8uj1scyoi)(p9j+u+^o9c-u7'
-
-ALLOWED_HOSTS = ['mydict.loc']
-
-DEBUG = True
 
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
