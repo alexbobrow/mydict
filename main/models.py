@@ -333,8 +333,8 @@ class ProgressManager(models.Manager):
 
 
 class Progress(models.Model):
-    word = models.ForeignKey(Word)
-    user = models.ForeignKey(User)
+    word = models.ForeignKey(Word, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     know_count = models.PositiveIntegerField(default=0)
     know_first = models.PositiveIntegerField(default=0)
@@ -375,8 +375,8 @@ class Progress(models.Model):
 
 @python_2_unicode_compatible
 class Report(models.Model):
-    word = models.ForeignKey(Word)
-    user = models.ForeignKey(User)
+    word = models.ForeignKey(Word, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
     text = models.TextField(max_length=500)
 
