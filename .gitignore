@@ -1,6 +1,6 @@
 **.pyc
 media/*
 local/*
-settings_local.py
+settings.py
 /tmp-*
 requirements.txt
