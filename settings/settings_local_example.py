@@ -6,7 +6,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'db_name',
-        'USERNAME': 'username',
+        'USER': 'username',
         'PASSWORD': 'password',
         'HOST': '127.0.0.1',
         'PORT': '5432'
@@ -16,5 +16,7 @@ DATABASES = {
 DEBUG = False
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
