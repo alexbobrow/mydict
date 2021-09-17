@@ -15,12 +15,9 @@
     </script>
 {% endblock head %}
 
-
 {% block menu %}
     <li><a href="{% url 'cards' %}">Карточки</a></li>
 {% endblock menu %}
-
-
 
 {% block main %}
 
@@ -39,9 +36,7 @@
                 {% endif %}
             </div>
 
-
         </form>
-
 
         <div class="pagination a-mb">
             <span class="step-links">
@@ -59,7 +54,6 @@
                 {% endif %}
             </span>
         </div>
-
 
         <div class='words-table a-mb'>
             {% for word in words %}
@@ -127,7 +121,6 @@
 
     </div>
 </div>
-
 
 <audio type="audio/mpeg" autoplay="true"></audio>
 

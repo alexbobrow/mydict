@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import main.models
+import main.utils
 
 
 class Migration(migrations.Migration):
@@ -24,7 +25,7 @@ class Migration(migrations.Migration):
                 ('time_updated', models.DateTimeField(auto_now=True)),
                 ('frequency', models.PositiveIntegerField(default=0)),
                 ('rank', models.PositiveIntegerField(default=0)),
-                ('pronounce', models.FileField(blank=True, default='', upload_to=main.models.pronounce_full_path)),
+                ('pronounce', models.FileField(blank=True, default='', upload_to=main.utils.pronounce_full_path)),
                 ('disabled', models.BooleanField(default=False)),
             ],
             options={

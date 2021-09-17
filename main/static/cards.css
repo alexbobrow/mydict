@@ -13,8 +13,6 @@ table.debug td {
     border-bottom: 1px solid #ccc;
 }
 
-
-
 ul.menu button.checkbox {
     background-image: url(checkbox-0.svg);
     background-repeat: no-repeat;
@@ -28,10 +26,8 @@ ul.menu button.checkbox.checked {
 }
 
 .left h2 {
-    margin-bottom: .0;
+    margin-bottom: 0;
 }
-
-
 
 .words {
     font-size: 400%;
@@ -39,7 +35,6 @@ ul.menu button.checkbox.checked {
     position: relative;
     z-index: 10;
 }
-
 
 @media screen and ( max-width: 800px )  {
     .words {
@@ -55,7 +50,6 @@ ul.menu button.checkbox.checked {
     }
 }
 
-
 div.word {
     margin: .8em 15px .8em 15px;
     text-align: center;
@@ -68,7 +62,6 @@ span.word {
 span.word:hover {
     border-bottom: 0.05em solid #ddd;
 }
-
 
 .answer {
     font-family: 'Roboto';
@@ -98,8 +91,6 @@ body.answer-delay .answer {
     font-size: 70%;
 }
 
-
-
 .sticked {
     position: absolute;
     z-index: 10;
@@ -108,9 +99,6 @@ body.answer-delay .answer {
     right: 0;
     transition: width linear 100ms;
 }
-
-
-
 
 .buttons {
     text-align: center; 
@@ -129,13 +117,11 @@ body.next-processing .buttons {
     pointer-events: none;
 }
 
-
 @media screen and ( max-width: 700px )  {
     .buttons {
         font-size: 130%;
     }
 }
-
 
 @media screen and ( max-width: 400px )  {
     .buttons {
@@ -155,7 +141,6 @@ body.next-processing .buttons {
     }
 }
 
-
 .buttons button[data-know] {
     width: 4em;
     height: 4em;
@@ -164,7 +149,6 @@ body.next-processing .buttons {
     font-size: inherit;
     outline: none;
 }
-
 
 .buttons button[data-know] span {
     display: inline-block;
@@ -180,8 +164,6 @@ body.next-processing .buttons {
     font-size: inherit;
 }
 
-
-
 .buttons button[data-know]:focus span {
     border: 1px solid green;
     color: green;
@@ -196,7 +178,6 @@ body.next-processing .buttons {
     background-color: rgba(0,255,0,.1);
     border: 1px solid green;
 }
-
 
 .buttons button[data-action] {
     height: 3em;
@@ -226,7 +207,6 @@ body.next-processing .buttons {
 .buttons button[data-action]:hover {
     border: 1px solid #777;
 }
-
 
 .buttons button[data-action]:active,
 .buttons button[data-action].active {

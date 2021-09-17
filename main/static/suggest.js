@@ -1,32 +1,27 @@
 (function(){
 
     /*
-    
-    alexSuggest
-
-    based on v 4.1
-    with changes for moislova
-
+    alexSuggest v4.1
+    fork for mydict
     */
 
     /* global */
 
-    var popupId = 'alsuli'
-    var selectorPopup = '#' + popupId;
-    var selectorLi = selectorPopup + " li";
+    let popupId = 'alsuli'
+    let selectorPopup = '#' + popupId;
+    let selectorLi = selectorPopup + " li";
 
-    var queryTid = 0;
-    var blurTid = 0;
-    var xhr = null;
-
+    let queryTid = 0;
+    let blurTid = 0;
+    let xhr = null;
 
     window.alexSuggest = function(selector, params){
 
+        let body = $('body');
 
-        createContainer();
+        createContainer(body);
 
-
-        var defaultParams = {
+        let defaultParams = {
             // класс который проставляется активной ссылке в popup
             hoverClass: 'alsuli-cur', 
             // путь для запроса
@@ -64,38 +59,33 @@
             onSelectionChange: function(){}  
         };
 
-
-    
-        $('body').on('click', selector, function(e){
+        body.on('click', selector, function(e){
             $(this).keyup();
             e.stopPropagation();
         });
 
-
-        $('body').on('blur', selector, function(e){
-            var i = $(this);
+        body.on('blur', selector, function(e){
+            let i = $(this);
             // при клике на попап без блюра все портится
             blurTid = setTimeout(function(){
                 cancel(i);
             }, 200);          
         });
 
-
         // блокировка отрпавки формы
-        $('body').on('keypress', selector, function(e){
-            var code = (e.charCode)? e.charCode : e.keyCode;
-            if (code == 13) {
+        body.on('keypress', selector, function(e){
+            let code = (e.charCode)? e.charCode : e.keyCode;
+            if (code === 13) {
                 e.preventDefault();
                 e.stopPropagation();
             }
 
         });
 
+        body.on('keyup', selector, function(e){
 
-        $('body').on('keyup', selector, function(e){
-
-            var o = getObject(params, defaultParams, this);
-            var i = $(this);
+            let o = getObject(params, defaultParams, this);
+            let i = $(this);
             
             console.log('clear timeout');
             clearTimeout(queryTid);
@@ -103,20 +93,20 @@
                 xhr.abort();
             }
             
-            var code = (e.charCode)? e.charCode : e.keyCode;
+            let code = (e.charCode)? e.charCode : e.keyCode;
 
             
-            if (code == 38) {
+            if (code === 38) {
                 up(i);
                 return true;
             }       
             
-            if (code == 40) {
+            if (code === 40) {
                 down(i);
                 return true;
             }
             
-            if (code == 13) {
+            if (code === 13) {
                 console.log('enter');
                 enter(i);
                 e.preventDefault();
@@ -125,17 +115,15 @@
             }       
             
 
-            var wordsCount = i.val().length;
-            if (wordsCount==0) {
+            let wordsCount = i.val().length;
+            if (wordsCount === 0) {
                 cancel(i);
                 return false;
             }
-            
-            
+
             if (wordsCount<o.minWordCount) {
                 return false;
             }
-
 
             // далее обработка нажатия любой другой клавиши, предлположительно новая буква
             console.log('set timeout');
@@ -144,7 +132,6 @@
                 o.onQueryBefore(i);
                 o.postParams.value = i.val();
                 xhr = $.get(o.url, o.postParams, function(data){
-                    console.log('suggesr response');
                     o.onQueryAfter(i);
                     showPopup(i, data);
                 }, 'html');
@@ -152,21 +139,18 @@
         
         });
 
-
         $(selector).each(function(e){
-            var o = getObject(params, defaultParams, this);
-        });        
-
+            getObject(params, defaultParams, this);
+        });
 
     } // w.as
 
-
     function getObject(defaultParams, params, input) {
-        i = $(input);
+        let i = $(input);
 
         if (typeof(i.data('alexSuggest'))=='undefined') {
 
-            var o = $.extend({}, params, defaultParams);
+            let o = $.extend({}, params, defaultParams);
             i.data('alexSuggest', o);
             o.initialValue = i.val();
             return o;
@@ -177,88 +161,68 @@
 
     }
 
-
-
-
-
     function up(i){
 
-       
         if (!$(selectorPopup).length) return;
 
-        
-        
-        var length = $(selectorLi).length;
+        let length = $(selectorLi).length;
         if (length<1) return;
 
-        var o = i.data('alexSuggest');       
-        var selectorHover = selectorLi + '.' + o.hoverClass        
+        let o = i.data('alexSuggest');
+        let selectorHover = selectorLi + '.' + o.hoverClass
 
-        
-        var index = $(selectorLi).index($(selectorHover));
-        var new_index = (index-1) ;
+        let index = $(selectorLi).index($(selectorHover));
+        let new_index = (index-1) ;
 
         if (new_index<0) { new_index = (length-1); }
 
         $(selectorHover).removeClass(o.hoverClass);
         
-        var newSelected = $(selectorLi + ":eq("+new_index+")");
+        let newSelected = $(selectorLi + ":eq("+new_index+")");
         newSelected.addClass(o.hoverClass);
         
         o.onSelectionChange(i, newSelected);
         
-        return; 
     }
-
-
 
     function down(i) {
 
         if (!$(selectorPopup).length) return;
 
-        
-        var length = $(selectorLi).length;
+        let length = $(selectorLi).length;
         if (length<1) return;
 
-        var o = i.data('alexSuggest');       
-        var selectorHover = selectorLi + '.' + o.hoverClass        
+        let o = i.data('alexSuggest');
+        let selectorHover = selectorLi + '.' + o.hoverClass
 
-        
-        var index = $(selectorLi).index($(selectorHover));
-        var new_index = index;
+        let index = $(selectorLi).index($(selectorHover));
 
-        if (new_index<0) {
-            new_index = 0;
+        if (index < 0) {
+            index = 0;
         } else {
-            new_index++;
-            if (new_index==length) {
-                new_index = 0;
+            index++;
+            if (index === length) {
+                index = 0;
             }
         }
 
-
         $(selectorHover).removeClass(o.hoverClass);
         
-        var newSelected = $(selectorLi + ":eq("+new_index+")");
+        let newSelected = $(selectorLi + ":eq("+index+")");
         newSelected.addClass(o.hoverClass);
         
         o.onSelectionChange(i, newSelected);
-        
-        return; 
 
     }
-
-
-
 
     /**
      * при нажатии на интер по полю
      */
     function enter(i) {
         
-        var o = i.data('alexSuggest');
+        let o = i.data('alexSuggest');
         
-        var jElem = $(selectorPopup + " ." + o.hoverClass);
+        let jElem = $(selectorPopup + " ." + o.hoverClass);
         
         if (jElem.length) { // выбран выриант
            
@@ -282,10 +246,6 @@
 
     }
 
-
-
-
-
     /**
      * принажатии на интер по полю если есть выделенный элемент
      * или клик по элементы мышкой
@@ -295,10 +255,10 @@
      */
     function select(i, li){
 
-        o = i.data('alexSuggest');
+        let o = i.data('alexSuggest');
 
-        var unique = getUniqueValue(i, li);
-        if (unique &&  o.ignoreRepeat && o.processedUnique && o.processedUnique==unique) {
+        let unique = getUniqueValue(i, li);
+        if (unique &&  o.ignoreRepeat && o.processedUnique && o.processedUnique === unique) {
             $(selectorPopup).empty().hide();
             return false;
         }
@@ -308,43 +268,33 @@
         }
         
         if (o.autoValueAttr!==null) {
-            var autoInput = o.autoValueAttr[0]; 
-            var attrName = o.autoValueAttr[1];
+            let autoInput = o.autoValueAttr[0];
+            let attrName = o.autoValueAttr[1];
             if (typeof(li.attr(attrName))!='undefined') {
                 autoInput.val(li.attr(attrName));
             }
         }
 
-
-        
         if (unique) {
             o.processedUnique = unique;
         }
-        
-        
+
         o.onSelect(i, li);
         
         $(selectorPopup).empty().hide();
     }
 
-
-
-
-
     function cancel(i) {
         // калбак
-        o = i.data('alexSuggest');
+        let o = i.data('alexSuggest');
         o.onCancel(i);
         $(selectorPopup).empty().hide();
     }
 
-
-
-
     function getUniqueValue(i, li) {
-        o = i.data('alexSuggest');
+        let o = i.data('alexSuggest');
         if (o.uniquePart) {
-            if (o.uniquePart=='text()') {
+            if (o.uniquePart === 'text()') {
                 return li.text();
             } else {
                 if (typeof(li.attr(o.uniquePart))!='undefined') {
@@ -359,18 +309,15 @@
 
     }
 
-
-
-
     /**
      * data - ответ XML запроса
      * input - сырой элемент поля
      */
     function showPopup(i, data) {
 
-        var o = i.data('alexSuggest');
+        let o = i.data('alexSuggest');
 
-        var popupOffset = i.offset();
+        let popupOffset = i.offset();
         
         $(selectorPopup).css({
             top: (popupOffset.top + i.height() + o.inputOffsetTop) + "px",
@@ -380,7 +327,7 @@
 
         $(selectorPopup).html(data);
 
-        if (o.setClass!='') {
+        if (o.setClass !== '') {
             $(selectorPopup).attr('class', o.setClass);
         } else {
             $(selectorPopup).attr('class', '');
@@ -394,41 +341,36 @@
         
         $(selectorPopup).data('input', i);
         
-        var unique = null;
-        
         // отметим ранее выбранный, если актуально
         $(selectorLi).each(function(){           
-            var unique = getUniqueValue(i, $(this));
-            if (unique == o.processedUnique) {
+            let unique = getUniqueValue(i, $(this));
+            if (unique === o.processedUnique) {
                 $(this).addClass(o.hoverClass);
             }
         });
         
     }
 
-
-
-
-    function createContainer() {
+    function createContainer(body) {
 
         if ($(selectorPopup).length) {
             $(selectorPopup).empty();
             return;
         }
 
-        $("body").append($("<div id='"+popupId+"' style='display:none'></div>").hover(function(){ $(this).addClass("hover"); },function(){ $(this).removeClass("hover"); }));
+        body.append($("<div id='"+popupId+"' style='display:none'></div>").hover(function(){ $(this).addClass("hover"); },function(){ $(this).removeClass("hover"); }));
 
-        $('body').on('click', selectorLi, function(e){
-            var i = $(selectorPopup).data('input');
+        body.on('click', selectorLi, function(e){
+            let i = $(selectorPopup).data('input');
             clearTimeout(blurTid);
             select(i, $(this));
             e.preventDefault();
         });
         
         // навигация мышкой
-        $('body').on('mouseenter', selectorLi, function(e){
-            var i = $(selectorPopup).data('input');
-            var o = i.data('alexSuggest');
+        body.on('mouseenter', selectorLi, function(e){
+            let i = $(selectorPopup).data('input');
+            let o = i.data('alexSuggest');
             $(selectorPopup + ' .' + o.hoverClass).removeClass(o.hoverClass);
             $(this).addClass(o.hoverClass);
             o.onSelectionChange(i, this);
@@ -436,11 +378,4 @@
 
     }
 
-
-
-
-
- 
 })();
-
-

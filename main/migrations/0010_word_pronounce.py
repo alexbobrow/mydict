@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import main.models
+import main.utils
 
 
 class Migration(migrations.Migration):
@@ -16,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='word',
             name='pronounce',
-            field=models.FileField(blank=True, default='', upload_to=main.models.pronounce_full_path),
+            field=models.FileField(blank=True, default='', upload_to=main.utils.pronounce_full_path),
         ),
     ]

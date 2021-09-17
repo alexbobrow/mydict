@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import main.models
+import main.utils
 
 
 class Migration(migrations.Migration):
@@ -25,7 +26,7 @@ class Migration(migrations.Migration):
                 ('frequency', models.PositiveIntegerField(default=0)),
                 ('frequency2', models.PositiveIntegerField(default=0)),
                 ('rank', models.PositiveIntegerField(default=0)),
-                ('pronounce', models.FileField(blank=True, default='', upload_to=main.models.pronounce_full_path)),
+                ('pronounce', models.FileField(blank=True, default='', upload_to=main.utils.pronounce_full_path)),
                 ('gstatic', models.NullBooleanField(default=None)),
                 ('disabled', models.BooleanField(default=False)),
             ],
@@ -42,7 +43,7 @@ class Migration(migrations.Migration):
                 ('frequency', models.PositiveIntegerField(default=0)),
                 ('frequency2', models.PositiveIntegerField(default=0)),
                 ('rank', models.PositiveIntegerField(default=0)),
-                ('pronounce', models.FileField(blank=True, default='', upload_to=main.models.pronounce_full_path)),
+                ('pronounce', models.FileField(blank=True, default='', upload_to=main.utils.pronounce_full_path)),
                 ('gstatic', models.NullBooleanField(default=None)),
                 ('disabled', models.BooleanField(default=False)),
             ],

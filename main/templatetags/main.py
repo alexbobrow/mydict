@@ -12,27 +12,25 @@ def pagelink(request, value):
 
 @register.simple_tag
 def filter_checked(request, value):
-	filters = request.user.preferences.filters
-	if value in filters:
-		return ' checked'
-	else:
-		return ''
+    filters = request.user.preferences.filters
+    if value in filters:
+        return ' checked'
+    else:
+        return ''
 
 
 @register.filter
 def float2(value):
-	if value:
-		return "%.1f" % value
-	else:
-		return value
+    if value:
+        return "%.1f" % value
+    else:
+        return value
 
 
 @register.filter
 def sensible(user):
-	fn = user.get_full_name()
-	if not fn:
-		return "Пользователь №%s" % user.pk
-	else:
-		return fn
-
-
+    fn = user.get_full_name()
+    if not fn:
+        return "Пользователь №%s" % user.pk
+    else:
+        return fn

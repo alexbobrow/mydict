@@ -1,21 +1,14 @@
-
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import logout
+from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Max, Avg, Sum, Count, Prefetch, Q
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
-
-from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-
 from django.urls import reverse
 
-from django.db.models import Max, Avg, Sum, Count, Prefetch, Q
-
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-from .models import Word, Progress, Report, NextWordNotFound
-
+from .exceptions import NextWordNotFound
+from .models import Word, Progress, Report
 
 
 # similar to staff_member_required
@@ -40,17 +33,12 @@ def login_required_code(fn):
     return wrapped
 
 
-
-
 def root(request):
     context = {}
     return render(request, 'about.html', context)
 
 
-
-
 def next(request):
-
 
     if request.user.is_authenticated:
         if 'progress_id' in request.POST:
@@ -67,8 +55,6 @@ def next(request):
             'error': 'По данному фильтру слов не найдено'
         })
 
-   
-
     if request.user.is_authenticated:
         context = stata
         progress = res
@@ -80,7 +66,6 @@ def next(request):
         progress = None
         word = res
 
-
     context['wordId'] = word.id
     context['en'] = word.word
     context['ru'] = word.translation
@@ -89,12 +74,7 @@ def next(request):
     if request.user.is_staff:
         context['debug'] = debug
 
-    
-
     return JsonResponse(context)
-
-
-
 
 
 @login_required_code
@@ -106,7 +86,6 @@ def list(request):
     if 'q' in request.GET and request.GET['q']:
         qs = qs.filter(Q(word__icontains=request.GET['q']) | Q(translation__icontains=request.GET['q'])) 
         context['q'] = request.GET['q']
-
 
     pqs = Progress.objects.filter(user=request.user)
     qs = qs.prefetch_related(Prefetch('progress_set', queryset=pqs))
@@ -127,59 +106,16 @@ def list(request):
     return render(request, 'list.html', context)
 
 
-
-
-
 def cards(request):
     context = {}
     context['type'] = 'freq'
     return render(request, 'cards.html', context)
-
-    
-
-
-
-
-def login_view(request):
-
-    context = {}
-
-    next_url = request.GET.get('next', '/')
-
-    if request.user.is_authenticated():
-        return redirect(next_url)
-
-
-    if 'login' in request.POST:
-
-        user = authenticate(
-            username=request.POST['login'],
-            password=request.POST['password']
-        )
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                return redirect(next_url)
-            else:
-                messages.error(request, 'Account is disabled')
-        else:
-            messages.error(request, 'Wrong login or password')
-    
-
-    return render(request, 'login.html', context)
-
-
 
 
 def logout_view(request):
     next_url = request.GET.get('next', '/')
     logout(request)
     return redirect(next_url)
-
-
-
-
-
 
 
 @login_required_code
@@ -197,8 +133,6 @@ def report_word(request):
     })
 
 
-
-
 @staff_required_code
 def delete_word(request):
     
@@ -209,7 +143,6 @@ def delete_word(request):
     return JsonResponse({
         'success': True
     })
-
 
 
 @staff_required_code
@@ -225,22 +158,15 @@ def admin_update_word(request):
     })
 
 
-
-
-
 @staff_member_required
 def stata(request):
-    #from django.contrib.auth.models import User
-    #from django.db.models import Max, Avg
     users = User.objects.all().annotate(
         last_activity=Max('progress__time_updated'),
         dict_size=Count('progress'),
         know_last=Avg('progress__know_last'),
         know_count=Sum('progress__know_count'),
     )
-
     return render(request, 'stata.html', {'users': users})
-
 
 
 @login_required_code
@@ -262,4 +188,3 @@ def user_prefs(request):
     return JsonResponse({
         'success': True
     })    
-

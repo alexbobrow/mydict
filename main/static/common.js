@@ -14,7 +14,7 @@
         // default ajax setup
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
-                var csrf = getCookie('csrftoken');
+                let csrf = getCookie('csrftoken');
                 if (!csrfSafeMethod(settings.type)) {
                     xhr.setRequestHeader("X-CSRFToken", csrf);
                 }
@@ -32,27 +32,21 @@
         }        
     }
 
-
-
     function loadedInit() {
     }
-
-
 
     function csrfSafeMethod(method) {
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
 
-
-
     function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = $.trim(cookies[i]);
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = $.trim(cookies[i]);
                 // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
                 }
@@ -66,7 +60,7 @@
     ************/
 
     words.typeFilterValue = function(){
-        var value = '';
+        let value = '';
         $('button.type-filter').each(function(){
             if ($(this).hasClass('sel')) {
                 value = value + '1';
@@ -77,13 +71,11 @@
         return value;
     }
 
-
     words.updateUserPrefs = function(name, value) {
         if (window.isAuthenticated) {
             $.post(appUrls.userPrefs, {name: name, value: value}, function(ans){}, 'json');
         }
     }
-
 
     /*************
     *  LISTENERS
@@ -91,26 +83,25 @@
 
     function listeners() {
 
+        let body = $('body');
 
-        $('body').on('click', 'button.toggle-menu', function(){
+        body.on('click', 'button.toggle-menu', function(){
             $('div.body').toggleClass('menu-opened');
-            var new_value = $('div.body').hasClass('menu-opened') ? 'on' : '';
+            let new_value = $('div.body').hasClass('menu-opened') ? 'on' : '';
             words.updateUserPrefs('show_sidebar', new_value);
         });
 
-
-        $('body').on('click', 'button[data-action=auth], button[data-action=user]', function(){
+        body.on('click', 'button[data-action=auth], button[data-action=user]', function(){
             $(this).parent().find('ul').slideToggle();
 
         });
 
-
-        $('body').on('click', 'button.type-filter', function(e){
-            var menu = $(this).closest('.menu');
+        body.on('click', 'button.type-filter', function(e){
+            let menu = $(this).closest('.menu');
             if (menu.hasClass('disabled')) {
                 return false;
             }
-            var base = $('button.type-filter');
+            let base = $('button.type-filter');
             if ($(this).hasClass('sel')) {
 
                 if ($('button.type-filter.sel').length==1 && $(this).hasClass('sel')) {
@@ -125,7 +116,7 @@
                     base.removeClass('sel');
                     $(this).addClass('sel');
                 }
-            };
+            }
 
             // callbacks
             if (words.typeFilterList) {
@@ -135,21 +126,14 @@
                 words.typeFilterCards(e);
             }
             
-
-
         });
 
-
-        $('body').on('click', 'a.login-required', function(e){
+        body.on('click', 'a.login-required', function(e){
             if (!isAuthenticated) {
                 alert('Для этой страницы необходимо авторизоваться.');
                 e.preventDefault();
             }
         });
-
-
-
-    }; // listeners
-
+    } // listeners
 
 })(window.words=window.words||{});

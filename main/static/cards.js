@@ -1,7 +1,9 @@
 (function(words){
 
+    let body;
 
     $(function(){
+        body = $('body');
         listeners();
         init();
     });
@@ -10,21 +12,17 @@
     *  PRIVATE
     ************/
 
-    var aud;
+    let aud;
 
-    var wordId = null;
+    let wordId = null;
 
-    var currentData = null;
+    let currentData = null;
 
-    var log = [];
+    let log = [];
 
-    var logPosition = 0;
+    let logPosition = 0;
 
-    var selCollapsed = true;
-
-    var debug = (window.localStorage.getItem('debug')==='true');
-
-    var numRules = [
+    let numRules = [
         ['1', [97, 49]],
         ['2', [98, 50]],
         ['3', [99, 51]],
@@ -32,62 +30,38 @@
         ['5', [101, 53]],
     ];
 
-
-
     function init(){
         aud = $('audio')[0];
-
-        // show debug if needed
-        if (debug) {
-            $('table.debug').show();
-            $('button[data-action=debug]').addClass('checked');
-        }
-
-       
-        console.log('next initial');
         next();
     }
 
-
-
-
     function replay() {
-        if (aud.src!='') {
+        if (aud.src !== '') {
             aud.play();
         }
     }
 
-
     function prev() {
-        console.log('prev');
-        var newPos = logPosition-1;
-        //console.log('newPos', newPos);
-        var id = log.length + newPos-1;
-        //console.log('id', id);
+        let newPos = logPosition-1;
+        let id = log.length + newPos-1;
         if (id < log.length && id >= 0) {
-            var ans = log[id];
+            let ans = log[id];
             logPosition--;
             setWord(ans);
         }     
     }
 
-
-
     function next(data) {
 
-
-
-        if ($('body').hasClass('next-processing')) {
+        if (body.hasClass('next-processing')) {
             return false;
         }
 
-        $('body').addClass('next-processing');
+        body.addClass('next-processing');
 
         if (logPosition<0) {
-            //console.log('log pos < 0');
-            var id = log.length + logPosition;
-            //console.log('id', id);
-            var ans = log[id];
+            let id = log.length + logPosition;
+            let ans = log[id];
             setWord(ans);
             logPosition++;
             return
@@ -98,11 +72,10 @@
         }
         
 
-        var filters = getFilters();
-        if (filters!='') {
+        let filters = getFilters();
+        if (filters !== '') {
             data['filters'] = filters;
         }
-
 
         $.post(appUrls.next, data, function(ans){
             if (ans.error) {
@@ -112,33 +85,27 @@
             log.push(ans);
             if (log.length>5) {
                 log.shift();
-            };
-            //console.log(log);
+            }
             setWord(ans);
         }, 'json').always(function(){
-            console.log('next request finished');
         });
 
     }
 
-
     function setWord(ans) {
-
-        var btn = $('button.next');
 
         clearTimeout(tidConfirm);
         
         currentData = ans;
 
         wordId = ans.wordId;
-        progressId = ans.progessId;
         $('span.word').text(ans.en);
         setFontSize(ans.ru);
         $('.answer').text(ans.ru);
         $('input.test').focus();
         aud.src = ans.pronounce;
 
-        $('body').removeClass('next-processing');
+        body.removeClass('next-processing');
 
         $('a[data-action=auto-link]').each(function(){
             let tpl = $(this).attr('data-template');
@@ -158,36 +125,19 @@
         
 
         if (checked('answer-delay')) {
-            $('body').addClass('answer-delay');
+            body.addClass('answer-delay');
         }
 
         if (ans.knowLast && ans.knowLast>0) {
-            console.log('setting to ' + ans.knowLast);
             $('button[data-know='+ans.knowLast+']').focus();
         }
 
-        // debug
-        if ($('table.debug').length>0) {
-            $('table.debug').empty();
-            $.each(ans.debug, function(k, v){
-                if (typeof(v)=='object') {
-                    $('table.debug').append("<tr><td>"+v.key+"</td><td>"+v.value+"</td></tr>");
-                } else {
-                    $('table.debug').append("<tr><td colspan='2'>"+v+"</td></tr>");
-                }                   
-            });
-        }        
-
-
         resize();
-
     }
 
-
-
     function setFontSize(str) {
-        var len = str.length;
-        var sizeClass = 's1';
+        let len = str.length;
+        let sizeClass = 's1';
         if (len>20) { 
             sizeClass = 's2';
         }
@@ -200,8 +150,6 @@
         $('.answer').attr('class', 'answer ' + sizeClass);
     }
 
-
-
     function checkAuthenticated(name) {
         if (!window.isAuthenticated) {
             alert('Для работы функции "'+name+'" необходимо авторизоваться.');
@@ -210,7 +158,6 @@
             return true;
         }
     }
-
 
     function report(e) {
 
@@ -222,7 +169,7 @@
             return false;
         }
 
-        var word = $('span.word').text();
+        let word = $('span.word').text();
         if (!confirm('Сообщить об ошибке/неточности в слове "'+word+'"?')) {
             return false;
         }
@@ -235,17 +182,13 @@
         }, 'json');
     }
 
-
-
-
-
     function adminUpdate() {
 
         if (!window.isStaff) {
             return false;
         }
         
-        var newAnswer = prompt('Для всех!!!' + "\n" +  'Обновить перевод для ' + currentData.en, currentData.ru);
+        let newAnswer = prompt('Для всех!!!' + "\n" +  'Обновить перевод для ' + currentData.en, currentData.ru);
 
         if (newAnswer===null) {
             return false;
@@ -261,8 +204,6 @@
         }, 'json');
     }
 
-
-
     function disable(e) {
 
         if (typeof(e)!=='undefined') {
@@ -273,7 +214,7 @@
             return false;
         }
 
-        var word = $('span.word').text();
+        let word = $('span.word').text();
         if (!confirm('УДАЛИТЬ слово "'+word+'"?')) {
             return false;
         }
@@ -282,15 +223,13 @@
                 alert(ans.error);
                 return false;
             }
-            console.log('next by delete cb');
             next();
         }, 'json');
     }
 
-
     function resize() {
 
-        var fh = $('.sticked').height();
+        let fh = $('.sticked').height();
 
         $('.footer-placeholder').css({
             height: fh + 'px'
@@ -298,59 +237,25 @@
 
     }
 
-    var tidConfirm = null;
-
-
-
-
-
-
-    function addRemoveDict(isAdd) {
-        if (isAdd) {
-            var btn = $('button[data-action=add-to-dict]');
-            var url = appUrls.add;
-            var newClass = 'remove';
-        } else {
-            var btn = $('button[data-action=remove-from-dict]');
-            var url = appUrls.remove;
-            var newClass = 'add';
-        }        
-        $.post(url, {word_id: wordId}, function(ans){
-            if (ans.error) {
-                alert(ans.error);
-                return false;
-            }
-            word.added = isAdd;
-            next();
-
-        }, 'json');
-    }
-
-
+    let tidConfirm = null;
 
     function answer(value){
-
-        var data = {
+        let data = {
             answer_value: value,
             progress_id: currentData.progressId
         }
-
         next(data);
-
     }
 
     function setActive(value) {
         $('button[data-know]').removeClass('active');
-        $('button[data-know='+value+']').addClass('active');
-        $('button[data-know='+value+']').focus();
+        $('button[data-know='+value+']').addClass('active').focus();
     }
-
-
 
     function getFilters() {
 
-        var filters = '';
-        var all = '';
+        let filters = '';
+        let all = '';
 
         $('button[data-filter]').each(function(){
             if ($(this).hasClass('checked')) {
@@ -359,34 +264,24 @@
             all += $(this).attr('data-filter');
         });
 
-        if (all==filters) {
+        if (all === filters) {
             filters = '';
         }
         return filters;
     }
 
-
-
-
     function saveFilters() {
-        var filters = getFilters();
+        let filters = getFilters();
         words.updateUserPrefs('filters', filters);
     }
-
-
 
     function checked(action) {
         return $('button.checkbox[data-action='+action+']').hasClass('checked');
     }
 
-
-
-
     /************
     *  PUBLIC
     ************/
-
-
 
     /*************
     *  LISTENERS
@@ -394,10 +289,9 @@
 
     function listeners() {
 
-
         $(window).on('keyup', function(e){
 
-            var code = (e.charCode)? e.charCode : e.keyCode;
+            let code = (e.charCode)? e.charCode : e.keyCode;
 
             /*
 
@@ -406,8 +300,7 @@
                     // report
                     report();
                 } else {
-                    console.log('next by enter');
-                    var btn = $('button.next');
+                    let btn = $('button.next');
                     next();
                 }
             }
@@ -420,26 +313,26 @@
             */
 
             // backspace
-            if (code==8) {
+            if (code === 8) {
                 prev();
             }
 
             // up
-            if (code==38) {
+            if (code === 38) {
                 replay();
             }
 
             // insert
-            if (code==45) {
+            if (code === 45) {
                 adminUpdate();
             }
 
             // delete
-            if (code==46) {
+            if (code === 46) {
                 disable();
             }
 
-            if (code==39) {
+            if (code === 39) {
                 // right
                 let dataKnow = $(document.activeElement).attr('data-know');
                 if (typeof(dataKnow)=='undefined') {
@@ -447,7 +340,7 @@
                 }
             }
 
-            if (code==37) {
+            if (code === 37) {
                 // left
                 let dataKnow = $(document.activeElement).attr('data-know');
                 if (typeof(dataKnow)=='undefined') {
@@ -456,26 +349,22 @@
             }
 
             $('.buttons button').removeClass('active');
-            console.log(code);
         });
 
         $('button[data-action=disable]').on('click', function(e){
             if (!confirm('Отключить это слово?')) {
                 return false;
             }
-            var data = {
+            let data = {
                 progress_id: currentProgressId,
                 csrfmiddlewaretoken: csrf,
             }
             $.post(appUrls.disable, data, function(ans){
-                console.log('next by disabled cb');
                 next();
             }, 'json');            
         });
 
-       
         $('button[data-action=report]').on('click', report);
-
 
         $('button[data-action=update]').on('click', function(e){
             adminUpdate();
@@ -490,13 +379,10 @@
             e.stopPropagation();
         });
 
-
         $('button.next').on('click', function(e){
-            var btn = $('button.next');
+            let btn = $('button.next');
             next();
         });
-
-
 
         $('button[data-action=add-to-dict], button[data-action=remove-from-dict], button.next').on('keypress keydown keyup', function(e){
             // prevent double next action if buttons is focused
@@ -505,15 +391,13 @@
             e.preventDefault();
         });
 
-
         $('button[data-know]').on('click', function(e){
-            var value = $(this).attr('data-know');
+            let value = $(this).attr('data-know');
             answer(value);
         });
 
-
         $(window).on('keydown', function(e){
-            var code = e.keyCode;         
+            let code = e.keyCode;
             $.each(numRules, function(k,v){
                 if (v[1].indexOf(code)>=0) {
                     setActive(v[0]);
@@ -521,44 +405,40 @@
             });
         });
 
-
         $('button[data-know]').on('keydown', function(e){
-            var code = e.keyCode;
-            if (code==13) {
-                var value = $(this).attr('data-know');
+            let code = e.keyCode;
+            if (code === 13) {
+                let value = $(this).attr('data-know');
                 setActive(value);
                 e.preventDefault();
             }
         });
 
-
         $('button[data-know]').on('keyup', function(e){
-            var code = e.keyCode;
-            var value = parseInt($(this).attr('data-know'),10);
+            let code = e.keyCode;
+            let value = parseInt($(this).attr('data-know'),10);
             
-            if (code==39) {
+            if (code === 39) {
                 // right
                 value++;
-                if (value==6) {
+                if (value === 6) {
                     value=1;
                 }
                 $('button[data-know='+value+']').focus();
             }
 
-            if (code==37) {
+            if (code === 37) {
                 // left
                 value--;
-                if (value==0) {
+                if (value === 0) {
                     value=5;
                 }
                 $('button[data-know='+value+']').focus();
             }
 
-
-            if (code==13) {
+            if (code === 13) {
                 answer(value);
             }
-
 
             $.each(numRules, function(k,v){
                 if (v[1].indexOf(code)>=0) {
@@ -568,87 +448,45 @@
 
         });
 
-
         $('.buttons button[data-action]').on('click', function(e){
             next();
         });
 
         $('.buttons button[data-action]').on('keydown', function(e){
-            var code = e.keyCode;
-            if (code==13) {
+            let code = e.keyCode;
+            if (code === 13) {
                 e.preventDefault();
             }
             $(this).addClass('active');
         });
 
-
         $('.buttons button[data-action]').on('keyup', function(e){
-            var code = e.keyCode;
-            if (code==13) {
+            let code = e.keyCode;
+            if (code === 13) {
                 next();
                 e.preventDefault();
             }
         });
 
-
-
-
-
         $('button.checkbox').on('click', function(e){
             $(this).toggleClass('checked');
         });
 
-
-
         $('button[data-action=answer-delay]').on('click', function(e){
-            var new_value = $(this).hasClass('checked') ? 'on' : '';
+            let new_value = $(this).hasClass('checked') ? 'on' : '';
             words.updateUserPrefs('answer_delay', new_value);
         });
-
-
-        $('button[data-action=explicit]').on('click', function(e){
-            var new_value = $(this).hasClass('checked') ? 'on' : '';
-            words.updateUserPrefs('explicit', new_value);
-        });
-
-
-
-
-        $('button[data-action=debug]').on('click', function(e){
-            e.preventDefault();
-            if ($(this).hasClass('checked')) {
-                $('table.debug').show();
-                window.localStorage.setItem('debug', 'true');
-            } else {
-                $('table.debug').hide();
-                window.localStorage.setItem('debug', 'false');
-            }
-        });
-
-
 
         $('button[data-filter]').on('click', function(e){
             saveFilters();
         });
 
-
-
-
         $('html').on('click', function(e){
             if (checked('answer-delay')) {
-                $('body').removeClass('answer-delay');
+                body.removeClass('answer-delay');
             }
         });
 
-
-
-
-
-    }; // listeners
-
+    } // listeners
 
 })(window.words=window.words||{});
-
-
-
-

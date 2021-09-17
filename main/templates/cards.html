@@ -19,7 +19,6 @@
     </script>
 {% endblock head %}
 
-
 {% block menu %}
     <li><a class='login-required' href="{% url 'list' %}">Список слов</a></li>
 
@@ -29,8 +28,6 @@
     <li><a data-action='auto-link' data-template="http://context.reverso.net/перевод/английский-русский/{word}" target="_blank" href="#">Примеры использования</a></li>
     <li><a data-action='auto-link' data-template="https://wooordhunt.ru/word/{word}" target="_blank" href="#">Открыть в Wooordhunt</a></li>
 {% endblock menu %}
-
-
 
 {% block aftermenu %}
     {% if request.user.is_authenticated %}
@@ -88,32 +85,9 @@
                     <span>Задержка ответа</span>
                 </button>  
             </li>
-
-            <li>
-                <button class='link checkbox{% if user.preferences.explicit %} checked{% endif %}' data-action='explicit'>
-                    <span class='img'></span>
-                    <span>Слова 18+</span>
-                </button>  
-            </li>
-
-            {% if request.user.is_staff %}
-                <li>
-                    <button class='link checkbox' data-action='debug'>
-                        <span class='img'></span>
-                        <span>Debug</span>
-                    </button>
-                </li>
-            {% endif %}
-
-
-
         </ul>
-
-
-
     {% endif %}
 {% endblock aftermenu %}
-
 
 {% block main %}
 
@@ -128,7 +102,6 @@
 
         <div class="footer-placeholder"></div>
 
-
         <div class='sticked'>
 
             <div class='buttons'>
@@ -140,9 +113,5 @@
             </div>
 
         </div>
-
-        {% if request.user.is_staff %}
-            <table class="debug"></div>
-        {% endif %}
 
 {% endblock main %}
