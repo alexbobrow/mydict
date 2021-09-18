@@ -37,7 +37,7 @@ class TestViews(TestCase):
     def test_stata_not_staff(self):
         url = reverse('stata')
         response = self.client.get(url)
-        self.assertEqual(302, response.status_code)
+        self.assertEqual(403, response.status_code)
 
     def test_stata_staff(self):
         self.user.is_staff = True

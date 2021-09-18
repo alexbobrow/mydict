@@ -41,22 +41,22 @@
         <div class="pagination a-mb">
             <span class="step-links">
 
-                {% if words.has_previous %}
-                    <a href="{% pagelink request words.previous_page_number %}">предыдущая</a>
+                {% if page_obj.has_previous %}
+                    <a href="{% pagelink request page_obj.previous_page_number %}">предыдущая</a>
                 {% endif %}
 
                 <span class="current">
-                    Страница {{ words.number }} из {{ words.paginator.num_pages }}.
+                    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
                 </span>
 
-                {% if words.has_next %}
-                    <a href="{% pagelink request words.next_page_number %}">следующая</a>
+                {% if page_obj.has_next %}
+                    <a href="{% pagelink request page_obj.next_page_number %}">следующая</a>
                 {% endif %}
             </span>
         </div>
 
         <div class='words-table a-mb'>
-            {% for word in words %}
+            {% for word in object_list %}
                 <div data-word-id='{{ word.pk }}' class='words-row freq-row'>
                     <div class='col-0'>
                         <span title='rank'>{{ word.rank }}</span>

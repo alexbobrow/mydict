@@ -1,13 +1,16 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Max, Avg, Sum, Count, Prefetch, Q
 from django.http import JsonResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views.generic import ListView
 
 from .exceptions import NextWordNotFound
+from .mixins import StaffMemberRequiredMixin
 from .models import Word, Progress, Report
 
 
@@ -36,10 +39,53 @@ def login_required_code(fn):
     return wrapped
 
 
-def root(request):
-    context = {}
-    return render(request, 'about.html', context)
+class WordsListView(LoginRequiredMixin, ListView):
 
+    template_name = 'list.html'
+    paginate_by = 100
+    page_kwarg = 'p'
+    raise_exception = True
+
+    def get_queryset(self):
+        qs = Word.objects.filter(disabled=False)
+
+        if self.request.GET.get('q'):
+            qs = qs.filter(Q(word__icontains=self.request.GET['q']) | Q(translation__icontains=self.request.GET['q']))
+
+        pqs = Progress.objects.filter(user=self.request.user)
+        qs = qs.prefetch_related(Prefetch('progress_set', queryset=pqs))
+        return qs
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(WordsListView, self).get_context_data()
+        context['q'] = self.request.GET.get('q')
+        return context
+
+
+class StataView(StaffMemberRequiredMixin, ListView):
+
+    template_name = 'stata.html'
+    raise_exception = True
+
+    def get_queryset(self):
+        users = User.objects.all().annotate(
+            last_activity=Max('progress__time_updated'),
+            dict_size=Count('progress'),
+            know_last=Avg('progress__know_last'),
+            know_count=Sum('progress__know_count'),
+        )
+        return users
+
+
+@staff_member_required
+def stata(request):
+    users = User.objects.all().annotate(
+        last_activity=Max('progress__time_updated'),
+        dict_size=Count('progress'),
+        know_last=Avg('progress__know_last'),
+        know_count=Sum('progress__know_count'),
+    )
+    return render(request, 'stata.html', {'users': users})
 
 def next(request):
 
@@ -81,46 +127,6 @@ def next(request):
 
 
 @login_required_code
-def list(request):
-    context = {}
-
-    qs = Word.objects.filter(disabled=False)
-
-    if 'q' in request.GET and request.GET['q']:
-        qs = qs.filter(Q(word__icontains=request.GET['q']) | Q(translation__icontains=request.GET['q'])) 
-        context['q'] = request.GET['q']
-
-    pqs = Progress.objects.filter(user=request.user)
-    qs = qs.prefetch_related(Prefetch('progress_set', queryset=pqs))
-
-    paginator = Paginator(qs, 100)
-
-    page = request.GET.get('p', 1)
-    try:
-        words = paginator.page(page)
-    except PageNotAnInteger:
-        return redirect(reverse('list'))
-    except EmptyPage:
-        url = "%s?page=%s" % (reverse('list'), paginator.num_pages)
-        return redirect(url)
-
-    context['words'] = words
-
-    return render(request, 'list.html', context)
-
-
-def cards(request):
-    context = {}
-    return render(request, 'cards.html', context)
-
-
-def logout_view(request):
-    next_url = request.GET.get('next', '/')
-    logout(request)
-    return redirect(next_url)
-
-
-@login_required_code
 def report_word(request):
 
     word = Word.objects.get(pk=request.POST['word_id'])
@@ -158,17 +164,6 @@ def admin_update_word(request):
     return JsonResponse({
         'success': True
     })
-
-
-@staff_member_required
-def stata(request):
-    users = User.objects.all().annotate(
-        last_activity=Max('progress__time_updated'),
-        dict_size=Count('progress'),
-        know_last=Avg('progress__know_last'),
-        know_count=Sum('progress__know_count'),
-    )
-    return render(request, 'stata.html', {'users': users})
 
 
 @login_required_code
