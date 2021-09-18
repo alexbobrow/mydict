@@ -13,6 +13,9 @@ from .models import Word, Progress, Report
 
 # similar to staff_member_required
 # but returns 403 instead of redirect
+from .tests.consts import ERROR_NO_WORDS
+
+
 def staff_required_code(fn):
     def wrapped(*args, **kwargs):
         request = args[0]
@@ -52,7 +55,7 @@ def next(request):
         res, stata, debug = Progress.objects.get_next(request.user, filters)
     except NextWordNotFound:
         return JsonResponse({
-            'error': 'По данному фильтру слов не найдено'
+            'error': ERROR_NO_WORDS
         })
 
     if request.user.is_authenticated:
@@ -108,7 +111,6 @@ def list(request):
 
 def cards(request):
     context = {}
-    context['type'] = 'freq'
     return render(request, 'cards.html', context)
 
 
@@ -171,7 +173,6 @@ def stata(request):
 
 @login_required_code
 def user_prefs(request):
-
     name = request.POST['name']
 
     if name in ['show_sidebar', 'explicit', 'answer_delay']:

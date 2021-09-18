@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="{% static "cards.css" %}" >
     <script type="text/javascript" src="{% static "cards.js" %}"></script>
     <script type="text/javascript">
-        window.cardsType = "{{ type }}";
         window.isAuthenticated = {% if request.user.is_authenticated %}true{% else %}false{% endif %};
         window.appUrls = window.appUrls || {};
         window.appUrls['next'] = "{% url 'next' %}";
