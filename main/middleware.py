@@ -2,6 +2,7 @@ from main.models import Preferences
 
 
 class SimpleMiddleware(object):
+    # todo remove
 
     def __init__(self, get_response):
         self.get_response = get_response

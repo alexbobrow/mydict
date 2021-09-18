@@ -9,6 +9,7 @@ django-debug-toolbar = "==3.2.2"
 psycopg2 = "==2.8.6"
 requests = "*"
 factory-boy = "*"
+djangorestframework = "*"
 
 [dev-packages]
 

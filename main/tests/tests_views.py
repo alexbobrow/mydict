@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
+from rest_framework.test import APITestCase
 
-from main.models import Progress, Word, Report
+from main.models import Progress, Word, Report, Preferences
 from main.tests.consts import ERROR_NO_WORDS
 from main.tests.factories import UserFactory, WordFactory, ProgressFactory
 
@@ -60,7 +61,7 @@ class TestApiViews(TestCase):
 
     def test_next_as_guest_no_words(self):
         url = reverse('next')
-        response = self.client.get(url)
+        response = self.client.post(url)
         self.assertEqual(200, response.status_code)
         self.assertJSONEqual(response.content, {
             "error": ERROR_NO_WORDS
@@ -69,7 +70,7 @@ class TestApiViews(TestCase):
     def test_next_as_guest(self):
         word = WordFactory()
         url = reverse('next')
-        response = self.client.get(url)
+        response = self.client.post(url)
         self.assertEqual(200, response.status_code)
         self.assertJSONEqual(response.content, {
             "en": word.word,
@@ -90,7 +91,7 @@ class TestApiViews(TestCase):
         WordFactory.create_batch(6)
 
         url = reverse('next')
-        response = self.client.get(url)
+        response = self.client.post(url)
         self.assertEqual(200, response.status_code)
         word_id = response.json()['wordId']
         word = Word.objects.get(id=word_id)
@@ -242,3 +243,44 @@ class TestApiViews(TestCase):
         word.refresh_from_db()
         self.assertEqual('version1', word.old_translation)
         self.assertEqual('version2', word.translation)
+
+
+class TestPreferencesViews(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory()
+
+    def setUp(self):
+        self.user.refresh_from_db()
+
+    def test_user_prefs_not_authenticated(self):
+        url = reverse('user_prefs')
+        data = {
+            'filters': '0123'
+        }
+        response = self.client.patch(url, data)
+        self.assertEqual(403, response.status_code)
+
+    def test_user_prefs_patch_create_new(self):
+        self.client.force_login(self.user)
+        url = reverse('user_prefs')
+        data = {
+            'filters': '0123'
+        }
+        response = self.client.patch(url, data)
+        self.assertEqual(200, response.status_code)
+        preferences = Preferences.objects.get(user=self.user)
+        self.assertEqual('0123', preferences.filters)
+
+    def test_user_prefs_patch_update_existing(self):
+        Preferences.objects.get_or_create(user=self.user)
+        self.client.force_login(self.user)
+        url = reverse('user_prefs')
+        data = {
+            'filters': '0123'
+        }
+        response = self.client.patch(url, data)
+        self.assertEqual(200, response.status_code)
+        preferences = Preferences.objects.get(user=self.user)
+        self.assertEqual('0123', preferences.filters)

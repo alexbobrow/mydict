@@ -70,6 +70,5 @@ class Report(models.Model):
 class Preferences(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     show_sidebar = models.BooleanField(default=False)
-    filters = models.CharField(max_length=10)
-    explicit = models.BooleanField(default=False)
+    filters = models.CharField(max_length=10, default='')
     answer_delay = models.BooleanField(default=False)
