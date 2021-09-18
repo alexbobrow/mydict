@@ -77,16 +77,6 @@ class StataView(StaffMemberRequiredMixin, ListView):
         return users
 
 
-@staff_member_required
-def stata(request):
-    users = User.objects.all().annotate(
-        last_activity=Max('progress__time_updated'),
-        dict_size=Count('progress'),
-        know_last=Avg('progress__know_last'),
-        know_count=Sum('progress__know_count'),
-    )
-    return render(request, 'stata.html', {'users': users})
-
 def next(request):
 
     if request.user.is_authenticated:
