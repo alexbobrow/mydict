@@ -73,7 +73,15 @@
 
     words.updateUserPrefs = function(name, value) {
         if (window.isAuthenticated) {
-            $.post(appUrls.userPrefs, {name: name, value: value}, function(ans){}, 'json');
+            let data = {};
+            data[name] = value;
+            $.ajax({
+               type: 'PATCH',
+               url: appUrls.userPrefs,
+               data: JSON.stringify(data),
+               processData: false,
+               contentType: 'application/json',
+            });
         }
     }
 
@@ -87,7 +95,7 @@
 
         body.on('click', 'button.toggle-menu', function(){
             $('div.body').toggleClass('menu-opened');
-            let new_value = $('div.body').hasClass('menu-opened') ? 'on' : '';
+            let new_value = $('div.body').hasClass('menu-opened');
             words.updateUserPrefs('show_sidebar', new_value);
         });
 

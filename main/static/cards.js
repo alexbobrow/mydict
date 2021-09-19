@@ -473,7 +473,7 @@
         });
 
         $('button[data-action=answer-delay]').on('click', function(e){
-            let new_value = $(this).hasClass('checked') ? 'on' : '';
+            let new_value = $(this).hasClass('checked');
             words.updateUserPrefs('answer_delay', new_value);
         });
 
