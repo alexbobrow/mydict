@@ -1,13 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Max, Avg, Sum, Count, Prefetch, Q
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 
-from .mixins import StaffMemberRequiredMixin
+from .mixins import StaffMemberRequiredMixin, AppContextMixin
 from .models import Word, Progress
 
 
-class WordsListView(LoginRequiredMixin, ListView):
+class AppTemplateView(AppContextMixin, TemplateView):
+    pass
+
+
+class WordsListView(AppContextMixin, LoginRequiredMixin, ListView):
 
     template_name = 'list.html'
     paginate_by = 100
@@ -30,7 +34,7 @@ class WordsListView(LoginRequiredMixin, ListView):
         return context
 
 
-class StataView(StaffMemberRequiredMixin, ListView):
+class StataView(AppContextMixin, StaffMemberRequiredMixin, ListView):
 
     template_name = 'stata.html'
     raise_exception = True

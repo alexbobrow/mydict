@@ -36,37 +36,37 @@
         </div>
 
         <ul class='menu a-mb'>
-            <li><button class='link checkbox{% filter_checked request '0' %}' data-filter='0'>
+            <li><button class='link checkbox{% filter_checked user_prefs.filters '0' %}' data-filter='0'>
                 <span class='img'></span>
                 <span>Новые</span>
                 (<span class='stata-new'>0</span>/<span class='stata-all'>0</span>)
             </button></li>
 
-            <li><button class='link checkbox{% filter_checked request '5' %}' data-filter='5'>
+            <li><button class='link checkbox{% filter_checked user_prefs.filters '5' %}' data-filter='5'>
                 <span class='img'></span>
                 <span>Пять</span>
                 (<span class='stata-5'>0</span>)
             </button></li>
 
-            <li><button class='link checkbox{% filter_checked request '4' %}' data-filter='4'>
+            <li><button class='link checkbox{% filter_checked user_prefs.filters '4' %}' data-filter='4'>
                 <span class='img'></span>
                 <span>Четыре</span>
                 (<span class='stata-4'>0</span>)
             </button></li>
 
-            <li><button class='link checkbox{% filter_checked request '3' %}' data-filter='3'>
+            <li><button class='link checkbox{% filter_checked user_prefs.filters '3' %}' data-filter='3'>
                 <span class='img'></span>
                 <span>Три</span>
                 (<span class='stata-3'>0</span>)
             </button></li>
 
-            <li><button class='link checkbox{% filter_checked request '2' %}' data-filter='2'>
+            <li><button class='link checkbox{% filter_checked user_prefs.filters '2' %}' data-filter='2'>
                 <span class='img'></span>
                 <span>Два</span>
                 (<span class='stata-2'>0</span>)
             </button></li>
 
-            <li><button class='link checkbox{% filter_checked request '1' %}' data-filter='1'>
+            <li><button class='link checkbox{% filter_checked user_prefs.filters '1' %}' data-filter='1'>
                 <span class='img'></span>
                 <span>Один</span>
                 (<span class='stata-1'>0</span>)
@@ -79,7 +79,7 @@
 
         <ul class='menu a-mb'>
             <li>
-                <button class='link checkbox{% if user.preferences.answer_delay %} checked{% endif %}' data-action='answer-delay'>
+                <button class='link checkbox{% if user_prefs.answer_delay %} checked{% endif %}' data-action='answer-delay'>
                     <span class='img'></span>
                     <span>Задержка ответа</span>
                 </button>  

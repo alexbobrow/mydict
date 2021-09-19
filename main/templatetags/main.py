@@ -11,8 +11,7 @@ def pagelink(request, value):
 
 
 @register.simple_tag
-def filter_checked(request, value):
-    filters = request.user.preferences.filters
+def filter_checked(filters, value):
     if value in filters:
         return ' checked'
     else:
