@@ -59,7 +59,7 @@
 
         body.addClass('next-processing');
 
-        if (logPosition<0) {
+        if (logPosition < 0) {
             let id = log.length + logPosition;
             let ans = log[id];
             setWord(ans);
@@ -70,7 +70,6 @@
         if (typeof(data)=='undefined') {
             data = {};
         }
-        
 
         let filters = getFilters();
         if (filters !== '') {
@@ -98,38 +97,39 @@
         
         currentData = ans;
 
-        wordId = ans.wordId;
-        $('span.word').text(ans.en);
-        setFontSize(ans.ru);
-        $('.answer').text(ans.ru);
+        wordId = ans.word.id;
+        $('span.word').text(ans.word.en);
+        setFontSize(ans.word.ru);
+        $('.answer').text(ans.word.ru);
         $('input.test').focus();
-        aud.src = ans.pronounce;
+        aud.src = ans.word.pronounce;
 
         body.removeClass('next-processing');
 
         $('a[data-action=auto-link]').each(function(){
             let tpl = $(this).attr('data-template');
             let re = /{word}/;
-            let newHref = tpl.replace(re, ans.en);
+            let newHref = tpl.replace(re, ans.word.en);
             $(this).attr('href', newHref)
         })
 
         // stata
-        $('span.stata-new').text(ans.newTotal);
-        $('span.stata-all').text(ans.total);
-        $('span.stata-5').text(ans.progress5);
-        $('span.stata-4').text(ans.progress4);
-        $('span.stata-3').text(ans.progress3);
-        $('span.stata-2').text(ans.progress2);
-        $('span.stata-1').text(ans.progress1);
-        
+        if (ans.stats) {
+            $('span.stata-new').text(ans.stats.newTotal);
+            $('span.stata-all').text(ans.stats.total);
+            $('span.stata-5').text(ans.stats.progress5);
+            $('span.stata-4').text(ans.stats.progress4);
+            $('span.stata-3').text(ans.stats.progress3);
+            $('span.stata-2').text(ans.stats.progress2);
+            $('span.stata-1').text(ans.stats.progress1);
+        }
 
         if (checked('answer-delay')) {
             body.addClass('answer-delay');
         }
 
-        if (ans.knowLast && ans.knowLast>0) {
-            $('button[data-know='+ans.knowLast+']').focus();
+        if (ans.progress && ans.progress.knowLast > 0) {
+            $('button[data-know='+ans.progress.knowLast+']').focus();
         }
 
         resize();
