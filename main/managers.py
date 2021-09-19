@@ -1,4 +1,6 @@
+import operator
 import random
+from functools import reduce
 
 from django.db import models
 from django.db.models import Q
@@ -6,109 +8,38 @@ from django.db.models import Q
 from main.exceptions import NextWordNotFound
 
 
-class ProgressManager(models.Manager):
+class WordQuerySet(models.QuerySet):
 
-    def get_random_entry(self, qs):
-
+    def get_random_entry(self):
+        qs = self.all()
         count = qs.count()
-
         if count > 0:
             rand = random.randint(0, count-1)
             return qs[rand]
         else:
             raise NextWordNotFound
 
-    def get_next(self, user, filters='05'):
-        from main.models import Word, Progress
 
-        if not user.is_authenticated:
+class WordManager(models.Manager):
 
-            return self.get_random_entry(Word.objects.filter(disabled=False)), {}, []
+    def get_queryset(self):
+        return WordQuerySet(self.model, using=self._db)
 
-        word_qs = Word.objects.filter(disabled=False)
-        progress_qs = self.filter(user=user)
+    def active(self):
+        return self.filter(disabled=False)
 
-        # delete words showed but not answered
-        progress_qs.filter(know_last=0).delete()
 
-        words_count = word_qs.count()
+class ProgressQuerySet(models.QuerySet):
 
-        progress5 = progress_qs.filter(know_last=5).count()
-        progress4 = progress_qs.filter(know_last=4).count()
-        progress3 = progress_qs.filter(know_last=3).count()
-        progress2 = progress_qs.filter(know_last=2).count()
-        progress1 = progress_qs.filter(know_last=1).count()
+    def with_certain_know_values(self, know_values):
+        query = reduce(operator.or_, (Q(know_last=know_value) for know_value in know_values))
+        return self.all().filter(query)
 
-        progress_count = progress1 + progress2 + progress3 + progress4 + progress5
 
-        qs_type_word = True
+class ProgressManager(models.Manager):
 
-        if filters == '':
-            qs = word_qs
+    def get_queryset(self):
+        return ProgressQuerySet(self.model, using=self._db)
 
-        elif filters == '0':
-            progress_qs_ex = progress_qs.values('word_id')
-            qs = word_qs.exclude(id__in=progress_qs_ex)
-
-        elif '0' in filters and len(filters) > 1:
-
-            ex = progress_qs
-
-            opts = None
-
-            if filters != '54321':
-                # words with selected know_last
-                for x in range(1, 6):
-                    y = str(x)
-                    if y not in filters:
-                        if opts is None:
-                            opts = Q(know_last=x)
-                        else:
-                            opts = opts | Q(know_last=x)
-                if opts is not None:
-                    ex = ex.filter(opts)
-
-            qs = word_qs.exclude(id__in=ex.values('word_id'))
-
-        elif '0' not in filters:
-            qs = progress_qs
-            opts = None
-            if filters != '54321':
-                # words with selected know_last
-                for x in range(1, 6):
-                    y = str(x)
-                    if y in filters:
-                        if opts is None:
-                            opts = Q(know_last=x)
-                        else:
-                            opts = opts | Q(know_last=x)
-                if opts is not None:
-                    qs = qs.filter(opts)
-
-            qs_type_word = False
-
-        if qs_type_word:
-            # we got words qs
-            # have to select word and add to progress if needed
-            word = self.get_random_entry(qs)
-
-            progress, created = Progress.objects.get_or_create(
-                user=user,
-                word=word,
-            )
-        else:
-            # we got progress qs
-            progress = self.get_random_entry(qs)
-            word = progress.word
-
-        data = {
-            'total': words_count,
-            'newTotal': (words_count - progress_count),
-            'progress1': progress1,
-            'progress2': progress2,
-            'progress3': progress3,
-            'progress4': progress4,
-            'progress5': progress5,
-        }
-
-        return progress, data, []
+    def for_user(self, user):
+        return self.filter(user=user)

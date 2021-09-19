@@ -6,48 +6,42 @@ from rest_framework.views import APIView
 
 from main.exceptions import NextWordNotFound
 from main.models import Progress, Word, Report, Preferences
-from main.serializers import PreferencesSerializer
+from main.serializers import PreferencesSerializer, WordSerializer, ProgressSerializer
 from main.tests.consts import ERROR_NO_WORDS
+from main.utils import get_next_word, get_progress_stats
 
 
 class NextView(APIView):
 
     def post(self, request):
-        if request.user.is_authenticated:
-            if 'progress_id' in request.POST:
-                # fixating answer
-                progress = Progress.objects.get(pk=request.POST['progress_id'])
-                progress.add_answer(request.POST['answer_value'])
+
+        if request.user.is_authenticated and 'progress_id' in request.POST:
+            progress = Progress.objects.get(pk=request.POST['progress_id'])
+            progress.add_answer(request.POST['answer_value'])
 
         filters = request.POST.get('filters', '')
 
         try:
-            res, stata, debug = Progress.objects.get_next(request.user, filters)
+            word = get_next_word(request.user, filters)
         except NextWordNotFound:
             return Response({
                 'error': ERROR_NO_WORDS
             })
 
-        if request.user.is_authenticated:
-            context = stata
-            progress = res
-            word = progress.word
-            context['progressId'] = progress.id
-            context['knowLast'] = progress.know_last
-        else:
-            context = {}
-            progress = None
-            word = res
+        response_data = {
+            'word': WordSerializer(instance=word).data
+        }
 
-        context['wordId'] = word.id
-        context['en'] = word.word
-        context['ru'] = word.translation
-        context['pronounce'] = word.pronounce.url
+        if not request.user.is_authenticated:
+            return Response(response_data)
 
-        if request.user.is_staff:
-            context['debug'] = debug
+        progress = Progress.objects.filter(user=request.user, word=word).first()
+        if progress:
+            response_data['progress'] = ProgressSerializer(instance=progress).data
 
-        return Response(context)
+        response_data['stats'] = get_progress_stats(request.user)
+
+        return Response(response_data)
 
 
 class ReportWordView(APIView):

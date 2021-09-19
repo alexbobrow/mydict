@@ -73,10 +73,12 @@ class TestApiViews(TestCase):
         response = self.client.post(url)
         self.assertEqual(200, response.status_code)
         self.assertJSONEqual(response.content, {
-            "en": word.word,
-            "ru": word.translation,
-            "pronounce": word.pronounce.url,
-            "wordId": word.id,
+            'word': {
+                'en': word.word,
+                'ru': word.translation,
+                'pronounce': word.pronounce.url,
+                'id': word.id
+            }
         })
 
     def test_next_as_user_several_words(self):
@@ -88,29 +90,34 @@ class TestApiViews(TestCase):
         ProgressFactory.create_batch(2, user=self.user, know_last=2)
         ProgressFactory.create_batch(1, user=self.user, know_last=1)
 
-        WordFactory.create_batch(6)
-
         url = reverse('next')
         response = self.client.post(url)
         self.assertEqual(200, response.status_code)
-        word_id = response.json()['wordId']
+
+        word_id = response.json()['word']['id']
+
         word = Word.objects.get(id=word_id)
         progress = Progress.objects.get(word=word, user=self.user)
 
         self.assertJSONEqual(response.content, {
-            "knowLast": progress.know_last,
-            "newTotal": 6,
-            "progress1": 1,
-            "progress2": 2,
-            "progress3": 3,
-            "progress4": 4,
-            "progress5": 5,
-            "progressId": progress.id,
-            "total": 21,
-            "en": word.word,
-            "ru": word.translation,
-            "pronounce": word.pronounce.url,
-            "wordId": word.id,
+            'word': {
+                'en': word.word,
+                'ru': word.translation,
+                'pronounce': word.pronounce.url,
+                'id': word.id,
+            },
+            'progress': {
+                'knowLast': progress.know_last,
+            },
+            'stats': {
+                'newTotal': 0,
+                'progress1': 1,
+                'progress2': 2,
+                'progress3': 3,
+                'progress4': 4,
+                'progress5': 5,
+                'total': 15,
+            },
         })
 
     def test_next_as_user_with_filter(self):
@@ -124,23 +131,23 @@ class TestApiViews(TestCase):
 
         response = self.client.post(url, dict(filters='1'))
         self.assertEqual(200, response.status_code)
-        self.assertEqual(progress_1.word.id, response.json()['wordId'])
+        self.assertEqual(progress_1.word.id, response.json()['word']['id'])
 
         response = self.client.post(url, dict(filters='2'))
         self.assertEqual(200, response.status_code)
-        self.assertEqual(progress_2.word.id, response.json()['wordId'])
+        self.assertEqual(progress_2.word.id, response.json()['word']['id'])
 
         response = self.client.post(url, dict(filters='3'))
         self.assertEqual(200, response.status_code)
-        self.assertEqual(progress_3.word.id, response.json()['wordId'])
+        self.assertEqual(progress_3.word.id, response.json()['word']['id'])
 
         response = self.client.post(url, dict(filters='4'))
         self.assertEqual(200, response.status_code)
-        self.assertEqual(progress_4.word.id, response.json()['wordId'])
+        self.assertEqual(progress_4.word.id, response.json()['word']['id'])
 
         response = self.client.post(url, dict(filters='5'))
         self.assertEqual(200, response.status_code)
-        self.assertEqual(progress_5.word.id, response.json()['wordId'])
+        self.assertEqual(progress_5.word.id, response.json()['word']['id'])
 
     def test_apply_progress_new(self):
         self.client.force_login(self.user)

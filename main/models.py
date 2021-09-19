@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from main.managers import ProgressManager
+from main.managers import ProgressManager, WordManager
 from main.utils import pronounce_full_path
 
 
@@ -16,6 +16,8 @@ class Word(models.Model):
     rank = models.PositiveIntegerField(default=0)
     pronounce = models.FileField(upload_to=pronounce_full_path, blank=True, default='')
     disabled = models.BooleanField(default=False)
+
+    objects = WordManager()
 
     class Meta:
         ordering = ['rank']
