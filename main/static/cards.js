@@ -392,6 +392,9 @@
         });
 
         $('button[data-know]').on('click', function(e){
+            if (!checkAuthenticated('Указать уровень знания по шкале 1-5')) {
+                return false;
+            }
             let value = $(this).attr('data-know');
             answer(value);
         });
@@ -478,6 +481,9 @@
         });
 
         $('button[data-filter]').on('click', function(e){
+            if (!checkAuthenticated('Фильтр слов по уровню знания')) {
+                return false;
+            }
             saveFilters();
         });
 
