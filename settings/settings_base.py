@@ -16,10 +16,6 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -29,14 +25,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'social_django',
+    'social_django',
     'main',
-    #'sslserver',
-    #'debug_toolbar',
 ]
 
 MIDDLEWARE = [
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,8 +60,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'settings.wsgi.application'
 
 # Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORSX = [
+AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
@@ -83,9 +75,6 @@ AUTH_PASSWORD_VALIDATORSX = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.9/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -96,16 +85,14 @@ USE_L10N = True
 
 USE_TZ = True
 
-# LOGIN_URL = '/login'
-
-# python-social-auth
 AUTHENTICATION_BACKENDS = (
-    # 'social_core.backends.google.GoogleOAuth2',
-    # 'social_core.backends.facebook.FacebookOAuth2',
-    # 'social_core.backends.vk.VKOAuth2',
-    # 'social_core.backends.odnoklassniki.OdnoklassnikiOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+SOCIAL_AUTH_VK_OAUTH2_ENABLED = False
+SOCIAL_AUTH_GOOGLE_OAUTH2_ENABLED = False
+SOCIAL_AUTH_FACEBOOK_OAUTH2_ENABLED = False
+SOCIAL_AUTH_ODNOKLASSNIKI_OAUTH2_ENABLED = False
 
 SECRET_KEY = 'h73&va@r2vm15ivn2e99vv$r@c8uj1scyoi)(p9j+u+^o9c-u7'
 

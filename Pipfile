@@ -10,6 +10,7 @@ psycopg2 = "==2.8.6"
 requests = "*"
 factory-boy = "*"
 djangorestframework = "*"
+social-auth-app-django = "*"
 
 [dev-packages]
 

@@ -22,7 +22,7 @@ import main
 urlpatterns = [
     url(r'^admin4315/', admin.site.urls),
     url(r'^', include('main.urls')),
-    # url('', include('social_django.urls', namespace='social'))
+    url('', include('social_django.urls', namespace='social'))
 ]
 
 if settings.DEBUG:
