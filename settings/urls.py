@@ -17,12 +17,13 @@ from django.conf.urls import url, include
 from django.conf import settings
 from django.contrib import admin
 from django.conf.urls.static import static
-import main
+from django.urls import path
+
 
 urlpatterns = [
-    url(r'^admin4315/', admin.site.urls),
-    url(r'^', include('main.urls')),
-    url('', include('social_django.urls', namespace='social'))
+    path(f'{settings.ADMIN_URL}/', admin.site.urls),
+    path('', include('main.urls')),
+    path('', include('social_django.urls', namespace='social'))
 ]
 
 if settings.DEBUG:
