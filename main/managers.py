@@ -43,3 +43,14 @@ class ProgressManager(models.Manager):
 
     def for_user(self, user):
         return self.filter(user=user)
+
+    def create_from_answer(self, user, word, answer_value):
+        answer_value = int(answer_value)
+        return self.create(
+            user=user,
+            word=word,
+            know_first=answer_value,
+            know_avg=answer_value,
+            know_last=answer_value,
+            know_count=1
+        )

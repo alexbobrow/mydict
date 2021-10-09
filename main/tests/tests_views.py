@@ -155,7 +155,7 @@ class TestApiViews(TestCase):
         url = reverse('next')
         data = {
             'answer_value': 3,
-            'progress_id': progress.id,
+            'word_id': progress.word.id,
             'filters': 54321
         }
         response = self.client.post(url, data)
@@ -171,7 +171,7 @@ class TestApiViews(TestCase):
         url = reverse('next')
         data = {
             'answer_value': 5,
-            'progress_id': progress.id,
+            'word_id': progress.word.id,
             'filters': 54321
         }
         response = self.client.post(url, data)

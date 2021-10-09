@@ -25,6 +25,16 @@ class Word(models.Model):
     def __str__(self):
         return self.word
 
+    def add_answer(self, user, answer_value):
+        if answer_value not in '12345':
+            raise Exception('Wrong answer value')
+        try:
+            progress = Progress.objects.get(word=self, user=user)
+            progress.add_answer(answer_value)
+        except Progress.DoesNotExist:
+            Progress.objects.create_from_answer(user=user, word=self, answer_value=answer_value)
+
+
 
 class Progress(models.Model):
     word = models.ForeignKey(Word, on_delete=models.CASCADE)
@@ -42,18 +52,18 @@ class Progress(models.Model):
     def __str__(self):
         return "id:%s / word_id:%s" % (self.id, self.word_id)
 
-    def add_answer(self, value):
-        if value not in '12345':
+    def add_answer(self, answer_value):
+        if answer_value not in '12345':
             raise Exception('Wrong answer value')
 
         new_count = self.know_count + 1
-        new_avg = ((self.know_avg * self.know_count) + int(value)) / new_count
+        new_avg = ((self.know_avg * self.know_count) + int(answer_value)) / new_count
 
         if self.know_count == 0:
-            self.know_first = value    
+            self.know_first = answer_value
 
         self.know_count = new_count
-        self.know_last = value
+        self.know_last = answer_value
         self.know_avg = new_avg
        
         self.save()

@@ -188,7 +188,9 @@
             return false;
         }
         
-        let newAnswer = prompt('Для всех!!!' + "\n" +  'Обновить перевод для ' + currentData.en, currentData.ru);
+        let newAnswer = prompt(
+            'Для всех!!!' + "\n" +  'Обновить перевод для ' + currentData.word.en, currentData.word.ru
+        );
 
         if (newAnswer===null) {
             return false;
@@ -200,7 +202,7 @@
                 return false;
             }
             $('.answer').text(newAnswer);
-            currentData.ru = newAnswer;
+            currentData.word.ru = newAnswer;
         }, 'json');
     }
 
@@ -242,7 +244,7 @@
     function answer(value){
         let data = {
             answer_value: value,
-            progress_id: currentData.progressId
+            word_id: currentData.word.id
         }
         next(data);
     }

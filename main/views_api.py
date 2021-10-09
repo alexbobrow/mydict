@@ -15,9 +15,9 @@ class NextView(APIView):
 
     def post(self, request):
 
-        if request.user.is_authenticated and 'progress_id' in request.POST:
-            progress = Progress.objects.get(pk=request.POST['progress_id'])
-            progress.add_answer(request.POST['answer_value'])
+        if request.user.is_authenticated and 'word_id' in request.POST:
+            word = Word.objects.get(pk=request.POST['word_id'])
+            word.add_answer(request.user, request.POST['answer_value'])
 
         filters = request.POST.get('filters', '')
 
